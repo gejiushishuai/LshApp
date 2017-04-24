@@ -1,8 +1,10 @@
 package com.linsh.lshapp.base;
 
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
@@ -12,8 +14,10 @@ import com.linsh.lshutils.utils.LshKeyboardUtils;
 import com.linsh.lshutils.utils.LshSystemUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     protected LshColorDialog mLshColorDialog;
     protected ShapeLoadingDialog mShapeLoadingDialog;
     public boolean onCreated;
@@ -26,9 +30,39 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(getLayout());
+        // 设置屏幕方向
+        setScreenOrientation();
+        // 初始化布局
+        initView();
+        // 初始化数据
+        initData();
+
         onCreated = true;
         onDestroyed = false;
     }
+
+    protected abstract int getLayout();
+
+    protected abstract void initView();
+
+    protected abstract void initData();
+
+    @IntDef({ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE,
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT,
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Orientation {
+    }
+
+    private void setScreenOrientation() {
+        setRequestedOrientation(getScreenOrientation());
+    }
+
+    @Orientation
+    protected abstract int getScreenOrientation();
 
     @Override
     protected void onStart() {
@@ -97,8 +131,8 @@ public class BaseActivity extends AppCompatActivity {
      * 显示弹出窗口
      * 只有一个确定按钮,默认点击后消失
      */
-    public LshColorDialog showPromptDialog(String content) {
-        return showDialog(content, new LshColorDialog.OnPositiveListener() {
+    public LshColorDialog showTextDialog(String content) {
+        return showTextDialog(content, new LshColorDialog.OnPositiveListener() {
             @Override
             public void onClick(LshColorDialog dialog1) {
                 dialog1.dismiss();
@@ -113,17 +147,17 @@ public class BaseActivity extends AppCompatActivity {
      * @param onPositiveListener        确定按钮的点击监听,为null则没有
      * @param defaultOnNegativeListener 是否使用默认的取消按钮点击监听, true 即点击后消失, false 即没有取消按钮
      */
-    public LshColorDialog showDialog(String content, @Nullable LshColorDialog.OnPositiveListener
+    public LshColorDialog showTextDialog(String content, @Nullable LshColorDialog.OnPositiveListener
             onPositiveListener, boolean defaultOnNegativeListener) {
         if (defaultOnNegativeListener) {
-            return showDialog(content, onPositiveListener, new LshColorDialog.OnNegativeListener() {
+            return showTextDialog(content, onPositiveListener, new LshColorDialog.OnNegativeListener() {
                 @Override
                 public void onClick(LshColorDialog dialog1) {
                     dialog1.dismiss();
                 }
             });
         } else {
-            return showDialog(content, onPositiveListener, null);
+            return showTextDialog(content, onPositiveListener, null);
         }
     }
 
@@ -134,15 +168,16 @@ public class BaseActivity extends AppCompatActivity {
      * @param onPositiveListener 确定按钮的点击监听,为null则没有
      * @param onNegativeListener 取消按钮的点击监听,为null则没有
      */
-    public LshColorDialog showDialog(String content, @Nullable LshColorDialog.OnPositiveListener
+    public LshColorDialog showTextDialog(String content, @Nullable LshColorDialog.OnPositiveListener
             onPositiveListener, @Nullable LshColorDialog.OnNegativeListener onNegativeListener) {
-        if (!onDestroyed) return getDialog(content, onPositiveListener, onNegativeListener).show();
+        if (!onDestroyed) return getTextDialog(content, onPositiveListener, onNegativeListener).show();
         return mLshColorDialog;
     }
 
-    public LshColorDialog showDialog(String content, @Nullable String positive, @Nullable LshColorDialog.OnPositiveListener
+    public LshColorDialog showTextDialog(String content, @Nullable String positive, @Nullable LshColorDialog.OnPositiveListener
             onPositiveListener, @Nullable String negative, @Nullable LshColorDialog.OnNegativeListener onNegativeListener) {
-        if (!onDestroyed) return getDialog(content, positive, onPositiveListener, negative, onNegativeListener).show();
+        if (!onDestroyed)
+            return getTextDialog(content, positive, onPositiveListener, negative, onNegativeListener).show();
         return mLshColorDialog;
     }
 
@@ -153,12 +188,12 @@ public class BaseActivity extends AppCompatActivity {
      * @param onPositiveListener 确定按钮的点击监听,为null则没有
      * @param onNegativeListener 取消按钮的点击监听,为null则没有
      */
-    public LshColorDialog.TextDialogBuilder getDialog(String content, @Nullable LshColorDialog.OnPositiveListener
+    public LshColorDialog.TextDialogBuilder getTextDialog(String content, @Nullable LshColorDialog.OnPositiveListener
             onPositiveListener, @Nullable LshColorDialog.OnNegativeListener onNegativeListener) {
-        return getDialog(content, null, onPositiveListener, null, onNegativeListener);
+        return getTextDialog(content, null, onPositiveListener, null, onNegativeListener);
     }
 
-    public LshColorDialog.TextDialogBuilder getDialog(String content, @Nullable String positive, @Nullable LshColorDialog.OnPositiveListener
+    public LshColorDialog.TextDialogBuilder getTextDialog(String content, @Nullable String positive, @Nullable LshColorDialog.OnPositiveListener
             onPositiveListener, @Nullable String negative, @Nullable LshColorDialog.OnNegativeListener onNegativeListener) {
         if (mLshColorDialog != null && mLshColorDialog.isShowing()) {
             mLshColorDialog.dismiss();

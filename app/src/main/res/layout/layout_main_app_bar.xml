@@ -22,6 +22,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/fragment_main"/>
+    <FrameLayout
+        android:id="@+id/fl_home_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </android.support.design.widget.CoordinatorLayout>
