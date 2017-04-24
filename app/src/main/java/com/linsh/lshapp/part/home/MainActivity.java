@@ -1,6 +1,5 @@
 package com.linsh.lshapp.part.home;
 
-import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,19 +9,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.linsh.lshapp.R;
-import com.linsh.lshapp.base.BaseActivity;
+import com.linsh.lshapp.base.BaseViewActivity;
 import com.linsh.lshapp.part.home.shiyi.ShiyiFragment;
 import com.linsh.lshapp.tools.MainFragmentHelper;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseViewActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private MainFragmentHelper mHomeFragmentHelper;
     private Toolbar mToolbar;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected int getLayout() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initView() {
         // 初始化ToolBar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -41,6 +43,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // 默认选择 拾意
         mHomeFragmentHelper.replaceFragment(new ShiyiFragment(), this);
         navigationView.setCheckedItem(R.id.nav_shiyi);
+    }
+
+    @Override
+    protected void initData() {
+
     }
 
     @Override

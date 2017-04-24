@@ -18,7 +18,7 @@ public class ShiyiFragment extends BaseMainFragment {
 
     @Override
     protected int getLayout() {
-        return 0;
+        return R.layout.fragment_shiyi;
     }
 
     @Override
