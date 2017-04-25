@@ -12,7 +12,7 @@ import com.linsh.lshapp.part.home.MainActivity;
  * Created by linsh on 17/1/30.
  */
 
-public abstract class BaseMainFragment extends BaseViewFragment<MainActivity> {
+public abstract class BaseMainFragment<P extends BaseContract.BasePresenter> extends BaseViewFragment<MainActivity, P> {
 
     @Nullable
     @Override

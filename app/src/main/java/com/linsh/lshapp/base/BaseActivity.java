@@ -35,8 +35,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         setScreenOrientation();
         // 初始化布局
         initView();
-        // 初始化数据
-        initData();
 
         onCreated = true;
         onDestroyed = false;
@@ -45,8 +43,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getLayout();
 
     protected abstract void initView();
-
-    protected abstract void initData();
 
     @IntDef({ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,

@@ -1,50 +1,62 @@
 package com.linsh.lshapp.base;
 
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Senh Linsh on 17/4/24.
  */
 
-public abstract class BasePresenterImpl<T extends BaseView> implements BasePresenter<T> {
+public abstract class BasePresenterImpl<T extends BaseContract.BaseView> implements BaseContract.BasePresenter<T> {
 
-    protected BaseView mView;
-    protected CompositeDisposable mCompositeDisposable;
+    protected T mView;
+    protected CompositeSubscription mCompositeDisposable;
 
-    protected Realm realm;
+    protected Realm mRealm;
 
     @Override
     public void attachView(T view) {
         mView = view;
-        mCompositeDisposable = new CompositeDisposable();
+        mCompositeDisposable = new CompositeSubscription();
+
+        mRealm = Realm.getDefaultInstance();
 
         attachView();
+    }
+
+    @Override
+    public void detachView() {
     }
 
     protected abstract void attachView();
 
     @Override
     public void subscribe() {
-        realm = Realm.getDefaultInstance();
+        if (mRealm.isClosed()) {
+            mRealm = Realm.getDefaultInstance();
+        }
     }
 
     @Override
     public void unsubscribe() {
         mCompositeDisposable.clear();
-        realm.close();
+        mRealm.close();
     }
 
-    protected BaseView getView() {
+    protected T getView() {
         return mView;
     }
 
-    protected CompositeDisposable getDisposable() {
+    protected CompositeSubscription getSubscription() {
         return mCompositeDisposable;
     }
 
-    protected void addDisposable(Disposable disposable) {
+    protected void addSubscription(Subscription disposable) {
         mCompositeDisposable.add(disposable);
+    }
+
+    protected Realm getRealm() {
+        return mRealm;
     }
 }

@@ -3,13 +3,11 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_fragment_shiyi_add_person"
-        android:orderInCategory="100"
         android:title="添加联系人"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_fragment_shiyi_add_group"
-        android:orderInCategory="100"
         android:title="添加组"
         app:showAsAction="never"/>
 </menu>

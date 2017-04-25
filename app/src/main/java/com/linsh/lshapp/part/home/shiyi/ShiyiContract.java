@@ -1,7 +1,9 @@
 package com.linsh.lshapp.part.home.shiyi;
 
-import com.linsh.lshapp.base.BasePresenter;
-import com.linsh.lshapp.base.BaseView;
+import com.linsh.lshapp.base.BaseContract;
+import com.linsh.lshapp.model.Group;
+
+import io.realm.RealmList;
 
 /**
  * Created by Senh Linsh on 17/4/24.
@@ -10,11 +12,12 @@ import com.linsh.lshapp.base.BaseView;
 public interface ShiyiContract {
 
 
-    interface View extends BaseView {
+    interface View extends BaseContract.BaseView {
 
+        void setData(RealmList<Group> groups);
     }
 
-    interface Presenter extends BasePresenter<View> {
+    interface Presenter extends BaseContract.BasePresenter<View> {
 
     }
 }

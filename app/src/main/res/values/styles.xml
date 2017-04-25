@@ -29,4 +29,18 @@
         <item name="android:backgroundDimAmount">0.6</item>
     </style>
     <!--ShapeLoadingDialog-->
+
+    <style name="Text_title">
+        <item name="android:textColor">#2F2F2F</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Text_detail">
+        <item name="android:textColor">#999DA0</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 </resources>

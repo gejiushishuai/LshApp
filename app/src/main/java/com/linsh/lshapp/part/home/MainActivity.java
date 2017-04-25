@@ -13,7 +13,7 @@ import com.linsh.lshapp.base.BaseViewActivity;
 import com.linsh.lshapp.part.home.shiyi.ShiyiFragment;
 import com.linsh.lshapp.tools.MainFragmentHelper;
 
-public class MainActivity extends BaseViewActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseViewActivity<MainContract.MainPresenter> implements NavigationView.OnNavigationItemSelectedListener {
 
     private MainFragmentHelper mHomeFragmentHelper;
     private Toolbar mToolbar;
@@ -43,11 +43,6 @@ public class MainActivity extends BaseViewActivity implements NavigationView.OnN
         // 默认选择 拾意
         mHomeFragmentHelper.replaceFragment(new ShiyiFragment(), this);
         navigationView.setCheckedItem(R.id.nav_shiyi);
-    }
-
-    @Override
-    protected void initData() {
-
     }
 
     @Override
@@ -85,5 +80,10 @@ public class MainActivity extends BaseViewActivity implements NavigationView.OnN
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected MainContract.MainPresenter initPresenter() {
+        return new MainPresenter();
     }
 }
