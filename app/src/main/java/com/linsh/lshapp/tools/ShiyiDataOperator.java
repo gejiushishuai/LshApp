@@ -22,6 +22,9 @@ import rx.functions.Func1;
 
 public class ShiyiDataOperator {
 
+    /**
+     * 创建拾意数据表
+     */
     public static void createShiyi(final Realm realm) {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -33,6 +36,9 @@ public class ShiyiDataOperator {
         });
     }
 
+    /**
+     * 添加分组
+     */
     public static rx.Observable<Void> addGroup(final Realm realm, final String groupName) {
         return realm.where(Group.class).equalTo("name", groupName).findAllAsync().asObservable()
                 .filter(new Func1<RealmResults<Group>, Boolean>() {
@@ -48,7 +54,7 @@ public class ShiyiDataOperator {
                         LshLogUtils.v("query groupName", "size : " + results.size());
                         if (results.size() != 0) {
                             // 已经有该组的名称
-                            return RxUtils.getDoNothingObservable();
+                            return LshRxUtils.getDoNothingObservable();
                         }
                         return Observable.create(new Observable.OnSubscribe<Void>() {
                             @Override
@@ -72,6 +78,9 @@ public class ShiyiDataOperator {
                 });
     }
 
+    /**
+     * 获取所有分组信息
+     */
     public static rx.Observable<RealmResults<Shiyi>> getGroups(Realm realm) {
         return realm.where(Shiyi.class).findAllAsync().asObservable()
                 .filter(new Func1<RealmResults<Shiyi>, Boolean>() {
@@ -82,6 +91,9 @@ public class ShiyiDataOperator {
                 });
     }
 
+    /**
+     * 删除分组
+     */
     public static rx.Observable<Void> deleteGroup(final Realm realm, final String groupId) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
@@ -111,6 +123,9 @@ public class ShiyiDataOperator {
         }).observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * 删除该分组并将分组里的数据转移到"未分组"分组
+     */
     public static rx.Observable<Void> moveToUnnameGroup(final Realm realm, final String groupId) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
@@ -136,6 +151,9 @@ public class ShiyiDataOperator {
         }).observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * 重命名分组
+     */
     public static rx.Observable<Void> renameGroup(final Realm realm, final String groupId, final String newGroupName) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
