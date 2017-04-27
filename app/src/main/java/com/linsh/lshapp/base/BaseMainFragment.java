@@ -36,5 +36,4 @@ public abstract class BaseMainFragment<P extends BaseContract.BasePresenter> ext
     public abstract int getOptionsMenuItems();
 
     public abstract boolean onOptionsItemSelected(int id);
-
 }

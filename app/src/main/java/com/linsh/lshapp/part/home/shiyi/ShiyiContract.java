@@ -19,5 +19,10 @@ public interface ShiyiContract {
 
     interface Presenter extends BaseContract.BasePresenter<View> {
 
+        void addGroup(String groupName);
+
+        void deleteGroup(int position);
+
+        void renameGroup(int position, String groupName);
     }
 }

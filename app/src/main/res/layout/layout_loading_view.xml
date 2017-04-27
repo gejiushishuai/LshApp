@@ -8,7 +8,7 @@
     android:minWidth="44dp"
     android:orientation="vertical">
 
-    <com.feiboedu.common.view.ShapeLoadingView
+    <com.linsh.lshapp.view.ShapeLoadingView
         android:id="@+id/shapeLoadingView"
         android:layout_width="24dp"
         android:layout_height="24dp"

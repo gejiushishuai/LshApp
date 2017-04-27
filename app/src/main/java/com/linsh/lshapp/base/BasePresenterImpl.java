@@ -27,21 +27,19 @@ public abstract class BasePresenterImpl<T extends BaseContract.BaseView> impleme
 
     @Override
     public void detachView() {
+        mRealm.removeAllChangeListeners();
+        mRealm.close();
     }
 
     protected abstract void attachView();
 
     @Override
     public void subscribe() {
-        if (mRealm.isClosed()) {
-            mRealm = Realm.getDefaultInstance();
-        }
     }
 
     @Override
     public void unsubscribe() {
         mCompositeDisposable.clear();
-        mRealm.close();
     }
 
     protected T getView() {

@@ -14,6 +14,7 @@ public class RxUtils {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
             }
         });
     }

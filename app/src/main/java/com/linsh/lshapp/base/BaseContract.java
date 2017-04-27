@@ -1,6 +1,9 @@
 package com.linsh.lshapp.base;
 
 import android.content.Context;
+import android.content.DialogInterface;
+
+import com.linsh.lshutils.view.LshColorDialog;
 
 /**
  * Created by Senh Linsh on 17/4/25.
@@ -12,26 +15,32 @@ public interface BaseContract {
 
         Context getContext();
 
-        //    void showTextDialog(String msg);
-        //
-        //    void showTextDialog(String title, String msg);
-        //
-        //    void showTextDialog(String msg, LshColorDialog.OnPositiveListener onPositiveListener);
-        //
-        //    void showTextDialog(String msg, String positiveBtn, LshColorDialog.OnPositiveListener onPositiveListener);
-        //
-        //    void showTextDialog(String msg, LshColorDialog.OnPositiveListener onPositiveListener, LshColorDialog.OnNegativeListener onNegativeListener);
-        //
-        //    void showTextDialog(String msg, String positiveBtn, LshColorDialog.OnPositiveListener onPositiveListener,
-        //                        String negativeBtn, LshColorDialog.OnNegativeListener onNegativeListener);
-        //
-        //    void showLoadingDialog(String msg);
-        //
-        //    void showLoadingDialog(String msg, boolean cancelable);
-        //
-        //    void showLoadingDialog(String msg, DialogInterface.OnCancelListener cancelListener);
-        //
-        //    void showToast(String msg);
+        void showTextDialog(String content);
+
+        void showTextDialog(String title, String content);
+
+        void showTextDialog(String content, LshColorDialog.OnPositiveListener onPositiveListener);
+
+        void showTextDialog(String content, String positiveBtn, LshColorDialog.OnPositiveListener onPositiveListener);
+
+        void showTextDialog(String content, LshColorDialog.OnPositiveListener onPositiveListener, LshColorDialog.OnNegativeListener onNegativeListener);
+
+        void showTextDialog(String content, String positiveBtn, LshColorDialog.OnPositiveListener onPositiveListener,
+                            String negativeBtn, LshColorDialog.OnNegativeListener onNegativeListener);
+
+        void dismissTextDialog();
+
+        void showLoadingDialog();
+
+        void showLoadingDialog(String content);
+
+        void showLoadingDialog(String content, boolean cancelable);
+
+        void showLoadingDialog(String content, DialogInterface.OnCancelListener cancelListener);
+
+        void dismissLoadingDialog();
+
+        void showToast(String content);
     }
 
     interface BasePresenter<T extends BaseView> {
