@@ -16,7 +16,7 @@ public class RealmTool {
     public static void init(Application application) {
         Realm.init(application);
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("shiyi.mRealm")
+                .name("shiyi.realm")
                 .encryptionKey(getEncryptionKey())
                 .schemaVersion(1)
 //                .modules(new Shiyi(), new PersonDetail())
