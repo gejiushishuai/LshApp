@@ -125,7 +125,7 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
                 "删除", new LshColorDialog.OnNegativeListener() {
                     @Override
                     public void onClick(LshColorDialog dialog) {
-                        ShiyiDataOperator.deleteGroup(getRealm(), groupId);
+                        ShiyiDataOperator.moveToUnnameGroup(getRealm(), groupId);
                     }
                 });
     }
