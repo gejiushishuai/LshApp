@@ -105,4 +105,9 @@ public abstract class BaseViewFragment<T extends BaseViewActivity, P extends Bas
     public void showToast(String content) {
         getMyActivity().showToast(content);
     }
+
+    @Override
+    public void finishActivity() {
+        getMyActivity().finish();
+    }
 }

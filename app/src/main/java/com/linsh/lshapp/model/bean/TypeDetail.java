@@ -1,4 +1,4 @@
-package com.linsh.lshapp.model;
+package com.linsh.lshapp.model.bean;
 
 import io.realm.RealmObject;
 

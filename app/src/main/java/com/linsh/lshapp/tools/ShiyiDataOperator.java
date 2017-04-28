@@ -1,8 +1,8 @@
 package com.linsh.lshapp.tools;
 
-import com.linsh.lshapp.model.Group;
-import com.linsh.lshapp.model.Person;
-import com.linsh.lshapp.model.Shiyi;
+import com.linsh.lshapp.model.bean.Group;
+import com.linsh.lshapp.model.bean.Person;
+import com.linsh.lshapp.model.bean.Shiyi;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
@@ -81,12 +81,24 @@ public class ShiyiDataOperator {
     /**
      * 获取所有分组信息
      */
-    public static rx.Observable<RealmResults<Shiyi>> getGroups(Realm realm) {
+    public static rx.Observable<RealmList<Group>> getGroups(final Realm realm) {
         return realm.where(Shiyi.class).findAllAsync().asObservable()
                 .filter(new Func1<RealmResults<Shiyi>, Boolean>() {
                     @Override
                     public Boolean call(RealmResults<Shiyi> shiyis) {
                         return shiyis.isLoaded();
+                    }
+                })
+                .map(new Func1<RealmResults<Shiyi>, RealmList<Group>>() {
+                    @Override
+                    public RealmList<Group> call(RealmResults<Shiyi> shiyis) {
+                        LshLogUtils.v("getGroups Shiyis", "size = " + shiyis.size());
+                        if (shiyis.size() == 0) {
+                            ShiyiDataOperator.createShiyi(realm);
+                            return null;
+                        } else {
+                            return shiyis.get(0).getGroups();
+                        }
                     }
                 });
     }
@@ -164,6 +176,25 @@ public class ShiyiDataOperator {
                         RealmResults<Group> results = realm.where(Group.class).equalTo("id", groupId).findAll();
                         for (Group group : results) {
                             group.setName(newGroupName);
+                        }
+                        subscriber.onNext(null);
+                    }
+                });
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static rx.Observable<Void> addPerson(final Realm realm, final String group, final String name, final String desc, final String sex) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<Group> groups = realm.where(Group.class).equalTo("name", group).findAll();
+                        if (groups.size() > 0) {
+                            Person person = ShiyiModelHelper.newPerson(name, desc, sex);
+                            groups.get(0).getPersons().add(person);
                         }
                         subscriber.onNext(null);
                     }

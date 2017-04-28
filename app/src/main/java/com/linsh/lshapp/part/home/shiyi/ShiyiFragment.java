@@ -1,12 +1,14 @@
 package com.linsh.lshapp.part.home.shiyi;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
-import com.linsh.lshapp.model.Group;
+import com.linsh.lshapp.model.bean.Group;
+import com.linsh.lshapp.part.add_person.PersonAddActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshExpandableAdapter;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
@@ -131,7 +133,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     public boolean onOptionsItemSelected(int id) {
         switch (id) {
             case R.id.menu_fragment_shiyi_add_person:
-
+                startActivityForResult(new Intent(getActivity(), PersonAddActivity.class), 100);
                 break;
             case R.id.menu_fragment_shiyi_add_group:
                 showAddGroupDialog();
@@ -140,6 +142,13 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
         return true;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 200) {
+            mPresenter.getGroups();
+        }
+    }
 
     @Override
     public void setData(RealmList<Group> groups) {

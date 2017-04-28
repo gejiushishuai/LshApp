@@ -1,7 +1,7 @@
 package com.linsh.lshapp.part.home.shiyi;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.Group;
+import com.linsh.lshapp.model.bean.Group;
 
 import io.realm.RealmList;
 
@@ -24,5 +24,7 @@ public interface ShiyiContract {
         void deleteGroup(int position);
 
         void renameGroup(int position, String groupName);
+
+        void getGroups();
     }
 }

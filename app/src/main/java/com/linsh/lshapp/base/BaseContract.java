@@ -41,6 +41,8 @@ public interface BaseContract {
         void dismissLoadingDialog();
 
         void showToast(String content);
+
+        void finishActivity();
     }
 
     interface BasePresenter<T extends BaseView> {

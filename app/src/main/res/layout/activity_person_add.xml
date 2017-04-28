@@ -1,0 +1,139 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <!-- 头像 -->
+    <RelativeLayout
+        android:id="@+id/rl_shiyi_person_add_avatar_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            style="@style/Text_title"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="头像"/>
+
+        <ImageView
+            android:id="@+id/iv_shiyi_person_add_avatar"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_contact"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
+    <!-- 姓名 -->
+    <RelativeLayout
+        android:id="@+id/rl_shiyi_person_add_name_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            style="@style/Text_title"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="姓名"/>
+
+        <TextView
+            android:id="@+id/tv_shiyi_person_add_name"
+            style="@style/Text_detail"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="未填写"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
+    <!-- 姓名描述 -->
+    <RelativeLayout
+        android:id="@+id/rl_shiyi_person_add_desc_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            style="@style/Text_title"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="描述"/>
+
+        <TextView
+            android:id="@+id/tv_shiyi_person_add_desc"
+            style="@style/Text_detail"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="未填写"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
+    <!-- 性别 -->
+    <RelativeLayout
+        android:id="@+id/rl_shiyi_person_add_sex_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            style="@style/Text_title"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="性别"/>
+
+        <TextView
+            android:id="@+id/tv_shiyi_person_add_sex"
+            style="@style/Text_detail"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="未填写"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
+    <!-- 分组 -->
+    <RelativeLayout
+        android:id="@+id/rl_shiyi_person_add_group_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            style="@style/Text_title"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="分组"/>
+
+        <TextView
+            android:id="@+id/tv_shiyi_person_add_group"
+            style="@style/Text_detail"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="未填写"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
+</LinearLayout>

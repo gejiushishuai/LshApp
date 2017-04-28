@@ -158,6 +158,11 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
     }
 
     @Override
+    public void finishActivity() {
+        finish();
+    }
+
+    @Override
     protected int getScreenOrientation() {
         return ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
     }
