@@ -2,7 +2,9 @@ package com.linsh.lshapp.tools;
 
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
+import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.Shiyi;
+import com.linsh.lshapp.model.bean.Type;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
@@ -31,6 +33,18 @@ public class ShiyiDataOperator {
             public void execute(Realm realm) {
                 Shiyi shiyi = realm.createObject(Shiyi.class);
                 shiyi.setGroups(new RealmList<Group>());
+                LshLogUtils.v("createShiyi", "getCurrentThreadName -- " + LshThreadUtils.getCurrentThreadName());
+            }
+        });
+    }
+
+    public static void createPersonDetail(final Realm realm, final String personId) {
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                PersonDetail detail = realm.createObject(PersonDetail.class);
+                detail.setId(personId);
+                detail.setTypes(new RealmList<Type>());
                 LshLogUtils.v("createShiyi", "getCurrentThreadName -- " + LshThreadUtils.getCurrentThreadName());
             }
         });
@@ -203,4 +217,44 @@ public class ShiyiDataOperator {
         }).observeOn(AndroidSchedulers.mainThread());
     }
 
+    public static rx.Observable<Person> getPerson(final Realm realm, String personId) {
+        return realm.where(Person.class).equalTo("id", personId).findAllAsync().asObservable()
+                .filter(new Func1<RealmResults<Person>, Boolean>() {
+                    @Override
+                    public Boolean call(RealmResults<Person> shiyis) {
+                        return shiyis.isLoaded();
+                    }
+                })
+                .map(new Func1<RealmResults<Person>, Person>() {
+                    @Override
+                    public Person call(RealmResults<Person> persons) {
+                        LshLogUtils.v("getPerson persons", "size = " + persons.size());
+                        if (persons.size() == 0) {
+                            return null;
+                        }
+                        return persons.get(0);
+                    }
+                });
+    }
+
+    public static rx.Observable<PersonDetail> getPersonDetail(final Realm realm, final String personId) {
+        return realm.where(PersonDetail.class).equalTo("id", personId).findAllAsync().asObservable()
+                .filter(new Func1<RealmResults<PersonDetail>, Boolean>() {
+                    @Override
+                    public Boolean call(RealmResults<PersonDetail> shiyis) {
+                        return shiyis.isLoaded();
+                    }
+                })
+                .map(new Func1<RealmResults<PersonDetail>, PersonDetail>() {
+                    @Override
+                    public PersonDetail call(RealmResults<PersonDetail> details) {
+                        LshLogUtils.v("getPersonDetail details", "size = " + details.size());
+                        if (details.size() == 0) {
+                            createPersonDetail(realm, personId);
+                            return null;
+                        }
+                        return details.get(0);
+                    }
+                });
+    }
 }

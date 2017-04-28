@@ -19,7 +19,6 @@ import com.linsh.lshutils.view.LshColorDialog;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class PersonAddActivity extends BaseToolbarActivity<PersonAddContract.Presenter> implements PersonAddContract.View {
@@ -50,7 +49,6 @@ public class PersonAddActivity extends BaseToolbarActivity<PersonAddContract.Pre
 
     @Override
     protected void initView() {
-        ButterKnife.bind(this);
     }
 
     @OnClick({R.id.rl_shiyi_person_add_avatar_item, R.id.rl_shiyi_person_add_name_item, R.id.rl_shiyi_person_add_desc_item,

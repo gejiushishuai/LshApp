@@ -54,6 +54,12 @@ public abstract class BasePresenterImpl<T extends BaseContract.BaseView> impleme
         mCompositeDisposable.add(disposable);
     }
 
+    protected void addSubscription(Subscription... disposables) {
+        for (Subscription disposable : disposables) {
+            mCompositeDisposable.add(disposable);
+        }
+    }
+
     protected Realm getRealm() {
         return mRealm;
     }

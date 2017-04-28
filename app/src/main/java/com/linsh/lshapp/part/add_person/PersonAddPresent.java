@@ -9,6 +9,7 @@ import com.linsh.lshapp.tools.ShiyiDataOperator;
 import java.util.List;
 
 import io.realm.RealmList;
+import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Actions;
 
@@ -22,7 +23,7 @@ public class PersonAddPresent extends BasePresenterImpl<PersonAddContract.View> 
 
     @Override
     protected void attachView() {
-        ShiyiDataOperator.getGroups(getRealm())
+        Subscription getGroupsSub = ShiyiDataOperator.getGroups(getRealm())
                 .subscribe(new Action1<RealmList<Group>>() {
                     @Override
                     public void call(RealmList<Group> groups) {
@@ -35,6 +36,7 @@ public class PersonAddPresent extends BasePresenterImpl<PersonAddContract.View> 
                         getView().showToast(throwable.getMessage());
                     }
                 });
+        addSubscription(getGroupsSub);
     }
 
     @Override

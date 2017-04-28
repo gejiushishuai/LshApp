@@ -57,6 +57,10 @@ public class Person extends RealmObject {
         return gender;
     }
 
+    public int getIntGender() {
+        return gender;
+    }
+
     public void setGender(int gender) {
         this.gender = gender;
     }
