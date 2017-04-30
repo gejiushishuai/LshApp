@@ -10,7 +10,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshutils.Rx.Action;
-import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
+import com.linsh.lshutils.adapter.LshSimplifiedRcvAdapter;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
 import com.linsh.lshutils.utils.LshListUtils;
@@ -132,7 +132,7 @@ public class PersonAddActivity extends BaseToolbarActivity<PersonAddContract.Pre
                 .setList(items)
                 .setOnItemClickListener(new LshColorDialog.OnItemClickListener() {
                     @Override
-                    public void onClick(LshColorDialog dialog, LshRecyclerViewAdapter.LshViewHolder viewHolder, int item) {
+                    public void onClick(LshColorDialog dialog, LshSimplifiedRcvAdapter.LshSimplifiedViewHolder viewHolder, int item) {
                         dialog.dismiss();
                         if (!lastSex.equals(items[item])) {
                             setSex(items[item]);
@@ -152,7 +152,7 @@ public class PersonAddActivity extends BaseToolbarActivity<PersonAddContract.Pre
                 .setList(groups)
                 .setOnItemClickListener(new LshColorDialog.OnItemClickListener() {
                     @Override
-                    public void onClick(LshColorDialog dialog, LshRecyclerViewAdapter.LshViewHolder viewHolder, int index) {
+                    public void onClick(LshColorDialog dialog, LshSimplifiedRcvAdapter.LshSimplifiedViewHolder viewHolder, int index) {
                         dialog.dismiss();
                         // 点击第一条, 添加新分组
                         if (index == 0) {

@@ -8,9 +8,14 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
+import com.linsh.lshapp.model.bean.Type;
+import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshutils.utils.LshActivityUtils;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
+import io.realm.RealmList;
 
 public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContract.Presenter> implements PersonDetailContract.View {
 
@@ -71,5 +76,15 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         if (personDetail != null) {
             mDetailAdapter.setData(personDetail.getTypes());
         }
+    }
+
+    private ArrayList<TypeDetail> getTypeDetails(PersonDetail personDetail) {
+        ArrayList<TypeDetail> typeDetails = new ArrayList<>();
+
+        RealmList<Type> types = personDetail.getTypes();
+        for (Type type : types) {
+            typeDetails.addAll(type.getTypeDetails());
+        }
+        return typeDetails;
     }
 }

@@ -100,8 +100,8 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
                         .setContent(content)
                         .setBgColor(getResources().getColor(R.color.color_theme_dark_blue));
 
-        if (onPositiveListener != null)
-            dialogBuilder.setPositiveButton(positive == null ? "确定" : positive, onPositiveListener);
+        dialogBuilder.setPositiveButton(positive == null ? "确定" : positive, onPositiveListener);
+
         if (onNegativeListener != null || defaultNegativeBtn)
             dialogBuilder.setNegativeButton(negative == null ? "取消" : negative, onNegativeListener);
 

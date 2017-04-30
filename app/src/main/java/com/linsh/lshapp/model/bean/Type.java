@@ -8,6 +8,7 @@ import io.realm.RealmObject;
  */
 public class Type extends RealmObject {
 
+    private String id;
     private String name;
     private int sort;
     private RealmList<TypeDetail> typeDetails;
@@ -34,5 +35,13 @@ public class Type extends RealmObject {
 
     public void setTypeDetails(RealmList<TypeDetail> typeDetails) {
         this.typeDetails = typeDetails;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

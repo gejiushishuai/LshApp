@@ -10,7 +10,7 @@ import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.part.add_person.PersonAddActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
-import com.linsh.lshutils.adapter.LshExpandableAdapter;
+import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.view.LshColorDialog;
@@ -42,7 +42,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
         mShiyiAdapter = new ShiyiAdapter();
         mRcv.setAdapter(mShiyiAdapter);
 
-        mShiyiAdapter.setOnItemLongClickListener(new LshExpandableAdapter.OnItemLongClickListener() {
+        mShiyiAdapter.setOnItemLongClickListener(new LshExpandableRcvAdapter.OnItemLongClickListener() {
             @Override
             public boolean onFirstLevelItemLongClick(View view, int firstLevelPosition) {
                 showGroupLongClickSetting(view, firstLevelPosition);
@@ -52,6 +52,17 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
             @Override
             public boolean onSecondLevelItemLongClick(View view, int secondLevelPosition) {
                 return false;
+            }
+        });
+        mShiyiAdapter.setOnItemClickListener(new LshExpandableRcvAdapter.OnItemClickListener() {
+            @Override
+            public void onFirstLevelItemClick(int firstLevelPosition, boolean expand) {
+
+            }
+
+            @Override
+            public void onSecondLevelItemClick(int secondLevelPosition) {
+
             }
         });
     }

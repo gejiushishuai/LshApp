@@ -10,7 +10,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.tools.ImageTools;
-import com.linsh.lshutils.adapter.LshExpandableAdapter;
+import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
 import com.linsh.lshutils.adapter.LshViewHolder;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Senh Linsh on 17/4/25.
  */
 
-public class ShiyiAdapter extends LshExpandableAdapter<Group, Person> {
+public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
 
     @Override
     public List<Person> getSecondData(int position) {
