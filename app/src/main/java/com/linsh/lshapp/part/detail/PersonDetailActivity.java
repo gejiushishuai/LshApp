@@ -1,6 +1,8 @@
 package com.linsh.lshapp.part.detail;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -86,5 +88,30 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
             typeDetails.addAll(type.getTypeDetails());
         }
         return typeDetails;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_person_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.menu_person_detail_add_type:
+//                mPresenter.getTypes();
+                return true;
+            case R.id.menu_person_detail_manage_type:
+
+                return true;
+            case R.id.menu_person_detail_delete_person:
+
+                return true;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_person_detail_add_type"
+        android:title="添加类型"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_person_detail_manage_type"
+        android:title="管理类型"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_person_detail_delete_person"
+        android:title="删除该联系人"
+        app:showAsAction="never"/>
+</menu>

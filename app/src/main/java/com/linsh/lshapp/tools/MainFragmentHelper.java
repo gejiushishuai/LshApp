@@ -7,6 +7,8 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.part.home.MainActivity;
 import com.linsh.lshapp.part.home.shiyi.ShiyiFragment;
+import com.linsh.lshapp.part.setting.SettingsActivity;
+import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshFragmentUtils;
 
 /**
@@ -32,7 +34,7 @@ public class MainFragmentHelper {
         } else if (id == R.id.nav_seek) {
 
         } else if (id == R.id.nav_setting) {
-//            LshActivityUtils.newIntent(SettingActivity.class).startActivity(activity);
+            LshActivityUtils.newIntent(SettingsActivity.class).startActivity(activity);
         }
         if (fragment != null) {
             replaceFragment(fragment, activity);

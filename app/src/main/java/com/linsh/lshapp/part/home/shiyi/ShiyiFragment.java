@@ -8,11 +8,14 @@ import android.view.View;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.model.bean.Group;
+import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.part.add_person.PersonAddActivity;
+import com.linsh.lshapp.part.detail.PersonDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import io.realm.RealmList;
@@ -54,15 +57,17 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                 return false;
             }
         });
-        mShiyiAdapter.setOnItemClickListener(new LshExpandableRcvAdapter.OnItemClickListener() {
+        mShiyiAdapter.setOnItemClickListener(new LshExpandableRcvAdapter.OnItemClickListener<Group, Person>() {
             @Override
-            public void onFirstLevelItemClick(int firstLevelPosition, boolean expand) {
+            public void onFirstLevelItemClick(Group firstLevelData, int firstLevelPosition, boolean expand) {
 
             }
 
             @Override
-            public void onSecondLevelItemClick(int secondLevelPosition) {
-
+            public void onSecondLevelItemClick(Person SecondLevelData, int firstLevelPosition, int secondLevelPosition) {
+                LshActivityUtils.newIntent(PersonDetailActivity.class)
+                        .putExtra(SecondLevelData.getId())
+                        .startActivity(getActivity());
             }
         });
     }
