@@ -18,6 +18,10 @@ public class ShiyiMigration implements RealmMigration {
                         .addField("id", String.class);
                 schema.get("TypeDetail")
                         .addField("id", String.class);
+            case 2:
+                schema.create("TypeLabel")
+                        .addField("sort", int.class)
+                        .addField("name", String.class);
                 break;
         }
     }
