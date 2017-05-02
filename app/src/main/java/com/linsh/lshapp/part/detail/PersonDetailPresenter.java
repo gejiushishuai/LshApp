@@ -2,10 +2,14 @@ package com.linsh.lshapp.part.detail;
 
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
+import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.tools.ShiyiDataOperator;
 
+import io.realm.RealmList;
+import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -16,6 +20,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
 
     private Person mPerson;
     private PersonDetail mPersonDetail;
+    private RealmList<TypeLabel> mTypeLabels;
 
     @Override
     protected void attachView() {
@@ -40,7 +45,47 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                         }
                     }
                 }, new DefaultThrowableAction());
-        addSubscription(getPersonSub, getPersonDetailSub);
+        Subscription getTypeLabelsSub = ShiyiDataOperator.getTypeLabels(getRealm())
+                .subscribe(new Action1<RealmResults<TypeLabel>>() {
+                    @Override
+                    public void call(RealmResults<TypeLabel> typeLabels) {
+                        if (mTypeLabels == null) {
+                            mTypeLabels = new RealmList<>();
+                        }
+                        if (typeLabels != null && typeLabels.size() > 0) {
+                            mTypeLabels.addAll(typeLabels.sort("sort"));
+                        }
+                    }
+                }, new DefaultThrowableAction());
+        addSubscription(getPersonSub, getPersonDetailSub, getTypeLabelsSub);
     }
 
+    @Override
+    public RealmList<TypeLabel> getTypes() {
+        return mTypeLabels;
+    }
+
+    @Override
+    public void addTypeLabel(final String labelName) {
+        ShiyiDataOperator.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        addType(labelName);
+                    }
+                }, new DefaultThrowableAction());
+    }
+
+    @Override
+    public void addType(String typeName) {
+        getView().showLoadingDialog();
+        ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        getView().dismissLoadingDialog();
+                        getView().setData(mPersonDetail);
+                    }
+                }, new DismissLoadingThrowableAction(getView()));
+    }
 }

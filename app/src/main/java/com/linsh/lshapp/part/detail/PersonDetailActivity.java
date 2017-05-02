@@ -12,9 +12,14 @@ import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.Type;
 import com.linsh.lshapp.model.bean.TypeDetail;
+import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.LshActivityUtils;
+import com.linsh.lshutils.utils.LshListUtils;
+import com.linsh.lshutils.view.LshColorDialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import io.realm.RealmList;
@@ -101,7 +106,11 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_person_detail_add_type:
-//                mPresenter.getTypes();
+                RealmList<TypeLabel> types = mPresenter.getTypes();
+                if (types == null) {
+                    return false;
+                }
+                addTypes(types);
                 return true;
             case R.id.menu_person_detail_manage_type:
 
@@ -113,5 +122,46 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addTypes(RealmList<TypeLabel> types) {
+        List<String> stringList = LshListUtils.getStringList(types, new Action<String, TypeLabel>() {
+            @Override
+            public String call(TypeLabel typeLabel) {
+                return typeLabel.getName();
+            }
+        });
+        stringList.add(0, "添加新类型");
+        new LshColorDialog(getActivity())
+                .buildList()
+                .setTitle("添加类型")
+                .setList(stringList)
+                .setOnItemClickListener(new LshColorDialog.OnItemClickListener() {
+                    @Override
+                    public void onClick(LshColorDialog dialog, String item, int index) {
+                        dialog.dismiss();
+                        if (index == 0) {
+                            showAddTypeDialog();
+                            return;
+                        }
+                        mPresenter.addType(item);
+                    }
+                })
+                .show();
+    }
+
+    private void showAddTypeDialog() {
+        new LshColorDialog(getActivity())
+                .buildInput()
+                .setTitle("添加新类型")
+                .setPositiveButton("添加", new LshColorDialog.OnInputPositiveListener() {
+                    @Override
+                    public void onClick(LshColorDialog dialog, String inputText) {
+                        dialog.dismiss();
+                        mPresenter.addTypeLabel(inputText);
+                    }
+                })
+                .setNegativeButton(null, null)
+                .show();
     }
 }

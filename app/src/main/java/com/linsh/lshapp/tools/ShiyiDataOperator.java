@@ -5,6 +5,7 @@ import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.Shiyi;
 import com.linsh.lshapp.model.bean.Type;
+import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
@@ -256,5 +257,59 @@ public class ShiyiDataOperator {
                         return details.get(0);
                     }
                 });
+    }
+
+    public static rx.Observable<RealmResults<TypeLabel>> getTypeLabels(Realm realm) {
+        return realm.where(TypeLabel.class).findAllAsync().asObservable()
+                .filter(new Func1<RealmResults<TypeLabel>, Boolean>() {
+                    @Override
+                    public Boolean call(RealmResults<TypeLabel> typeLabels) {
+                        return typeLabels.isLoaded();
+                    }
+                });
+    }
+
+    public static Observable<Void> addTypeLabel(final Realm realm, final String labelName, final int size) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<TypeLabel> results = realm.where(TypeLabel.class).equalTo("name", labelName).findAll();
+                        if (results.size() == 0) {
+                            TypeLabel newTypeLabel = ShiyiModelHelper.newTypeLabel(size + 1, labelName);
+                            realm.copyToRealm(newTypeLabel);
+                        }
+                        subscriber.onNext(null);
+                    }
+                });
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<Void> addType(final Realm realm, final String personId, final String typeName) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<PersonDetail> results = realm.where(PersonDetail.class).equalTo("id", personId).findAll();
+                        PersonDetail personDetail;
+                        if (results.size() > 0) {
+                            personDetail = results.get(0);
+                        } else {
+                            personDetail = ShiyiModelHelper.newPersonDetail(personId);
+                            realm.copyToRealm(personDetail);
+                        }
+                        RealmList<Type> types = personDetail.getTypes();
+                        types.add(ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
+
+                        subscriber.onNext(null);
+                    }
+                });
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
     }
 }
