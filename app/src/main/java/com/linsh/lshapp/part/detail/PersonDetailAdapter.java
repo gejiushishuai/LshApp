@@ -25,7 +25,25 @@ public class PersonDetailAdapter extends LshNestedDataRcvAdapter<Type, PersonDet
 
     @Override
     protected MyViewHolder getViewHolder(View view, int viewType) {
-        return new MyViewHolder(view);
+        return new MyViewHolder(view) {
+
+            @Override
+            public boolean onLongClick(View v) {
+                int adapterPosition = getAdapterPosition();
+                int firstLevelPosition = getFirstLevelPosition(adapterPosition);
+                int secondLevelPosition = getSecondLevelPosition(adapterPosition);
+                mOnItemLongClickListener.onItemLongClick(getData().get(firstLevelPosition), firstLevelPosition, secondLevelPosition);
+                return true;
+            }
+
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = getAdapterPosition();
+                int firstLevelPosition = getFirstLevelPosition(adapterPosition);
+                int secondLevelPosition = getSecondLevelPosition(adapterPosition);
+                mOnItemClickListener.onItemClick(getData().get(firstLevelPosition), firstLevelPosition, secondLevelPosition);
+            }
+        };
     }
 
     @Override
@@ -53,10 +71,31 @@ public class PersonDetailAdapter extends LshNestedDataRcvAdapter<Type, PersonDet
         return getData().get(firstLevelPosition).getTypeDetails().size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    private OnItemClickListener<Type> mOnItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener<Type> listener) {
+        mOnItemClickListener = listener;
+    }
+
+    public interface OnItemClickListener<T> {
+        void onItemClick(T data, int firstLevelPosition, int secondLevelPosition);
+    }
+
+    private OnItemLongClickListener<Type> mOnItemLongClickListener;
+
+    public void setOnItemLongClickListener(OnItemLongClickListener<Type> listener) {
+        mOnItemLongClickListener = listener;
+    }
+
+    public interface OnItemLongClickListener<T> {
+        void onItemLongClick(T data, int firstLevelPosition, int secondLevelPosition);
+    }
+
+    public abstract class MyViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
         private final TextView tvName;
         private final TextView tvInfo;
         private final TextView tvDetail;
+        private final View llTypeLayout;
         private final View vDivider;
 
         public MyViewHolder(View itemView) {
@@ -64,7 +103,19 @@ public class PersonDetailAdapter extends LshNestedDataRcvAdapter<Type, PersonDet
             tvName = (TextView) itemView.findViewById(R.id.tv_item_person_detail_type_name);
             tvInfo = (TextView) itemView.findViewById(R.id.tv_item_person_detail_type_info);
             tvDetail = (TextView) itemView.findViewById(R.id.tv_item_person_detail_type_detail);
+            llTypeLayout = itemView.findViewById(R.id.ll_item_person_detail_type_layout);
             vDivider = itemView.findViewById(R.id.v_item_person_detail_divider);
+
+            llTypeLayout.setOnClickListener(this);
+            llTypeLayout.setOnLongClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
+
+
+        @Override
+        public abstract boolean onLongClick(View v);
+
+        @Override
+        public abstract void onClick(View v);
     }
 }

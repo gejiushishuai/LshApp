@@ -37,6 +37,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     TextView tvDesc;
     @BindView(R.id.rcv_person_detail_content)
     RecyclerView rcvContent;
+
     private PersonDetailAdapter mDetailAdapter;
 
     @Override
@@ -59,6 +60,19 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         rcvContent.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDetailAdapter = new PersonDetailAdapter();
         rcvContent.setAdapter(mDetailAdapter);
+
+        mDetailAdapter.setOnItemClickListener(new PersonDetailAdapter.OnItemClickListener<Type>() {
+            @Override
+            public void onItemClick(Type data, int firstLevelPosition, int secondLevelPosition) {
+                showToast("onItemClick:" + data.getName() + "---" + secondLevelPosition);
+            }
+        });
+        mDetailAdapter.setOnItemLongClickListener(new PersonDetailAdapter.OnItemLongClickListener<Type>() {
+            @Override
+            public void onItemLongClick(Type data, int firstLevelPosition, int secondLevelPosition) {
+                showToast("onItemLongClick:" + data.getName() + "---" + secondLevelPosition);
+            }
+        });
     }
 
     @Override
