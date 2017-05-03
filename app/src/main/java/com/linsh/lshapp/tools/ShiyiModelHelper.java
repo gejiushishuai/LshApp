@@ -12,6 +12,8 @@ import java.util.Date;
 
 import io.realm.RealmList;
 
+import static android.R.attr.id;
+
 /**
  * Created by Senh Linsh on 17/4/27.
  */
@@ -19,7 +21,11 @@ import io.realm.RealmList;
 public class ShiyiModelHelper {
 
     public static String getId(String name) {
-        return LshIdTools.getPinYinId(name) + new SimpleDateFormat("_yyMMddHHmmss").format(new Date());
+        return LshIdTools.getPinYinId(name) + getIdTimeSuffix();
+    }
+
+    private static String getIdTimeSuffix() {
+        return new SimpleDateFormat("_yyMMddHHmmss").format(new Date());
     }
 
     public static Group newGroup(String name, int sort) {
@@ -59,11 +65,23 @@ public class ShiyiModelHelper {
         int endIndex = personId.length() - 12;
         String id = (endIndex > 0 ? personId.substring(0, endIndex) : personId) + "_" + typeName;
 
+        RealmList<TypeDetail> typeDetails = new RealmList<>();
+        typeDetails.add(newTypeDetail(1, id));
+
         Type type = new Type();
         type.setName(typeName);
         type.setId(id);
         type.setSort(sort);
-        type.setTypeDetails(new RealmList<TypeDetail>());
+        type.setTypeDetails(typeDetails);
         return type;
+    }
+
+    public static TypeDetail newTypeDetail(int sort, String typeId) {
+        TypeDetail detail = new TypeDetail();
+        detail.setSort(sort);
+        detail.setDetail("");
+        detail.setDescribe("");
+        detail.setId(typeId + getIdTimeSuffix());
+        return detail;
     }
 }

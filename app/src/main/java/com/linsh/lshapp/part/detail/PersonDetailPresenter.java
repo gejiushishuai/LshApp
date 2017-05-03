@@ -8,6 +8,7 @@ import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.tools.ShiyiDataOperator;
 
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Subscription;
@@ -21,6 +22,12 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     private Person mPerson;
     private PersonDetail mPersonDetail;
     private RealmList<TypeLabel> mTypeLabels;
+    private RealmChangeListener<PersonDetail> mListener = new RealmChangeListener<PersonDetail>() {
+        @Override
+        public void onChange(PersonDetail element) {
+            getView().setData(element);
+        }
+    };
 
     @Override
     protected void attachView() {
@@ -42,6 +49,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                         if (personDetail != null) {
                             mPersonDetail = personDetail;
                             getView().setData(mPersonDetail);
+                            mPersonDetail.addChangeListener(mListener);
                         }
                     }
                 }, new DefaultThrowableAction());
@@ -58,6 +66,12 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                     }
                 }, new DefaultThrowableAction());
         addSubscription(getPersonSub, getPersonDetailSub, getTypeLabelsSub);
+    }
+
+    @Override
+    public void detachView() {
+        super.detachView();
+        mPersonDetail.removeAllChangeListeners();
     }
 
     @Override
@@ -84,7 +98,6 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                     @Override
                     public void call(Void aVoid) {
                         getView().dismissLoadingDialog();
-                        getView().setData(mPersonDetail);
                     }
                 }, new DismissLoadingThrowableAction(getView()));
     }

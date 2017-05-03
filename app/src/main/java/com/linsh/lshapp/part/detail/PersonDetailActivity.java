@@ -1,5 +1,6 @@
 package com.linsh.lshapp.part.detail;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,6 +56,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
 
     @Override
     protected void initView() {
+        rcvContent.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDetailAdapter = new PersonDetailAdapter();
         rcvContent.setAdapter(mDetailAdapter);
     }
