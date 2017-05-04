@@ -2,10 +2,13 @@ package com.linsh.lshapp.part.detail;
 
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.action.DismissLoadingAction;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
+import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.tools.ShiyiDataOperator;
 
 import io.realm.RealmChangeListener;
@@ -94,11 +97,33 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     public void addType(String typeName) {
         getView().showLoadingDialog();
         ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName)
-                .subscribe(new Action1<Void>() {
+                .subscribe(new DismissLoadingAction<Void>(getView()), new DismissLoadingThrowableAction(getView()));
+    }
+
+    @Override
+    public void addType(String typeName, int sort) {
+        getView().showLoadingDialog();
+        ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
+                .subscribe(new Action1<Result>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void call(Result result) {
                         getView().dismissLoadingDialog();
+                        if (result != null && !result.isEmpty()) {
+                            getView().showToast(result.getMessage());
+                        }
                     }
                 }, new DismissLoadingThrowableAction(getView()));
+    }
+
+    @Override
+    public void deleteType(String typeId) {
+        ShiyiDataOperator.deleteType(getRealm(), typeId)
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction());
+    }
+
+    @Override
+    public void deleteTypeDetail(String typeDetailId) {
+        ShiyiDataOperator.deleteTypeDetail(getRealm(), typeDetailId)
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction());
     }
 }

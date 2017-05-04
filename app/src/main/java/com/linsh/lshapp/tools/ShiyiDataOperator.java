@@ -7,10 +7,13 @@ import com.linsh.lshapp.model.bean.Shiyi;
 import com.linsh.lshapp.model.bean.Type;
 import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
 import com.linsh.lshutils.utils.LshThreadUtils;
+
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -321,6 +324,97 @@ public class ShiyiDataOperator {
                             RealmList<Type> types = personDetail.getTypes();
                             types.add(ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
                         }
+
+                        subscriber.onNext(null);
+                    }
+                });
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<Result> addType(final Realm realm, final String personId, final String typeName, final int sort) {
+        return Observable.create(new Observable.OnSubscribe<Result>() {
+            @Override
+            public void call(final Subscriber<? super Result> subscriber) {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        // 通过Id查询该PersonDetail
+                        RealmResults<PersonDetail> personDetailResults = realm.where(PersonDetail.class).equalTo("id", personId).findAll();
+                        PersonDetail personDetail;
+                        if (personDetailResults.size() > 0) {
+                            // 有该PersonDetail, 取第一个
+                            personDetail = personDetailResults.get(0);
+                            // 获取Types, 查询是否有同名的Type
+                            RealmResults<Type> typeResults = personDetail.getTypes().where().equalTo("name", typeName).findAll();
+                            if (typeResults.size() > 0) {
+                                // 有同名的Type, 则在该Type的TypeDetails最后加上空的TypeDetail
+                                RealmList<TypeDetail> typeDetails = typeResults.get(0).getTypeDetails();
+                                typeDetails.add(ShiyiModelHelper.newTypeDetail(typeDetails.size() + 1, personDetail.getId()));
+
+                                subscriber.onNext(new Result("已存在该类型, 添加至该类型处"));
+                            } else {
+                                // 没有同名的Type, 则在types里面加上一个Type (该Type的TypeDetails里面默认有一个空的TypeDetail)
+                                RealmList<Type> types = personDetail.getTypes();
+
+                                // 添加类型到指定的地方
+                                int saftySort = sort;
+                                if (saftySort < 0) {
+                                    saftySort = 0;
+                                } else if (saftySort >= types.size()) {
+                                    saftySort = types.size();
+                                }
+                                types.add(saftySort, ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
+                                renewTypesSort(types);
+                            }
+                        } else {
+                            // 没有该PersonDetail, 则创建一个
+                            personDetail = ShiyiModelHelper.newPersonDetail(personId);
+                            realm.copyToRealm(personDetail);
+                            // 然后添加一个Type到Types里面 (该Type的TypeDetails里面默认有一个空的TypeDetail)
+                            RealmList<Type> types = personDetail.getTypes();
+                            types.add(ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
+                        }
+
+                        subscriber.onNext(null);
+                    }
+                });
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static void renewTypesSort(List<Type> types) {
+        for (int i = 0; i < types.size(); i++) {
+            types.get(i).setSort(i + 1);
+        }
+    }
+
+    public static Observable<Void> deleteType(final Realm realm, final String typeId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<Type> typeResults = realm.where(Type.class).equalTo("id", typeId).findAll();
+                        typeResults.deleteAllFromRealm();
+
+                        subscriber.onNext(null);
+                    }
+                });
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<Void> deleteTypeDetail(final Realm realm, final String typeDetailId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<TypeDetail> typeResults = realm.where(TypeDetail.class).equalTo("id", typeDetailId).findAll();
+                        typeResults.deleteAllFromRealm();
 
                         subscriber.onNext(null);
                     }

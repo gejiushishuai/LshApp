@@ -46,15 +46,20 @@ public class LshPopupWindow extends PopupWindow {
     private abstract class BasePopupWindowBuilder<T extends BasePopupWindowBuilder> implements BasePopupWindowInterface<T> {
 
         public BasePopupWindowBuilder() {
+            // 必须设置透明背景
+            setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
             initView(mLayout);
         }
 
         @Override
         public LshPopupWindow showAsDropDown(View anchor, int xoff, int yoff) {
-            // 必须设置透明背景
-            setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             // 显示在指定的View下面
             LshPopupWindow.this.showAsDropDown(anchor, xoff, yoff);
+            return LshPopupWindow.this;
+        }
+
+        public LshPopupWindow getPopupWindow() {
             return LshPopupWindow.this;
         }
 
@@ -193,5 +198,15 @@ public class LshPopupWindow extends PopupWindow {
             width = mLayout.getMeasuredWidth();
         }
         return width;
+    }
+
+    @Override
+    public int getHeight() {
+        int height = super.getHeight();
+        if (height <= 0) {
+            mLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            height = mLayout.getMeasuredHeight();
+        }
+        return height;
     }
 }

@@ -32,7 +32,7 @@ public class PersonDetailAdapter extends LshNestedDataRcvAdapter<Type, PersonDet
                 int adapterPosition = getAdapterPosition();
                 int firstLevelPosition = getFirstLevelPosition(adapterPosition);
                 int secondLevelPosition = getSecondLevelPosition(adapterPosition);
-                mOnItemLongClickListener.onItemLongClick(getData().get(firstLevelPosition), firstLevelPosition, secondLevelPosition);
+                mOnItemLongClickListener.onItemLongClick(v, getData().get(firstLevelPosition), firstLevelPosition, secondLevelPosition);
                 return true;
             }
 
@@ -88,7 +88,7 @@ public class PersonDetailAdapter extends LshNestedDataRcvAdapter<Type, PersonDet
     }
 
     public interface OnItemLongClickListener<T> {
-        void onItemLongClick(T data, int firstLevelPosition, int secondLevelPosition);
+        void onItemLongClick(View view, T data, int firstLevelPosition, int secondLevelPosition);
     }
 
     public abstract class MyViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {

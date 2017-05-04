@@ -30,5 +30,11 @@ public interface PersonDetailContract {
         void addTypeLabel(String inputText);
 
         void addType(String typeName);
+
+        void addType(String typeName, int sort);
+
+        void deleteType(String typeId);
+
+        void deleteTypeDetail(String typeDetailId);
     }
 }

@@ -4,6 +4,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,9 +15,11 @@ import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.Type;
 import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshListUtils;
+import com.linsh.lshutils.utils.LshScreenUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import java.util.ArrayList;
@@ -69,8 +72,56 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         });
         mDetailAdapter.setOnItemLongClickListener(new PersonDetailAdapter.OnItemLongClickListener<Type>() {
             @Override
-            public void onItemLongClick(Type data, int firstLevelPosition, int secondLevelPosition) {
-                showToast("onItemLongClick:" + data.getName() + "---" + secondLevelPosition);
+            public void onItemLongClick(View view, final Type data, final int firstLevelPosition, final int secondLevelPosition) {
+                int yOnScreen = LshScreenUtils.getLocationYOnScreen(view);
+                View viewParent = (View) view.getParent();
+                if (viewParent instanceof RecyclerView) {
+                    viewParent = view;
+                }
+
+                LshPopupWindow popupWindow = new LshPopupWindow(getActivity()).BuildList()
+                        .setItems(new String[]{"添加当前类型", "添加类型到前面", "添加类型到后面", "删除当前类型", "删除当前类型信息"}, new LshPopupWindow.OnItemClickListener() {
+                            @Override
+                            public void onClick(LshPopupWindow window, int index) {
+                                window.dismiss();
+                                switch (index) {
+                                    case 0:
+                                        // 添加当前类型
+                                        mPresenter.addType(data.getName());
+                                        break;
+                                    case 1:
+                                        // 添加类型到前面
+                                        addType(firstLevelPosition);
+                                        break;
+                                    case 2:
+                                        // 添加类型到后面
+                                        addType(firstLevelPosition + 1);
+                                        break;
+                                    case 3:
+                                        // 删除当前类型
+                                        if (data.getTypeDetails().size() > 1) {
+                                            showTextDialog("删除当前类型将会删除该类型的所有类型信息", "删除", new LshColorDialog.OnPositiveListener() {
+                                                @Override
+                                                public void onClick(LshColorDialog dialog) {
+                                                    dialog.dismiss();
+                                                    mPresenter.deleteType(data.getId());
+                                                }
+                                            }, null, null);
+                                        } else {
+                                            mPresenter.deleteType(data.getId());
+                                        }
+                                        break;
+                                    case 4:
+                                        // 删除当前类型信息
+                                        mPresenter.deleteTypeDetail(data.getTypeDetails().get(secondLevelPosition).getId());
+                                        break;
+                                }
+                            }
+                        }).getPopupWindow();
+
+                int xOff = viewParent.getWidth() / 2 - popupWindow.getWidth() / 2;
+                int yOff = yOnScreen > LshScreenUtils.getScreenHeight() / 2 ? -popupWindow.getHeight() - view.getHeight() : 0;
+                popupWindow.showAsDropDown(viewParent, xOff, yOff);
             }
         });
     }
@@ -122,17 +173,15 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_person_detail_add_type:
-                RealmList<TypeLabel> types = mPresenter.getTypes();
-                if (types == null) {
+                if (addType(-1)) {
                     return false;
                 }
-                addTypes(types);
                 return true;
             case R.id.menu_person_detail_manage_type:
 
                 return true;
             case R.id.menu_person_detail_delete_person:
-
+                
                 return true;
             default:
                 break;
@@ -140,7 +189,16 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         return super.onOptionsItemSelected(item);
     }
 
-    private void addTypes(RealmList<TypeLabel> types) {
+    private boolean addType(int sort) {
+        RealmList<TypeLabel> types = mPresenter.getTypes();
+        if (types == null) {
+            return true;
+        }
+        showTypesDialog(types, sort);
+        return false;
+    }
+
+    private void showTypesDialog(RealmList<TypeLabel> types, final int sort) {
         List<String> stringList = LshListUtils.getStringList(types, new Action<String, TypeLabel>() {
             @Override
             public String call(TypeLabel typeLabel) {
@@ -148,22 +206,21 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
             }
         });
         stringList.add(0, "添加新类型");
-        new LshColorDialog(getActivity())
-                .buildList()
-                .setTitle("添加类型")
-                .setList(stringList)
-                .setOnItemClickListener(new LshColorDialog.OnItemClickListener() {
-                    @Override
-                    public void onClick(LshColorDialog dialog, String item, int index) {
-                        dialog.dismiss();
-                        if (index == 0) {
-                            showAddTypeDialog();
-                            return;
-                        }
-                        mPresenter.addType(item);
-                    }
-                })
-                .show();
+        showListDialog("添加类型", stringList, new LshColorDialog.OnItemClickListener() {
+            @Override
+            public void onClick(LshColorDialog dialog, String item, int index) {
+                dialog.dismiss();
+                if (index == 0) {
+                    showAddTypeDialog();
+                    return;
+                }
+                if (sort >= 0) {
+                    mPresenter.addType(item, sort);
+                } else {
+                    mPresenter.addType(item);
+                }
+            }
+        });
     }
 
     private void showAddTypeDialog() {

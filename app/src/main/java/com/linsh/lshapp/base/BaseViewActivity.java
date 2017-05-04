@@ -13,6 +13,8 @@ import com.linsh.lshutils.utils.LshRecourseUtils;
 import com.linsh.lshutils.utils.LshSystemUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
+import java.util.List;
+
 /**
  * Created by Senh Linsh on 17/4/24.
  */
@@ -106,6 +108,18 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
             dialogBuilder.setNegativeButton(negative == null ? "取消" : negative, onNegativeListener);
 
         return dialogBuilder;
+    }
+
+    public void showListDialog(String title, List<String> data, LshColorDialog.OnItemClickListener listener) {
+        if (mLshColorDialog != null && mLshColorDialog.isShowing()) {
+            mLshColorDialog.dismiss();
+        }
+        mLshColorDialog = new LshColorDialog(getActivity())
+                .buildList()
+                .setTitle(title)
+                .setList(data)
+                .setOnItemClickListener(listener)
+                .show();
     }
 
     @Override
