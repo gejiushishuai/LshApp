@@ -107,5 +107,6 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
         etInfo.setEnabled(true);
         etDesc.setEnabled(true);
         etInfo.requestFocus();
+        etInfo.setSelection(etInfo.getText().length());
     }
 }
