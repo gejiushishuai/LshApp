@@ -24,9 +24,9 @@ public abstract class BaseToolbarActivity<T extends BaseContract.BasePresenter> 
         // 初始化ToolBar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mToolbar.setTitle(getToolbarTitle());
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
+            supportActionBar.setTitle(getToolbarTitle());
             supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setHomeButtonEnabled(true);
         }
