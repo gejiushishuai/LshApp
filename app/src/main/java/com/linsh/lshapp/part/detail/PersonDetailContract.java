@@ -36,5 +36,7 @@ public interface PersonDetailContract {
         void deleteType(String typeId);
 
         void deleteTypeDetail(String typeDetailId);
+
+        void deletePerson();
     }
 }

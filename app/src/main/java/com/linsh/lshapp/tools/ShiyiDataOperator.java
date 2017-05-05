@@ -422,4 +422,25 @@ public class ShiyiDataOperator {
             }
         }).observeOn(AndroidSchedulers.mainThread());
     }
+
+    public static Observable<Result> deletePerson(final Realm realm, final String personId) {
+        return Observable.create(new Observable.OnSubscribe<Result>() {
+            @Override
+            public void call(final Subscriber<? super Result> subscriber) {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        // 删除Person
+                        RealmResults<Person> personResults = realm.where(Person.class).equalTo("id", personId).findAll();
+                        personResults.deleteAllFromRealm();
+                        // 删除PersonDetail
+                        RealmResults<PersonDetail> personDetailResults = realm.where(PersonDetail.class).equalTo("id", personId).findAll();
+                        personDetailResults.deleteAllFromRealm();
+
+                        subscriber.onNext(null);
+                    }
+                });
+            }
+        }).observeOn(AndroidSchedulers.mainThread());
+    }
 }

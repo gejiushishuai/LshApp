@@ -28,7 +28,9 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     private RealmChangeListener<PersonDetail> mListener = new RealmChangeListener<PersonDetail>() {
         @Override
         public void onChange(PersonDetail element) {
-            getView().setData(element);
+            if (element.isValid()) {
+                getView().setData(element);
+            }
         }
     };
 
@@ -84,26 +86,30 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
 
     @Override
     public void addTypeLabel(final String labelName) {
-        ShiyiDataOperator.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
+        Subscription subscription = ShiyiDataOperator.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
                         addType(labelName);
                     }
                 }, new DefaultThrowableAction());
+        addSubscription(subscription);
     }
 
     @Override
     public void addType(String typeName) {
         getView().showLoadingDialog();
-        ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName)
+
+        Subscription subscription = ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName)
                 .subscribe(new DismissLoadingAction<Void>(getView()), new DismissLoadingThrowableAction(getView()));
+        addSubscription(subscription);
     }
 
     @Override
     public void addType(String typeName, int sort) {
         getView().showLoadingDialog();
-        ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
+
+        Subscription subscription = ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
                 .subscribe(new Action1<Result>() {
                     @Override
                     public void call(Result result) {
@@ -113,17 +119,35 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                         }
                     }
                 }, new DismissLoadingThrowableAction(getView()));
+        addSubscription(subscription);
     }
 
     @Override
     public void deleteType(String typeId) {
-        ShiyiDataOperator.deleteType(getRealm(), typeId)
+        Subscription subscription = ShiyiDataOperator.deleteType(getRealm(), typeId)
                 .subscribe(new NothingAction<Void>(), new DefaultThrowableAction());
+        addSubscription(subscription);
     }
 
     @Override
     public void deleteTypeDetail(String typeDetailId) {
-        ShiyiDataOperator.deleteTypeDetail(getRealm(), typeDetailId)
+        Subscription subscription = ShiyiDataOperator.deleteTypeDetail(getRealm(), typeDetailId)
                 .subscribe(new NothingAction<Void>(), new DefaultThrowableAction());
+        addSubscription(subscription);
+    }
+
+    @Override
+    public void deletePerson() {
+        getView().showLoadingDialog();
+
+        Subscription subscription = ShiyiDataOperator.deletePerson(getRealm(), mPersonDetail.getId())
+                .subscribe(new Action1<Result>() {
+                    @Override
+                    public void call(Result result) {
+                        getView().dismissLoadingDialog();
+                        getView().finishActivity();
+                    }
+                }, new DismissLoadingThrowableAction(getView()));
+        addSubscription(subscription);
     }
 }

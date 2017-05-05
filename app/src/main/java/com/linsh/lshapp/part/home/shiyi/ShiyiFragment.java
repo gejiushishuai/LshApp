@@ -67,7 +67,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
             public void onSecondLevelItemClick(Person SecondLevelData, int firstLevelPosition, int secondLevelPosition) {
                 LshActivityUtils.newIntent(PersonDetailActivity.class)
                         .putExtra(SecondLevelData.getId())
-                        .startActivity(getActivity());
+                        .startActivityForResult(getActivity(), 101);
             }
         });
     }
@@ -161,8 +161,10 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 200) {
+        if (requestCode == 100 && resultCode == 200) {
             mPresenter.getGroups();
+        } else if (requestCode == 101 && resultCode == 200) {
+
         }
     }
 

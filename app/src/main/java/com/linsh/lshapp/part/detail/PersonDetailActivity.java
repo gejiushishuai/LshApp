@@ -13,7 +13,6 @@ import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.Type;
-import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
@@ -22,7 +21,6 @@ import com.linsh.lshutils.utils.LshListUtils;
 import com.linsh.lshutils.utils.LshScreenUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -152,16 +150,6 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         }
     }
 
-    private ArrayList<TypeDetail> getTypeDetails(PersonDetail personDetail) {
-        ArrayList<TypeDetail> typeDetails = new ArrayList<>();
-
-        RealmList<Type> types = personDetail.getTypes();
-        for (Type type : types) {
-            typeDetails.addAll(type.getTypeDetails());
-        }
-        return typeDetails;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_person_detail, menu);
@@ -181,7 +169,13 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
 
                 return true;
             case R.id.menu_person_detail_delete_person:
-                
+                showTextDialog("是否要将该联系人删除?", "删除", new LshColorDialog.OnPositiveListener() {
+                    @Override
+                    public void onClick(LshColorDialog dialog) {
+                        dialog.dismiss();
+                        mPresenter.deletePerson();
+                    }
+                }, null, null);
                 return true;
             default:
                 break;
