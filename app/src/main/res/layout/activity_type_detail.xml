@@ -11,7 +11,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/selector_editline"
-        android:enabled="false"/>
+        android:enabled="false"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"/>
 
     <TextView
         style="@style/Text_title2"
