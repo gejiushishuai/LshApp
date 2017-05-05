@@ -25,20 +25,31 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    ////////// 官方
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
-    compile project(':LshUtils:lshutils')
-    compile 'com.github.bumptech.glide:glide:3.7.0'
 
+    //////////  常用
+    // glide
+    compile 'com.github.bumptech.glide:glide:3.7.0'
     // butterknife
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-
+    // 汉字转拼音
     compile 'com.belerweb:pinyin4j:2.5.1'
+    // Rxjava
     compile 'io.reactivex:rxjava:1.2.9'
     compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.jakewharton.rxbinding:rxbinding:1.0.1'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:1.0.1'
+    // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    // Dagger
     compile 'com.google.dagger:dagger:2.10'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
+
+    //////////  个人
+    compile project(':LshUtils:lshutils')
 }

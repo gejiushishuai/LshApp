@@ -1,20 +1,19 @@
-package com.linsh.lshapp.part.detail;
+package com.linsh.lshapp.part.person_detail;
 
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.action.DismissLoadingAction;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
 import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.model.result.Result;
-import com.linsh.lshapp.tools.ShiyiDataOperator;
+import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
 
-import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -25,18 +24,10 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     private Person mPerson;
     private PersonDetail mPersonDetail;
     private RealmList<TypeLabel> mTypeLabels;
-    private RealmChangeListener<PersonDetail> mListener = new RealmChangeListener<PersonDetail>() {
-        @Override
-        public void onChange(PersonDetail element) {
-            if (element.isValid()) {
-                getView().setData(element);
-            }
-        }
-    };
 
     @Override
     protected void attachView() {
-        Subscription getPersonSub = ShiyiDataOperator.getPerson(getRealm(), getView().getPersonId())
+        Subscription getPersonSub = ShiyiDbHelper.getPerson(getRealm(), getView().getPersonId())
                 .subscribe(new Action1<Person>() {
                     @Override
                     public void call(Person person) {
@@ -47,18 +38,17 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                     }
                 }, new DefaultThrowableAction());
 
-        Subscription getPersonDetailSub = ShiyiDataOperator.getPersonDetail(getRealm(), getView().getPersonId())
+        Subscription getPersonDetailSub = ShiyiDbHelper.getPersonDetail(getRealm(), getView().getPersonId())
                 .subscribe(new Action1<PersonDetail>() {
                     @Override
                     public void call(PersonDetail personDetail) {
                         if (personDetail != null) {
                             mPersonDetail = personDetail;
                             getView().setData(mPersonDetail);
-                            mPersonDetail.addChangeListener(mListener);
                         }
                     }
                 }, new DefaultThrowableAction());
-        Subscription getTypeLabelsSub = ShiyiDataOperator.getTypeLabels(getRealm())
+        Subscription getTypeLabelsSub = ShiyiDbHelper.getTypeLabels(getRealm())
                 .subscribe(new Action1<RealmResults<TypeLabel>>() {
                     @Override
                     public void call(RealmResults<TypeLabel> typeLabels) {
@@ -76,7 +66,6 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void detachView() {
         super.detachView();
-        mPersonDetail.removeAllChangeListeners();
     }
 
     @Override
@@ -86,68 +75,85 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
 
     @Override
     public void addTypeLabel(final String labelName) {
-        Subscription subscription = ShiyiDataOperator.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
-                .subscribe(new Action1<Void>() {
+        Subscription subscription = ShiyiDbHelper.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void call() {
                         addType(labelName);
                     }
-                }, new DefaultThrowableAction());
+                });
         addSubscription(subscription);
     }
 
     @Override
     public void addType(String typeName) {
-        getView().showLoadingDialog();
-
-        Subscription subscription = ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName)
-                .subscribe(new DismissLoadingAction<Void>(getView()), new DismissLoadingThrowableAction(getView()));
+        Subscription subscription = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName)
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
+                    @Override
+                    public void call() {
+                        getView().setData(mPersonDetail);
+                    }
+                });
         addSubscription(subscription);
     }
 
     @Override
     public void addType(String typeName, int sort) {
-        getView().showLoadingDialog();
-
-        Subscription subscription = ShiyiDataOperator.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
+        Subscription subscription = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
                 .subscribe(new Action1<Result>() {
                     @Override
                     public void call(Result result) {
-                        getView().dismissLoadingDialog();
-                        if (result != null && !result.isEmpty()) {
+                        if (!result.isEmpty()) {
                             getView().showToast(result.getMessage());
                         }
                     }
-                }, new DismissLoadingThrowableAction(getView()));
+                }, new DismissLoadingThrowableAction(getView()), new Action0() {
+                    @Override
+                    public void call() {
+                        getView().setData(mPersonDetail);
+                    }
+                });
         addSubscription(subscription);
     }
 
     @Override
     public void deleteType(String typeId) {
-        Subscription subscription = ShiyiDataOperator.deleteType(getRealm(), typeId)
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction());
+        Subscription subscription = ShiyiDbHelper.deleteType(getRealm(), typeId)
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
+                    @Override
+                    public void call() {
+                        getView().setData(mPersonDetail);
+                    }
+                });
         addSubscription(subscription);
     }
 
     @Override
     public void deleteTypeDetail(String typeDetailId) {
-        Subscription subscription = ShiyiDataOperator.deleteTypeDetail(getRealm(), typeDetailId)
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction());
+        Subscription subscription = ShiyiDbHelper.deleteTypeDetail(getRealm(), typeDetailId)
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
+                    @Override
+                    public void call() {
+                        getView().setData(mPersonDetail);
+                    }
+                });
         addSubscription(subscription);
     }
 
     @Override
     public void deletePerson() {
-        getView().showLoadingDialog();
-
-        Subscription subscription = ShiyiDataOperator.deletePerson(getRealm(), mPersonDetail.getId())
-                .subscribe(new Action1<Result>() {
+        Subscription subscription = ShiyiDbHelper.deletePerson(getRealm(), mPersonDetail.getId())
+                .subscribe(new NothingAction<Result>(), new DefaultThrowableAction(), new Action0() {
                     @Override
-                    public void call(Result result) {
-                        getView().dismissLoadingDialog();
+                    public void call() {
                         getView().finishActivity();
                     }
-                }, new DismissLoadingThrowableAction(getView()));
+                });
         addSubscription(subscription);
+    }
+
+    @Override
+    public PersonDetail getPersonDetail() {
+        return mPersonDetail;
     }
 }

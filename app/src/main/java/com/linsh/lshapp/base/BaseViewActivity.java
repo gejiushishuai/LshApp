@@ -177,6 +177,12 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
     }
 
     @Override
+    public void finishActivity(int resultCode) {
+        setResult(resultCode);
+        finish();
+    }
+
+    @Override
     protected int getScreenOrientation() {
         return ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
     }
@@ -184,6 +190,7 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mPresenter.detachView();
         // 关闭弹出窗口
         if (mLshColorDialog != null && mLshColorDialog.isShowing()) {
             mLshColorDialog.dismiss();

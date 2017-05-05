@@ -10,7 +10,7 @@ import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.part.add_person.PersonAddActivity;
-import com.linsh.lshapp.part.detail.PersonDetailActivity;
+import com.linsh.lshapp.part.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;

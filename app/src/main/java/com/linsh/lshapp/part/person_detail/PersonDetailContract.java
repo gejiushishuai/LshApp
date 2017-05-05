@@ -1,4 +1,4 @@
-package com.linsh.lshapp.part.detail;
+package com.linsh.lshapp.part.person_detail;
 
 import com.linsh.lshapp.base.BaseContract;
 import com.linsh.lshapp.model.bean.Person;
@@ -38,5 +38,7 @@ public interface PersonDetailContract {
         void deleteTypeDetail(String typeDetailId);
 
         void deletePerson();
+
+        PersonDetail getPersonDetail();
     }
 }

@@ -3,16 +3,16 @@ package com.linsh.lshapp.part.home.shiyi;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingAction;
-import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
+import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.tools.ShiyiDataOperator;
 import com.linsh.lshutils.view.LshColorDialog;
 
-import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -22,7 +22,6 @@ import rx.functions.Action1;
 public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implements ShiyiContract.Presenter {
 
     private RealmList<Group> mGroups;
-    private RealmChangeListener<RealmList<Group>> mChangeListener;
 
     @Override
     protected void attachView() {
@@ -48,24 +47,11 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
     @Override
     public void getGroups() {
         Subscription subscription = ShiyiDataOperator.getGroups(getRealm())
-
                 .subscribe(new Action1<RealmList<Group>>() {
                     @Override
                     public void call(RealmList<Group> groups) {
                         mGroups = groups;
                         getView().setData(groups);
-
-                        if (mGroups != null && mChangeListener == null) {
-                            mChangeListener = new RealmChangeListener<RealmList<Group>>() {
-                                @Override
-                                public void onChange(RealmList<Group> element) {
-                                    if (element.isValid()) {
-                                        getView().setData(element);
-                                    }
-                                }
-                            };
-                            mGroups.addChangeListener(mChangeListener);
-                        }
                     }
                 }, new DefaultThrowableAction());
         addSubscription(subscription);
@@ -76,25 +62,25 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
         getView().showLoadingDialog();
 
         Subscription subscription = ShiyiDataOperator.addGroup(getRealm(), groupName)
-                .subscribe(new DismissLoadingAction<Void>(getView()), new DismissLoadingAction<Throwable>(getView()));
+                .subscribe(new NothingAction<Void>(), new DismissLoadingAction<Throwable>(getView()),
+                        new Action0() {
+                            @Override
+                            public void call() {
+                                getView().dismissLoadingDialog();
+                                getView().setData(mGroups);
+                            }
+                        });
         addSubscription(subscription);
     }
 
     @Override
     public void deleteGroup(int position) {
-        getView().showLoadingDialog();
         final Group group = mGroups.get(position);
 
         Subscription subscription = ShiyiDataOperator.deleteGroup(getRealm(), group.getId())
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        getView().dismissLoadingDialog();
-                    }
-                }, new Action1<Throwable>() {
+                .subscribe(new NothingAction<Void>(), new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        getView().dismissLoadingDialog();
                         if (throwable instanceof DeleteUnnameGroupThrowable) {
                             deleteUnnameGroup();
                         } else if (throwable instanceof DeleteUnemptyGroupThrowable) {
@@ -103,6 +89,11 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
                             throwable.printStackTrace();
                             getView().showToast(throwable.getMessage());
                         }
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        getView().setData(mGroups);
                     }
                 });
         addSubscription(subscription);
@@ -124,12 +115,17 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
 
     @Override
     public void renameGroup(int position, String groupName) {
-        getView().showLoadingDialog();
         Group group = mGroups.get(position);
 
         if (!group.getName().equals(groupName)) {
             Subscription subscription = ShiyiDataOperator.renameGroup(getRealm(), group.getId(), groupName)
-                    .subscribe(new DismissLoadingAction<Void>(getView()), new DismissLoadingThrowableAction(getView()));
+                    .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(),
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    getView().setData(mGroups);
+                                }
+                            });
             addSubscription(subscription);
         }
     }

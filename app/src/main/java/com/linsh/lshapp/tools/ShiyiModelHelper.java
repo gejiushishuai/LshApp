@@ -12,8 +12,6 @@ import java.util.Date;
 
 import io.realm.RealmList;
 
-import static android.R.attr.id;
-
 /**
  * Created by Senh Linsh on 17/4/27.
  */

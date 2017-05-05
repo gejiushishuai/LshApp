@@ -1,4 +1,4 @@
-package com.linsh.lshapp.part.detail;
+package com.linsh.lshapp.part.person_detail;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

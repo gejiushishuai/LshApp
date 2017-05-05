@@ -1,5 +1,6 @@
-package com.linsh.lshapp.part.detail;
+package com.linsh.lshapp.part.person_detail;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -13,7 +14,9 @@ import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.Type;
+import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.part.type_detail.TypeDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.LshActivityUtils;
@@ -65,7 +68,12 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         mDetailAdapter.setOnItemClickListener(new PersonDetailAdapter.OnItemClickListener<Type>() {
             @Override
             public void onItemClick(Type data, int firstLevelPosition, int secondLevelPosition) {
-                showToast("onItemClick:" + data.getName() + "---" + secondLevelPosition);
+                TypeDetail typeDetail = data.getTypeDetails().get(secondLevelPosition);
+
+                LshActivityUtils.newIntent(TypeDetailActivity.class)
+                        .putExtra(data.getName(), 0)
+                        .putExtra(typeDetail.getId(), 1)
+                        .startActivityForResult(getActivity(), 100);
             }
         });
         mDetailAdapter.setOnItemLongClickListener(new PersonDetailAdapter.OnItemLongClickListener<Type>() {
@@ -230,5 +238,13 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                 })
                 .setNegativeButton(null, null)
                 .show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 200) {
+            setData(mPresenter.getPersonDetail());
+        }
     }
 }

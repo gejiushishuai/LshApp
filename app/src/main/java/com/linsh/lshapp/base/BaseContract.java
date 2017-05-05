@@ -43,6 +43,8 @@ public interface BaseContract {
         void showToast(String content);
 
         void finishActivity();
+
+        void finishActivity(int resultCode);
     }
 
     interface BasePresenter<T extends BaseView> {

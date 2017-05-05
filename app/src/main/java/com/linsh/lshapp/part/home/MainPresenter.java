@@ -10,6 +10,5 @@ public class MainPresenter extends BasePresenterImpl<MainContract.MainView> impl
 
     @Override
     protected void attachView() {
-
     }
 }

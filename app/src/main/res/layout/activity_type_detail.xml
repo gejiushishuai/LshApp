@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/bg_white"
+              android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/et_type_detail_info"
+        style="@style/Text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/selector_editline"
+        android:enabled="false"/>
+
+    <TextView
+        style="@style/Text_title2"
+        android:layout_marginLeft="10dp"
+        android:text="描述:"
+        android:textColor="@color/text_detail"/>
+
+    <EditText
+        android:id="@+id/et_type_detail_desc"
+        style="@style/Text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/selector_editframe"
+        android:enabled="false"
+        android:gravity="top"
+        android:lines="5"/>
+
+</LinearLayout>

@@ -42,6 +42,12 @@ public abstract class BaseViewFragment<T extends BaseViewActivity, P extends Bas
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.detachView();
+    }
+
+    @Override
     public void showTextDialog(String content) {
         getMyActivity().showTextDialog(content);
     }
@@ -109,5 +115,10 @@ public abstract class BaseViewFragment<T extends BaseViewActivity, P extends Bas
     @Override
     public void finishActivity() {
         getMyActivity().finish();
+    }
+
+    @Override
+    public void finishActivity(int resultCode) {
+        getMyActivity().finishActivity(resultCode);
     }
 }

@@ -1,5 +1,7 @@
 package com.linsh.lshapp.tools;
 
+import com.linsh.lshapp.model.action.AsyncTransaction;
+import com.linsh.lshapp.model.action.ResultListFilterFunc;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
@@ -442,5 +444,33 @@ public class ShiyiDataOperator {
                 });
             }
         }).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<TypeDetail> getTypeDetail(final Realm realm, String typeDetailId) {
+        return realm.where(TypeDetail.class).equalTo("id", typeDetailId).findAllAsync().asObservable()
+                .filter(new ResultListFilterFunc<TypeDetail>())
+                .map(new Func1<RealmResults<TypeDetail>, TypeDetail>() {
+                    @Override
+                    public TypeDetail call(RealmResults<TypeDetail> details) {
+                        if (details.size() == 0) {
+                            return null;
+                        }
+                        return details.get(0);
+                    }
+                });
+    }
+
+    public static Observable<Result> editTypeDetail(final Realm realm, final String typeDetailId, final String info, final String desc) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Result>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Result> subscriber) {
+                TypeDetail typeDetail = realm.where(TypeDetail.class).equalTo("id", typeDetailId).findFirst();
+                if (typeDetail != null) {
+                    typeDetail.setDetail(info);
+                    typeDetail.setDescribe(desc);
+                    typeDetail.refreshTimestamp();
+                }
+            }
+        });
     }
 }
