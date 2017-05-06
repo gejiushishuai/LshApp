@@ -90,8 +90,10 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
                     @Override
                     public void call(Throwable throwable) {
                         if (throwable instanceof DeleteUnnameGroupThrowable) {
+                            // 删除未分组分组
                             deleteUnnameGroup();
                         } else if (throwable instanceof DeleteUnemptyGroupThrowable) {
+                            // 删除非空分组
                             deleteUnemptyGroup(group.getId());
                         } else {
                             throwable.printStackTrace();
@@ -112,14 +114,20 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
     }
 
     private void deleteUnemptyGroup(final String groupId) {
-        getView().showTextDialog("分组中的联系人不会被删除，是否继续删除该分组？", null, null,
-                "删除", new LshColorDialog.OnNegativeListener() {
+        getView().showTextDialog("分组中的联系人不会被删除，是否继续删除该分组？",
+                "删除", new LshColorDialog.OnPositiveListener() {
                     @Override
                     public void onClick(LshColorDialog dialog) {
+                        dialog.dismiss();
                         ShiyiDbHelper.moveToUnnameGroup(getRealm(), groupId)
-                                .subscribe(Actions.empty(), new DefaultThrowableAction());
+                                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
+                                    @Override
+                                    public void call() {
+                                        getView().setData(mGroups);
+                                    }
+                                });
                     }
-                });
+                }, null, null);
     }
 
     @Override
