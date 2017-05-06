@@ -2,7 +2,6 @@ package com.linsh.lshapp.part.home.shiyi;
 
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.action.DismissLoadingAction;
 import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
@@ -59,14 +58,11 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
 
     @Override
     public void addGroup(String groupName) {
-        getView().showLoadingDialog();
-
         Subscription subscription = ShiyiDataOperator.addGroup(getRealm(), groupName)
-                .subscribe(new NothingAction<Void>(), new DismissLoadingAction<Throwable>(getView()),
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(),
                         new Action0() {
                             @Override
                             public void call() {
-                                getView().dismissLoadingDialog();
                                 getView().setData(mGroups);
                             }
                         });
