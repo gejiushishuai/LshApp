@@ -9,7 +9,6 @@ import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
-import com.linsh.lshapp.tools.ShiyiDataOperator;
 
 import java.util.List;
 
@@ -64,7 +63,7 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
 
     @Override
     public void addGroup(String inputText) {
-        ShiyiDataOperator.addGroup(getRealm(), inputText)
+        ShiyiDbHelper.addGroup(getRealm(), inputText)
                 .subscribe(Actions.empty(), new DefaultThrowableAction());
     }
 

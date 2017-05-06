@@ -8,13 +8,14 @@ import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
-import com.linsh.lshapp.tools.ShiyiDataOperator;
+import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import io.realm.RealmList;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Actions;
 
 /**
  * Created by Senh Linsh on 17/4/24.
@@ -26,7 +27,7 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
 
     @Override
     protected void attachView() {
-        Subscription subscription = ShiyiDataOperator.getGroups(getRealm())
+        Subscription subscription = ShiyiDbHelper.getGroups(getRealm())
                 .subscribe(new Action1<RealmList<Group>>() {
                     @Override
                     public void call(RealmList<Group> groups) {
@@ -69,7 +70,7 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
 
     @Override
     public void addGroup(String groupName) {
-        Subscription subscription = ShiyiDataOperator.addGroup(getRealm(), groupName)
+        Subscription subscription = ShiyiDbHelper.addGroup(getRealm(), groupName)
                 .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(),
                         new Action0() {
                             @Override
@@ -84,7 +85,7 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
     public void deleteGroup(int position) {
         final Group group = mGroups.get(position);
 
-        Subscription subscription = ShiyiDataOperator.deleteGroup(getRealm(), group.getId())
+        Subscription subscription = ShiyiDbHelper.deleteGroup(getRealm(), group.getId())
                 .subscribe(new NothingAction<Void>(), new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
@@ -115,7 +116,8 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
                 "删除", new LshColorDialog.OnNegativeListener() {
                     @Override
                     public void onClick(LshColorDialog dialog) {
-                        ShiyiDataOperator.moveToUnnameGroup(getRealm(), groupId);
+                        ShiyiDbHelper.moveToUnnameGroup(getRealm(), groupId)
+                                .subscribe(Actions.empty(), new DefaultThrowableAction());
                     }
                 });
     }
@@ -125,7 +127,7 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
         Group group = mGroups.get(position);
 
         if (!group.getName().equals(groupName)) {
-            Subscription subscription = ShiyiDataOperator.renameGroup(getRealm(), group.getId(), groupName)
+            Subscription subscription = ShiyiDbHelper.renameGroup(getRealm(), group.getId(), groupName)
                     .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(),
                             new Action0() {
                                 @Override

@@ -6,7 +6,7 @@ import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingAction;
 import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
-import com.linsh.lshapp.tools.ShiyiDataOperator;
+import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
 
 import rx.Subscription;
 import rx.functions.Action0;
@@ -25,7 +25,7 @@ public class TypeDetailPresenter extends BasePresenterImpl<TypeDetailContract.Vi
     protected void attachView() {
         getView().showLoadingDialog();
 
-        ShiyiDataOperator.getTypeDetail(getRealm(), getView().getTypeDetailId())
+        Subscription subscription = ShiyiDbHelper.getTypeDetail(getRealm(), getView().getTypeDetailId())
                 .subscribe(new Action1<TypeDetail>() {
                     @Override
                     public void call(TypeDetail typeDetail) {
@@ -36,12 +36,13 @@ public class TypeDetailPresenter extends BasePresenterImpl<TypeDetailContract.Vi
                         }
                     }
                 }, new DismissLoadingAction<Throwable>(getView()));
+        addSubscription(subscription);
     }
 
     @Override
     public void saveTypeDetail(String info, String desc) {
         if (!info.equals(mTypeDetail.getDetail()) || !desc.equals(mTypeDetail.getDescribe())) {
-            Subscription subscription = ShiyiDataOperator.editTypeDetail(getRealm(), mTypeDetail.getId(), info, desc)
+            Subscription subscription = ShiyiDbHelper.editTypeDetail(getRealm(), mTypeDetail.getId(), info, desc)
                     .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
                         @Override
                         public void call() {
@@ -57,14 +58,14 @@ public class TypeDetailPresenter extends BasePresenterImpl<TypeDetailContract.Vi
 
     @Override
     public void deleteTypeDetail() {
-        Subscription subscription = ShiyiDataOperator.deleteTypeDetail(getRealm(), mTypeDetail.getId())
-                .subscribe(new Action1<Void>() {
+        Subscription subscription = ShiyiDbHelper.deleteTypeDetail(getRealm(), mTypeDetail.getId())
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void call() {
                         RxBus.getDefault().post(new PersonDetailChangedEvent());
                         getView().finishActivity();
                     }
-                }, new DefaultThrowableAction());
+                });
         addSubscription(subscription);
     }
 
