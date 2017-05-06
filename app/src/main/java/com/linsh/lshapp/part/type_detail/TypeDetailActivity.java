@@ -3,6 +3,7 @@ package com.linsh.lshapp.part.type_detail;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
@@ -19,6 +20,8 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
     EditText etInfo;
     @BindView(R.id.et_type_detail_desc)
     EditText etDesc;
+    @BindView(R.id.tv_type_detail_timestamp)
+    TextView tvTimestamp;
 
     private boolean isEditMode;
 
@@ -89,6 +92,8 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
 
     @Override
     public void setData(TypeDetail typeDetail) {
+        tvTimestamp.setText("更新时间: " + typeDetail.getStringTimestamp());
+
         String detail = typeDetail.getDetail();
         String describe = typeDetail.getDescribe();
         if (LshStringUtils.isAllEmpty(detail, describe)) {
