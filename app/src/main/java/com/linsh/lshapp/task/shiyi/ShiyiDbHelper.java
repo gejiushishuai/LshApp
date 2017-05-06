@@ -15,8 +15,6 @@ import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 
-import java.util.List;
-
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -196,7 +194,10 @@ public class ShiyiDbHelper {
                         // 获取未分组分组
                         Group unnameGroup = groups.where().equalTo("name", "未分组").findFirst();
                         if (unnameGroup != null) {
-                            unnameGroup.getPersons().addAll(group.getPersons());
+                            RealmList<Person> persons = unnameGroup.getPersons();
+                            persons.addAll(group.getPersons());
+                            // 对联系人进行排序并保存
+                            ShiyiDbUtils.sortToRealm(realm, persons, "id");
                         } else {
                             // 没有未分组, 则创建
                             groups.add(ShiyiModelHelper.newGroup("未分组", 0));
@@ -229,7 +230,10 @@ public class ShiyiDbHelper {
                 Group group = realm.where(Group.class).equalTo("name", groupName).findFirst();
                 if (group != null) {
                     Person person = ShiyiModelHelper.newPerson(personName, desc, sex);
-                    group.getPersons().add(person);
+                    RealmList<Person> persons = group.getPersons();
+                    persons.add(person);
+                    // 对联系人进行排序并保存
+                    ShiyiDbUtils.sortToRealm(realm, persons, "id");
                 }
             }
         });
@@ -305,7 +309,7 @@ public class ShiyiDbHelper {
                             saftySort = types.size();
                         }
                         types.add(saftySort, ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
-                        renewTypesSort(types);
+                        ShiyiDbUtils.renewTypesSort(types);
                     }
                 } else {
                     // 没有该PersonDetail, 则创建一个
@@ -317,12 +321,6 @@ public class ShiyiDbHelper {
                 }
             }
         });
-    }
-
-    public static void renewTypesSort(List<Type> types) {
-        for (int i = 0; i < types.size(); i++) {
-            types.get(i).setSort(i + 1);
-        }
     }
 
     public static Observable<Void> deleteType(final Realm realm, final String typeId) {
@@ -398,7 +396,10 @@ public class ShiyiDbHelper {
                     Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
                     if (newGroup != null) {
                         person.deleteFromRealm();
-                        newGroup.getPersons().add(person);
+                        RealmList<Person> persons = newGroup.getPersons();
+                        persons.add(person);
+                        // 对联系人进行排序并保存
+                        ShiyiDbUtils.sortToRealm(realm, persons, "id");
                     }
                 }
             }
