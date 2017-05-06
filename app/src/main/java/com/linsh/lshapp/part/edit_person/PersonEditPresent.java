@@ -62,9 +62,15 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
     }
 
     @Override
-    public void addGroup(String inputText) {
+    public void addGroup(final String inputText) {
         ShiyiDbHelper.addGroup(getRealm(), inputText)
-                .subscribe(Actions.empty(), new DefaultThrowableAction());
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
+                    @Override
+                    public void call() {
+                        getView().setGroup(inputText);
+                        RxBus.getDefault().post(new GroupsChangedEvent());
+                    }
+                });
     }
 
     @Override

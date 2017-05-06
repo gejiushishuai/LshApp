@@ -19,6 +19,8 @@ public interface PersonEditContract {
         void setData(Person person);
 
         String getPrimaryGroup();
+
+        void setGroup(String groupName);
     }
 
     interface Presenter extends BaseContract.BasePresenter<View> {
