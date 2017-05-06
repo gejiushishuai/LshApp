@@ -1,7 +1,8 @@
-package com.linsh.lshapp.part.add_person;
+package com.linsh.lshapp.part.edit_person;
 
 import com.linsh.lshapp.base.BaseContract;
 import com.linsh.lshapp.model.bean.Group;
+import com.linsh.lshapp.model.bean.Person;
 
 import java.util.List;
 
@@ -9,11 +10,15 @@ import java.util.List;
  * Created by Senh Linsh on 17/4/25.
  */
 
-public interface PersonAddContract {
+public interface PersonEditContract {
 
     interface View extends BaseContract.BaseView {
 
-        void addPersonSuccess();
+        String getPersonId();
+
+        void setData(Person person);
+
+        String getPrimaryGroup();
     }
 
     interface Presenter extends BaseContract.BasePresenter<View> {
@@ -22,6 +27,6 @@ public interface PersonAddContract {
 
         void addGroup(String inputText);
 
-        void addPerson(String group, String name, String desc, String sex);
+        void savePerson(String group, String name, String desc, String sex);
     }
 }

@@ -374,4 +374,34 @@ public class ShiyiDbHelper {
             }
         });
     }
+
+    public static Observable<Void> editPerson(Realm realm, final String personId, final String name, final String desc, final String sex) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                Person person = realm.where(Person.class).equalTo("id", personId).findFirst();
+                if (person != null) {
+                    person.setName(name);
+                    person.setDescribe(desc);
+                    person.setGender(sex);
+                }
+            }
+        });
+    }
+
+    public static Observable<Void> movePersonToGroup(Realm realm, final String personId, final String newGroupName) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                Person person = realm.where(Person.class).equalTo("id", personId).findFirst();
+                if (person != null) {
+                    Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
+                    if (newGroup != null) {
+                        person.deleteFromRealm();
+                        newGroup.getPersons().add(person);
+                    }
+                }
+            }
+        });
+    }
 }

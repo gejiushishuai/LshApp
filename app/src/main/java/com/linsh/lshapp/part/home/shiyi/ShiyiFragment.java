@@ -9,7 +9,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
-import com.linsh.lshapp.part.add_person.PersonAddActivity;
+import com.linsh.lshapp.part.edit_person.PersonEditActivity;
 import com.linsh.lshapp.part.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
@@ -67,6 +67,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
             public void onSecondLevelItemClick(Person SecondLevelData, int firstLevelPosition, int secondLevelPosition) {
                 LshActivityUtils.newIntent(PersonDetailActivity.class)
                         .putExtra(SecondLevelData.getId())
+                        .putExtra(mShiyiAdapter.getData().get(firstLevelPosition).getName(), 1)
                         .startActivityForResult(getActivity(), 101);
             }
         });
@@ -149,23 +150,13 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     public boolean onOptionsItemSelected(int id) {
         switch (id) {
             case R.id.menu_fragment_shiyi_add_person:
-                startActivityForResult(new Intent(getActivity(), PersonAddActivity.class), 100);
+                startActivityForResult(new Intent(getActivity(), PersonEditActivity.class), 100);
                 break;
             case R.id.menu_fragment_shiyi_add_group:
                 showAddGroupDialog();
                 break;
         }
         return true;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == 200) {
-            mPresenter.getGroups();
-        } else if (requestCode == 101 && resultCode == 200) {
-
-        }
     }
 
     @Override

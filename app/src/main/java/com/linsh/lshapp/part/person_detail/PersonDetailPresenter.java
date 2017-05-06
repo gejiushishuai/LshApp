@@ -1,5 +1,6 @@
 package com.linsh.lshapp.part.person_detail;
 
+import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
@@ -7,6 +8,9 @@ import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.model.event.GroupsChangedEvent;
+import com.linsh.lshapp.model.event.PersonChangedEvent;
+import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
 import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
 
@@ -61,6 +65,22 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                     }
                 }, new DefaultThrowableAction());
         addSubscription(getPersonSub, getPersonDetailSub, getTypeLabelsSub);
+
+        Subscription personChangeBus = RxBus.getDefault().toObservable(PersonChangedEvent.class)
+                .subscribe(new Action1<PersonChangedEvent>() {
+                    @Override
+                    public void call(PersonChangedEvent personChangedEvent) {
+                        getView().setData(mPerson);
+                    }
+                });
+        Subscription personDetailChangeBus = RxBus.getDefault().toObservable(PersonDetailChangedEvent.class)
+                .subscribe(new Action1<PersonDetailChangedEvent>() {
+                    @Override
+                    public void call(PersonDetailChangedEvent personDetailChangedEvent) {
+                        getView().setData(mPersonDetail);
+                    }
+                });
+        addRxBusSub(personChangeBus, personDetailChangeBus);
     }
 
     @Override
@@ -146,6 +166,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                 .subscribe(new NothingAction<Result>(), new DefaultThrowableAction(), new Action0() {
                     @Override
                     public void call() {
+                        RxBus.getDefault().post(new GroupsChangedEvent());
                         getView().finishActivity();
                     }
                 });
@@ -155,5 +176,10 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public PersonDetail getPersonDetail() {
         return mPersonDetail;
+    }
+
+    @Override
+    public Person getPerson() {
+        return mPerson;
     }
 }

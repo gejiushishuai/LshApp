@@ -1,4 +1,4 @@
-package com.linsh.lshapp.part.add_person;
+package com.linsh.lshapp.part.edit_person;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,9 +9,11 @@ import android.widget.TextView;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Group;
+import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
+import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshListUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
@@ -20,7 +22,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class PersonAddActivity extends BaseToolbarActivity<PersonAddContract.Presenter> implements PersonAddContract.View {
+public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.Presenter> implements PersonEditContract.View {
 
     @BindView(R.id.iv_shiyi_person_add_avatar)
     ImageView ivAvatar;
@@ -213,25 +215,37 @@ public class PersonAddActivity extends BaseToolbarActivity<PersonAddContract.Pre
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_shiyi_add_person_confirm) {
-            addPerson();
+            savePerson();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void addPerson() {
+    private void savePerson() {
         //////添加个人信息到选定的组里面, 并结束Activity
-        mPresenter.addPerson(getGroup(), getName(), getDesc(), getSex());
+        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex());
     }
 
     @Override
-    public void addPersonSuccess() {
-        setResult(200);
-        finish();
+    public String getPersonId() {
+        return LshActivityUtils.getStringExtra(getActivity());
     }
 
     @Override
-    protected PersonAddContract.Presenter initPresenter() {
-        return new PersonAddPresent();
+    public void setData(Person person) {
+        setName(person.getName());
+        setDesc(person.getDescribe());
+        setSex(person.getGender());
+        setGroup(getPrimaryGroup());
+    }
+
+    @Override
+    public String getPrimaryGroup() {
+        return LshActivityUtils.getStringExtra(getActivity(), 1);
+    }
+
+    @Override
+    protected PersonEditContract.Presenter initPresenter() {
+        return new PersonEditPresent();
     }
 
     public String getName() {

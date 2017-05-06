@@ -1,9 +1,11 @@
 package com.linsh.lshapp.part.home.shiyi;
 
+import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.Group;
+import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.tools.ShiyiDataOperator;
@@ -24,7 +26,24 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
 
     @Override
     protected void attachView() {
-        getGroups();
+        Subscription subscription = ShiyiDataOperator.getGroups(getRealm())
+                .subscribe(new Action1<RealmList<Group>>() {
+                    @Override
+                    public void call(RealmList<Group> groups) {
+                        mGroups = groups;
+                        getView().setData(groups);
+                    }
+                }, new DefaultThrowableAction());
+        addSubscription(subscription);
+
+        Subscription groupChangedBus = RxBus.getDefault().toObservable(GroupsChangedEvent.class)
+                .subscribe(new Action1<GroupsChangedEvent>() {
+                    @Override
+                    public void call(GroupsChangedEvent groupsChangedEvent) {
+                        getView().setData(mGroups);
+                    }
+                });
+        addRxBusSub(groupChangedBus);
     }
 
     @Override
@@ -44,16 +63,8 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
     }
 
     @Override
-    public void getGroups() {
-        Subscription subscription = ShiyiDataOperator.getGroups(getRealm())
-                .subscribe(new Action1<RealmList<Group>>() {
-                    @Override
-                    public void call(RealmList<Group> groups) {
-                        mGroups = groups;
-                        getView().setData(groups);
-                    }
-                }, new DefaultThrowableAction());
-        addSubscription(subscription);
+    public RealmList<Group> getGroups() {
+        return mGroups;
     }
 
     @Override

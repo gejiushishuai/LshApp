@@ -25,6 +25,6 @@ public interface ShiyiContract {
 
         void renameGroup(int position, String groupName);
 
-        void getGroups();
+        RealmList<Group> getGroups();
     }
 }

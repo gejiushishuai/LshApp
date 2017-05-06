@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".part.add_person.PersonAddActivity"/>
+        <activity android:name=".part.edit_person.PersonEditActivity"/>
         <activity android:name=".part.person_detail.PersonDetailActivity"/>
         <activity android:name=".part.setting.SettingsActivity"/>
         <activity android:name=".part.type_detail.TypeDetailActivity">

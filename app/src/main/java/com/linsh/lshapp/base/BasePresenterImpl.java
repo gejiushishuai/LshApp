@@ -12,6 +12,7 @@ public abstract class BasePresenterImpl<T extends BaseContract.BaseView> impleme
 
     protected T mView;
     protected CompositeSubscription mCompositeDisposable;
+    protected CompositeSubscription RxBusSubscriptions;
 
     protected Realm mRealm;
 
@@ -19,6 +20,7 @@ public abstract class BasePresenterImpl<T extends BaseContract.BaseView> impleme
     public void attachView(T view) {
         mView = view;
         mCompositeDisposable = new CompositeSubscription();
+        RxBusSubscriptions = new CompositeSubscription();
 
         mRealm = Realm.getDefaultInstance();
 
@@ -27,6 +29,9 @@ public abstract class BasePresenterImpl<T extends BaseContract.BaseView> impleme
 
     @Override
     public void detachView() {
+        mCompositeDisposable.unsubscribe();
+        RxBusSubscriptions.clear();
+        RxBusSubscriptions.unsubscribe();
         mRealm.removeAllChangeListeners();
         mRealm.close();
     }
@@ -57,6 +62,16 @@ public abstract class BasePresenterImpl<T extends BaseContract.BaseView> impleme
     protected void addSubscription(Subscription... disposables) {
         for (Subscription disposable : disposables) {
             mCompositeDisposable.add(disposable);
+        }
+    }
+
+    protected void addRxBusSub(Subscription disposable) {
+        RxBusSubscriptions.add(disposable);
+    }
+
+    protected void addRxBusSub(Subscription... disposables) {
+        for (Subscription disposable : disposables) {
+            RxBusSubscriptions.add(disposable);
         }
     }
 

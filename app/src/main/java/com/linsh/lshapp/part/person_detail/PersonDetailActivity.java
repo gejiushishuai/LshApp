@@ -16,6 +16,7 @@ import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.Type;
 import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.part.edit_person.PersonEditActivity;
 import com.linsh.lshapp.part.type_detail.TypeDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
@@ -27,6 +28,7 @@ import com.linsh.lshutils.view.LshColorDialog;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.realm.RealmList;
 
 public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContract.Presenter> implements PersonDetailContract.View {
@@ -130,6 +132,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                 popupWindow.showAsDropDown(viewParent, xOff, yOff);
             }
         });
+
     }
 
     @Override
@@ -156,6 +159,14 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         if (personDetail != null) {
             mDetailAdapter.setData(personDetail.getTypes());
         }
+    }
+
+    @OnClick(R.id.rl_person_detail_info_layout)
+    public void onInfoLayoutClick(View view) {
+        LshActivityUtils.newIntent(PersonEditActivity.class)
+                .putExtra(mPresenter.getPerson().getId())
+                .putExtra(LshActivityUtils.getStringExtra(getActivity(), 1), 1)
+                .startActivityForResult(getActivity(), 101);
     }
 
     @Override
@@ -243,7 +254,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 200) {
+        if (requestCode == 100 && resultCode == 200) {
             setData(mPresenter.getPersonDetail());
         }
     }

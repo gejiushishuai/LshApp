@@ -40,5 +40,7 @@ public interface PersonDetailContract {
         void deletePerson();
 
         PersonDetail getPersonDetail();
+
+        Person getPerson();
     }
 }
