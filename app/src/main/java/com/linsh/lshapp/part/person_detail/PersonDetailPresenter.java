@@ -70,14 +70,18 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                 .subscribe(new Action1<PersonChangedEvent>() {
                     @Override
                     public void call(PersonChangedEvent personChangedEvent) {
-                        getView().setData(mPerson);
+                        if (mPerson.isValid()) {
+                            getView().setData(mPerson);
+                        }
                     }
                 });
         Subscription personDetailChangeBus = RxBus.getDefault().toObservable(PersonDetailChangedEvent.class)
                 .subscribe(new Action1<PersonDetailChangedEvent>() {
                     @Override
                     public void call(PersonDetailChangedEvent personDetailChangedEvent) {
-                        getView().setData(mPersonDetail);
+                        if (mPersonDetail.isValid()) {
+                            getView().setData(mPersonDetail);
+                        }
                     }
                 });
         addRxBusSub(personChangeBus, personDetailChangeBus);

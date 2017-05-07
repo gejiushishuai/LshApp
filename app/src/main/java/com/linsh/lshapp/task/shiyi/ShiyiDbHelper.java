@@ -45,9 +45,8 @@ public class ShiyiDbHelper {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                PersonDetail detail = realm.createObject(PersonDetail.class);
-                detail.setId(personId);
-                detail.setTypes(new RealmList<Type>());
+                PersonDetail personDetail = ShiyiModelHelper.newPersonDetail(personId);
+                realm.copyToRealm(personDetail);
             }
         });
     }
@@ -398,9 +397,13 @@ public class ShiyiDbHelper {
                 if (person != null) {
                     Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
                     if (newGroup != null) {
+                        // 获取person的copy
+                        Person copy = realm.copyFromRealm(person);
+                        // 删除原来的person
                         person.deleteFromRealm();
+                        // 添加copy到新分组去
                         RealmList<Person> persons = newGroup.getPersons();
-                        persons.add(person);
+                        persons.add(copy);
                         // 对联系人进行排序并保存
                         ShiyiDbUtils.sortToRealm(realm, persons, "id");
                     }

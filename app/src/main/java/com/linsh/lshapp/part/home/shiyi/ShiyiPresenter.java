@@ -50,7 +50,6 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
     @Override
     public void detachView() {
         super.detachView();
-        mGroups.removeAllChangeListeners();
     }
 
     @Override
