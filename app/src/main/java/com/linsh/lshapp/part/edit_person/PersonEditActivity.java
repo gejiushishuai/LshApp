@@ -81,7 +81,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         new LshColorDialog(getActivity())
                 .buildInput()
                 .setTitle("填写姓名:")
-                .setHint(emptyToEmpty(lastName))
+                .setText(emptyToEmpty(lastName))
                 .setPositiveButton(null, new LshColorDialog.OnInputPositiveListener() {
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
@@ -104,7 +104,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         new LshColorDialog(getActivity())
                 .buildInput()
                 .setTitle("添加描述:")
-                .setHint(emptyToEmpty(lastDesc))
+                .setText(emptyToEmpty(lastDesc))
                 .setPositiveButton(null, new LshColorDialog.OnInputPositiveListener() {
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
