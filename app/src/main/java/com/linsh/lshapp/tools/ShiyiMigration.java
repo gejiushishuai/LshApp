@@ -22,6 +22,12 @@ public class ShiyiMigration implements RealmMigration {
                 schema.create("TypeLabel")
                         .addField("sort", int.class)
                         .addField("name", String.class);
+            case 3:
+                schema.get("Group").addPrimaryKey("id");
+                schema.get("Person").addPrimaryKey("id");
+                schema.get("PersonDetail").addPrimaryKey("id");
+                schema.get("Type").addPrimaryKey("id");
+                schema.get("TypeDetailW").addPrimaryKey("id");
                 break;
         }
     }
