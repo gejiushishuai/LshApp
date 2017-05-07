@@ -68,6 +68,7 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
                     @Override
                     public void call() {
                         getView().setGroup(inputText);
+                        getView().onPersonModified();
                         RxBus.getDefault().post(new GroupsChangedEvent());
                     }
                 });

@@ -21,6 +21,8 @@ public interface PersonEditContract {
         String getPrimaryGroup();
 
         void setGroup(String groupName);
+
+        void onPersonModified();
     }
 
     interface Presenter extends BaseContract.BasePresenter<View> {

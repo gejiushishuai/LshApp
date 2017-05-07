@@ -91,6 +91,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                         }
                         if (!inputText.equals(lastName)) {
                             setName(inputText);
+                            onPersonModified();
                         }
                         dialog.dismiss();
                     }
@@ -114,6 +115,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                         }
                         if (!inputText.equals(lastDesc)) {
                             setDesc(inputText);
+                            onPersonModified();
                         }
                         dialog.dismiss();
                     }
@@ -135,6 +137,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                         dialog.dismiss();
                         if (!lastSex.equals(items[index])) {
                             setSex(items[index]);
+                            onPersonModified();
                         }
                     }
                 })
@@ -172,6 +175,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                             String group = groups.get(index);
                             if (!lastGroup.equals(group)) {
                                 setGroup(group);
+                                onPersonModified();
                             }
                         }
                     }
@@ -191,7 +195,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     // 个人信息被修改
-    private void onPersonModified() {
+    public void onPersonModified() {
         // 只有名字和组别填写之后才设置确认修改按钮为可用
         if (!mConfirmItem.isEnabled() && !isEmpty(getName()) && !isEmpty(getGroup())) {
             mConfirmItem.setEnabled(true);
@@ -249,7 +253,6 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     public void setName(String name) {
         tvName.setText(emptyToEmptyText(name));
-        onPersonModified();
     }
 
     public String getDesc() {
@@ -258,7 +261,6 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     public void setDesc(String desc) {
         tvDesc.setText(emptyToEmptyText(desc));
-        onPersonModified();
     }
 
     public String getSex() {
@@ -267,7 +269,6 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     public void setSex(String sex) {
         tvSex.setText(emptyToEmptyText(sex));
-        onPersonModified();
     }
 
     public String getGroup() {
@@ -276,7 +277,6 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     public void setGroup(String group) {
         tvGroup.setText(emptyToEmptyText(group));
-        onPersonModified();
     }
 
     private boolean isEmpty(String text) {
