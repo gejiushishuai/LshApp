@@ -18,6 +18,8 @@ public abstract class BaseToolbarActivity<T extends BaseContract.BasePresenter> 
 
     private Toolbar mToolbar;
 
+    protected abstract String getToolbarTitle();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +51,6 @@ public abstract class BaseToolbarActivity<T extends BaseContract.BasePresenter> 
         }
         return super.onOptionsItemSelected(item);
     }
-
-    protected abstract String getToolbarTitle();
 
     protected void setToolbarTitle(String title) {
         mToolbar.setTitle(title);

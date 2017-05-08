@@ -1,6 +1,6 @@
 package com.linsh.lshapp.task.shiyi;
 
-import com.linsh.lshapp.model.bean.Type;
+import com.linsh.lshapp.model.bean.Sortable;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import io.realm.RealmResults;
 
 public class ShiyiDbUtils {
 
-    public static void renewTypesSort(List<Type> types) {
+    public static void renewSort(List<? extends Sortable> types) {
         for (int i = 0; i < types.size(); i++) {
             types.get(i).setSort(i + 1);
         }

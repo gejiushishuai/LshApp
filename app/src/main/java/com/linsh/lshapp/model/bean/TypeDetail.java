@@ -9,7 +9,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by Senh Linsh on 17/1/22.
  */
-public class TypeDetail extends RealmObject {
+public class TypeDetail extends RealmObject implements Sortable {
     @PrimaryKey
     private String id;
     private int sort;

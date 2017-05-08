@@ -105,7 +105,7 @@ public class ShiyiDbHelper {
     }
 
     public static Observable<RealmResults<TypeLabel>> getTypeLabels(Realm realm) {
-        return realm.where(TypeLabel.class).findAllAsync().asObservable()
+        return realm.where(TypeLabel.class).findAllSortedAsync("sort").asObservable()
                 .filter(new Func1<RealmResults<TypeLabel>, Boolean>() {
                     @Override
                     public Boolean call(RealmResults<TypeLabel> typeLabels) {
@@ -311,7 +311,7 @@ public class ShiyiDbHelper {
                             saftySort = types.size();
                         }
                         types.add(saftySort, ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
-                        ShiyiDbUtils.renewTypesSort(types);
+                        ShiyiDbUtils.renewSort(types);
                     }
                 } else {
                     // 没有该PersonDetail, 则创建一个

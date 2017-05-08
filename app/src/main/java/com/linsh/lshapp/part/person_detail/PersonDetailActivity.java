@@ -17,6 +17,7 @@ import com.linsh.lshapp.model.bean.Type;
 import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.part.edit_person.PersonEditActivity;
+import com.linsh.lshapp.part.edit_type.TypeEditActivity;
 import com.linsh.lshapp.part.type_detail.TypeDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
@@ -180,14 +181,18 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_person_detail_add_type:
+                // 添加类型
                 if (addType(-1)) {
                     return false;
                 }
                 return true;
             case R.id.menu_person_detail_manage_type:
-
+                // 管理类型
+                LshActivityUtils.newIntent(TypeEditActivity.class)
+                        .startActivity(getActivity());
                 return true;
             case R.id.menu_person_detail_delete_person:
+                // 删除该联系人
                 showTextDialog("是否要将该联系人删除?", "删除", new LshColorDialog.OnPositiveListener() {
                     @Override
                     public void onClick(LshColorDialog dialog) {

@@ -26,6 +26,8 @@
         <activity android:name=".part.setting.SettingsActivity"/>
         <activity android:name=".part.type_detail.TypeDetailActivity">
         </activity>
+        <activity android:name=".part.edit_type.TypeEditActivity">
+        </activity>
     </application>
 
 </manifest>
