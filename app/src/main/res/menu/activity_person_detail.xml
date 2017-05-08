@@ -7,8 +7,13 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/menu_person_detail_manage_type"
+        android:id="@+id/menu_person_detail_manage_type_label"
         android:title="管理类型"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_person_detail_manage_person_type"
+        android:title="管理该联系人类型"
         app:showAsAction="never"/>
 
     <item

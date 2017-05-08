@@ -1,7 +1,7 @@
 package com.linsh.lshapp.part.edit_type;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.model.bean.Typable;
 
 import java.util.List;
 
@@ -13,11 +13,13 @@ public interface TypeEditContract {
 
     interface View extends BaseContract.BaseView {
 
-        void setData(List<TypeLabel> typeLabels);
+        <T extends Typable> void setData(List<T> typeLabels);
+
+        String getPersonId();
     }
 
-    interface Presenter extends BaseContract.BasePresenter<View> {
+    interface Presenter<T extends Typable> extends BaseContract.BasePresenter<View> {
 
-        void saveTypes(List<TypeLabel> data);
+        void saveTypes(List<T> data);
     }
 }

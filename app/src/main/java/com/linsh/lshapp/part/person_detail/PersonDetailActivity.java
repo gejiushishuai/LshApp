@@ -186,9 +186,17 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                     return false;
                 }
                 return true;
-            case R.id.menu_person_detail_manage_type:
+            case R.id.menu_person_detail_manage_type_label:
                 // 管理类型
                 LshActivityUtils.newIntent(TypeEditActivity.class)
+                        .putExtra(TypeEditActivity.MANAGER_TYPE_LABELS)
+                        .startActivity(getActivity());
+                return true;
+            case R.id.menu_person_detail_manage_person_type:
+                // 管理该联系人类型
+                LshActivityUtils.newIntent(TypeEditActivity.class)
+                        .putExtra(TypeEditActivity.MANAGER_PERSON_TYPES)
+                        .putExtra(mPresenter.getPerson().getId())
                         .startActivity(getActivity());
                 return true;
             case R.id.menu_person_detail_delete_person:

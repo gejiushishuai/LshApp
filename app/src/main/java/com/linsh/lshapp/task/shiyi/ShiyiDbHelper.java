@@ -15,12 +15,16 @@ import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 
+import java.util.List;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
+
+import static android.R.attr.data;
 
 /**
  * Created by Senh Linsh on 17/5/5.
@@ -407,6 +411,22 @@ public class ShiyiDbHelper {
                         // 对联系人进行排序并保存
                         ShiyiDbUtils.sortToRealm(realm, persons, "id");
                     }
+                }
+            }
+        });
+    }
+
+    public static Observable<Void> savePersonTypes(Realm realm, final String personId, final List<Type> types) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                ShiyiDbUtils.renewSort(types);
+                realm.copyToRealmOrUpdate(types);
+
+                PersonDetail personDetail = realm.where(PersonDetail.class).equalTo("id", personId).findFirst();
+                if (personDetail != null) {
+                    RealmList<Type> types = personDetail.getTypes();
+                    ShiyiDbUtils.sortToRealm(realm, types, "sort");
                 }
             }
         });

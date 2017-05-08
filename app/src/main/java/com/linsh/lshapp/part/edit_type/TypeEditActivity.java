@@ -7,8 +7,9 @@ import android.view.MenuItem;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
-import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.model.bean.Typable;
 import com.linsh.lshutils.tools.LshItemDragHelper;
+import com.linsh.lshutils.utils.LshActivityUtils;
 
 import java.util.List;
 
@@ -18,6 +19,9 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @BindView(R.id.rcv_type_edit_content)
     RecyclerView rcvContent;
+
+    public static final int MANAGER_TYPE_LABELS = 0;
+    public static final int MANAGER_PERSON_TYPES = 1;
     private TypeEditAdapter mAdapter;
 
     @Override
@@ -32,7 +36,12 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @Override
     protected TypeEditContract.Presenter initPresenter() {
-        return new TypeEditPresenter();
+        int intExtra = LshActivityUtils.getIntExtra(getActivity());
+        if (intExtra == MANAGER_PERSON_TYPES) {
+            return new PersonTypeEditPresenter();
+        } else {
+            return new TypeLabelEditPresenter();
+        }
     }
 
     @Override
@@ -46,8 +55,13 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
     }
 
     @Override
-    public void setData(List<TypeLabel> typeLabels) {
-        mAdapter.setData(typeLabels);
+    public <T extends Typable> void setData(List<T> typeLabels) {
+        mAdapter.setData((List<Typable>) typeLabels);
+    }
+
+    @Override
+    public String getPersonId() {
+        return LshActivityUtils.getStringExtra(getActivity());
     }
 
     @Override
@@ -64,4 +78,5 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

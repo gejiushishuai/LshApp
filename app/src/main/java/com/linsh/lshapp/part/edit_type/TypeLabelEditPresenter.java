@@ -23,7 +23,7 @@ import rx.functions.Actions;
  * Created by Senh Linsh on 17/5/8.
  */
 
-public class TypeEditPresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter {
+public class TypeLabelEditPresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<TypeLabel> {
 
     public List<TypeLabel> mTypeLabels;
 

@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.linsh.lshapp.R;
-import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.model.bean.Typable;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
 import com.linsh.lshutils.tools.LshItemDragHelper;
 
@@ -14,7 +14,7 @@ import java.util.Collections;
 /**
  * Created by Senh Linsh on 17/5/8.
  */
-public class TypeEditAdapter extends LshRecyclerViewAdapter<TypeLabel, TypeEditAdapter.MyViewHolder> implements LshItemDragHelper.IItemDragCallback {
+public class TypeEditAdapter extends LshRecyclerViewAdapter<Typable, TypeEditAdapter.MyViewHolder> implements LshItemDragHelper.IItemDragCallback {
 
     @Override
     protected int getLayout() {
@@ -27,7 +27,7 @@ public class TypeEditAdapter extends LshRecyclerViewAdapter<TypeLabel, TypeEditA
     }
 
     @Override
-    protected void onBindViewHolder(MyViewHolder holder, TypeLabel data, int position) {
+    protected void onBindViewHolder(MyViewHolder holder, Typable data, int position) {
         holder.tvTypeName.setText(data.getName());
     }
 
