@@ -18,7 +18,7 @@ public class RealmTool {
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("shiyi.realm")
                 .encryptionKey(getEncryptionKey())
-                .schemaVersion(4)
+                .schemaVersion(5)
                 .migration(new ShiyiMigration())
 //                .modules(new Shiyi(), new PersonDetail())
                 .build();

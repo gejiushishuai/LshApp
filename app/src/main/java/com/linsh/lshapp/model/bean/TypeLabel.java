@@ -1,15 +1,16 @@
 package com.linsh.lshapp.model.bean;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Senh Linsh on 17/5/2.
  */
 
 public class TypeLabel extends RealmObject {
-
-    private int sort;
+    @PrimaryKey
     private String name;
+    private int sort;
 
     public int getSort() {
         return sort;

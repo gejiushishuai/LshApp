@@ -27,7 +27,9 @@ public class ShiyiMigration implements RealmMigration {
                 schema.get("Person").addPrimaryKey("id");
                 schema.get("PersonDetail").addPrimaryKey("id");
                 schema.get("Type").addPrimaryKey("id");
-                schema.get("TypeDetailW").addPrimaryKey("id");
+                schema.get("TypeDetail").addPrimaryKey("id");
+            case 4:
+                schema.get("TypeLabel").addPrimaryKey("name");
                 break;
         }
     }
