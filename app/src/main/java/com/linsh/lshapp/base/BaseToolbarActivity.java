@@ -37,9 +37,8 @@ public abstract class BaseToolbarActivity<T extends BaseContract.BasePresenter> 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         View view = View.inflate(this, R.layout.activity_base_toolbar, null);
-        ViewGroup rootView = (ViewGroup) view.findViewById(R.id.cl_shiyi_base_other_root);
-        View inflate = View.inflate(this, layoutResID, null);
-        rootView.addView(inflate);
+        // 填充子布局, 由子类返回布局id
+        getLayoutInflater().inflate(getLayout(), (ViewGroup) view, true);
         setContentView(view);
     }
 
