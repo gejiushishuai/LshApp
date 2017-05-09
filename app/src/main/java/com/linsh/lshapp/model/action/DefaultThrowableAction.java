@@ -12,6 +12,10 @@ public class DefaultThrowableAction implements Action1<Throwable> {
 
     @Override
     public void call(Throwable throwable) {
+        showThrowableMsg(throwable);
+    }
+
+    public static void showThrowableMsg(Throwable throwable) {
         throwable.printStackTrace();
         LshToastUtils.showToast(throwable.getMessage());
     }

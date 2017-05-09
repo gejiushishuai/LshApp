@@ -7,14 +7,11 @@ import android.widget.TextView;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.model.bean.Typable;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
-import com.linsh.lshutils.tools.LshItemDragHelper;
-
-import java.util.Collections;
 
 /**
  * Created by Senh Linsh on 17/5/8.
  */
-public class TypeEditAdapter extends LshRecyclerViewAdapter<Typable, TypeEditAdapter.MyViewHolder> implements LshItemDragHelper.IItemDragCallback {
+public class TypeEditAdapter extends LshRecyclerViewAdapter<Typable, TypeEditAdapter.MyViewHolder> {
 
     @Override
     protected int getLayout() {
@@ -29,34 +26,6 @@ public class TypeEditAdapter extends LshRecyclerViewAdapter<Typable, TypeEditAda
     @Override
     protected void onBindViewHolder(MyViewHolder holder, Typable data, int position) {
         holder.tvTypeName.setText(data.getName());
-    }
-
-    @Override
-    public boolean isItemViewSwipeEnabled() {
-        return true;
-    }
-
-    @Override
-    public boolean isLongPressDragEnabled() {
-        return true;
-    }
-
-    @Override
-    public boolean onMove(RecyclerView recyclerView, int fromPosition, int toPosition) {
-        Collections.swap(getData(), fromPosition, toPosition);
-        notifyItemMoved(fromPosition, toPosition);
-        return true;
-    }
-
-    @Override
-    public void onSwiped(int position, int direction) {
-        getData().remove(position);
-        notifyItemRemoved(position);
-    }
-
-    @Override
-    public void onMoved(RecyclerView recyclerView, int fromPosition, int toPosition) {
-
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

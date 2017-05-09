@@ -50,4 +50,21 @@ public class PersonTypeEditPresenter extends BasePresenterImpl<TypeEditContract.
                     }
                 });
     }
+
+    @Override
+    public void removeType(String typeName, final int position) {
+        ShiyiDbHelper.removePersonType(getRealm(), getView().getPersonId(), typeName)
+                .subscribe(Actions.empty(), new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        DefaultThrowableAction.showThrowableMsg(throwable);
+                        getView().deletedTypeFromRealm(false, position);
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        getView().deletedTypeFromRealm(true, position);
+                    }
+                });
+    }
 }

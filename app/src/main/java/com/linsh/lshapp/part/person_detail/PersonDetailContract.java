@@ -25,7 +25,7 @@ public interface PersonDetailContract {
 
     interface Presenter extends BaseContract.BasePresenter<View> {
 
-        RealmList<TypeLabel> getTypes();
+        RealmList<TypeLabel> getTypeLabels();
 
         void addTypeLabel(String inputText);
 

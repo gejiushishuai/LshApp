@@ -11,6 +11,7 @@ import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
+import com.linsh.lshapp.model.event.TypeLabelChangedEvent;
 import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
 
@@ -84,6 +85,13 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                         }
                     }
                 });
+        RxBus.getDefault().toObservable(TypeLabelChangedEvent.class)
+                .subscribe(new Action1<TypeLabelChangedEvent>() {
+                    @Override
+                    public void call(TypeLabelChangedEvent typeLabelChangedEvent) {
+
+                    }
+                });
         addRxBusSub(personChangeBus, personDetailChangeBus);
     }
 
@@ -93,7 +101,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     }
 
     @Override
-    public RealmList<TypeLabel> getTypes() {
+    public RealmList<TypeLabel> getTypeLabels() {
         return mTypeLabels;
     }
 

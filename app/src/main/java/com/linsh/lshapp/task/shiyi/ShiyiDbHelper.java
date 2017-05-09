@@ -24,8 +24,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
 
-import static android.R.attr.data;
-
 /**
  * Created by Senh Linsh on 17/5/5.
  */
@@ -427,6 +425,33 @@ public class ShiyiDbHelper {
                 if (personDetail != null) {
                     RealmList<Type> types = personDetail.getTypes();
                     ShiyiDbUtils.sortToRealm(realm, types, "sort");
+                }
+            }
+        });
+    }
+
+    public static Observable<Void> removePersonType(Realm realm, final String personId, final String typeName) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                PersonDetail personDetail = realm.where(PersonDetail.class).equalTo("id", personId).findFirst();
+                if (personDetail != null) {
+                    Type type = personDetail.getTypes().where().equalTo("name", typeName).findFirst();
+                    if (type != null) {
+                        type.deleteFromRealm();
+                    }
+                }
+            }
+        });
+    }
+
+    public static Observable<Void> removeTypeLabel(Realm realm, final String typeName) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                TypeLabel typeLabel = realm.where(TypeLabel.class).equalTo("name", typeName).findFirst();
+                if (typeLabel != null) {
+                    typeLabel.deleteFromRealm();
                 }
             }
         });

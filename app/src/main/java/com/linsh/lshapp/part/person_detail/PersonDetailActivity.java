@@ -216,7 +216,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     }
 
     private boolean addType(int sort) {
-        RealmList<TypeLabel> types = mPresenter.getTypes();
+        RealmList<TypeLabel> types = mPresenter.getTypeLabels();
         if (types == null) {
             return true;
         }
@@ -228,7 +228,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         List<String> stringList = LshListUtils.getStringList(types, new Action<String, TypeLabel>() {
             @Override
             public String call(TypeLabel typeLabel) {
-                return typeLabel.getName();
+                return typeLabel.isValid() ? typeLabel.getName() : null;
             }
         });
         stringList.add(0, "添加新类型");

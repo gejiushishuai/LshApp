@@ -16,10 +16,14 @@ public interface TypeEditContract {
         <T extends Typable> void setData(List<T> typeLabels);
 
         String getPersonId();
+
+        void deletedTypeFromRealm(boolean isSuccess, int position);
     }
 
     interface Presenter<T extends Typable> extends BaseContract.BasePresenter<View> {
 
         void saveTypes(List<T> data);
+
+        void removeType(String typeName, int position);
     }
 }

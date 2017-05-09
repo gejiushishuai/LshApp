@@ -10,12 +10,14 @@ import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Typable;
 import com.linsh.lshutils.tools.LshItemDragHelper;
 import com.linsh.lshutils.utils.LshActivityUtils;
+import com.linsh.lshutils.view.LshColorDialog;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 
-public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Presenter> implements TypeEditContract.View {
+public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Presenter> implements TypeEditContract.View, LshItemDragHelper.IItemDragCallback {
 
     @BindView(R.id.rcv_type_edit_content)
     RecyclerView rcvContent;
@@ -50,7 +52,7 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
         mAdapter = new TypeEditAdapter();
         rcvContent.setAdapter(mAdapter);
 
-        LshItemDragHelper itemDragHelper = new LshItemDragHelper(mAdapter);
+        LshItemDragHelper itemDragHelper = new LshItemDragHelper(this);
         itemDragHelper.attachToRecyclerView(rcvContent);
     }
 
@@ -79,4 +81,52 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean isItemViewSwipeEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isLongPressDragEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean onMove(RecyclerView recyclerView, int fromPosition, int toPosition) {
+        Collections.swap(mAdapter.getData(), fromPosition, toPosition);
+        mAdapter.notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    @Override
+    public void onSwiped(final int position, int direction) {
+        showTextDialog("是否要删除该条类型?", "删除", new LshColorDialog.OnPositiveListener() {
+            @Override
+            public void onClick(LshColorDialog dialog) {
+                dialog.dismiss();
+                mPresenter.removeType(mAdapter.getData().get(position).getName(), position);
+            }
+        }, null, new LshColorDialog.OnNegativeListener() {
+            @Override
+            public void onClick(LshColorDialog dialog) {
+                dialog.dismiss();
+                deletedTypeFromRealm(false, position);
+            }
+        });
+    }
+
+    @Override
+    public void deletedTypeFromRealm(boolean isSuccess, int position) {
+        if (isSuccess) {
+            // Realm删除数据后, Copy的数据也会因此更新? 我猜是的!
+            mAdapter.notifyItemRemoved(position);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onMoved(RecyclerView recyclerView, int fromPosition, int toPosition) {
+
+    }
 }

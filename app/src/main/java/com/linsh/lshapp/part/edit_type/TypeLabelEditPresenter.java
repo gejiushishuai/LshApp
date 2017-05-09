@@ -61,4 +61,21 @@ public class TypeLabelEditPresenter extends BasePresenterImpl<TypeEditContract.V
             }
         });
     }
+
+    @Override
+    public void removeType(String typeName, final int position) {
+        ShiyiDbHelper.removeTypeLabel(getRealm(), typeName)
+                .subscribe(Actions.empty(), new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        DefaultThrowableAction.showThrowableMsg(throwable);
+                        getView().deletedTypeFromRealm(false, position);
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        getView().deletedTypeFromRealm(true, position);
+                    }
+                });
+    }
 }
