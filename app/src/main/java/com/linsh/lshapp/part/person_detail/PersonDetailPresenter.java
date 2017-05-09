@@ -11,11 +11,11 @@ import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
-import com.linsh.lshapp.model.event.TypeLabelChangedEvent;
 import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
 
-import io.realm.RealmList;
+import java.util.List;
+
 import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -28,7 +28,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
 
     private Person mPerson;
     private PersonDetail mPersonDetail;
-    private RealmList<TypeLabel> mTypeLabels;
+    private List<TypeLabel> mTypeLabels;
 
     @Override
     protected void attachView() {
@@ -57,11 +57,8 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                 .subscribe(new Action1<RealmResults<TypeLabel>>() {
                     @Override
                     public void call(RealmResults<TypeLabel> typeLabels) {
-                        if (mTypeLabels == null) {
-                            mTypeLabels = new RealmList<>();
-                        }
-                        if (typeLabels != null && typeLabels.size() > 0) {
-                            mTypeLabels.addAll(typeLabels.sort("sort"));
+                        if (typeLabels != null) {
+                            mTypeLabels = typeLabels;
                         }
                     }
                 }, new DefaultThrowableAction());
@@ -85,13 +82,6 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
                         }
                     }
                 });
-        RxBus.getDefault().toObservable(TypeLabelChangedEvent.class)
-                .subscribe(new Action1<TypeLabelChangedEvent>() {
-                    @Override
-                    public void call(TypeLabelChangedEvent typeLabelChangedEvent) {
-
-                    }
-                });
         addRxBusSub(personChangeBus, personDetailChangeBus);
     }
 
@@ -101,7 +91,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     }
 
     @Override
-    public RealmList<TypeLabel> getTypeLabels() {
+    public List<TypeLabel> getTypeLabels() {
         return mTypeLabels;
     }
 

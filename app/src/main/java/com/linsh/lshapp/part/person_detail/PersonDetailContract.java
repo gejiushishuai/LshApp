@@ -5,7 +5,7 @@ import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.bean.PersonDetail;
 import com.linsh.lshapp.model.bean.TypeLabel;
 
-import io.realm.RealmList;
+import java.util.List;
 
 /**
  * Created by Senh Linsh on 17/4/25.
@@ -25,7 +25,7 @@ public interface PersonDetailContract {
 
     interface Presenter extends BaseContract.BasePresenter<View> {
 
-        RealmList<TypeLabel> getTypeLabels();
+        List<TypeLabel> getTypeLabels();
 
         void addTypeLabel(String inputText);
 

@@ -30,7 +30,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.realm.RealmList;
 
 public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContract.Presenter> implements PersonDetailContract.View {
 
@@ -216,7 +215,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     }
 
     private boolean addType(int sort) {
-        RealmList<TypeLabel> types = mPresenter.getTypeLabels();
+        List<TypeLabel> types = mPresenter.getTypeLabels();
         if (types == null) {
             return true;
         }
@@ -224,7 +223,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         return false;
     }
 
-    private void showTypesDialog(RealmList<TypeLabel> types, final int sort) {
+    private void showTypesDialog(List<TypeLabel> types, final int sort) {
         List<String> stringList = LshListUtils.getStringList(types, new Action<String, TypeLabel>() {
             @Override
             public String call(TypeLabel typeLabel) {
