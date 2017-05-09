@@ -1,5 +1,7 @@
 package com.linsh.lshapp.model.bean;
 
+import com.linsh.lshapp.tools.ShiyiModelHelper;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,14 +20,22 @@ public class TypeDetail extends RealmObject implements Sortable {
     private long timestamp;
 
     public TypeDetail() {
-        refreshTimestamp();
     }
 
-    public TypeDetail(String id, int sort, String detail, String describe) {
-        this.id = id;
+    public TypeDetail(String typeId, int sort, String detail, String describe) {
+        this.id = ShiyiModelHelper.getTypeDetailId(typeId);
         this.sort = sort;
         this.detail = detail;
         this.describe = describe;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public long getTimestamp() {
@@ -66,13 +76,5 @@ public class TypeDetail extends RealmObject implements Sortable {
 
     public void setSort(int sort) {
         this.sort = sort;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

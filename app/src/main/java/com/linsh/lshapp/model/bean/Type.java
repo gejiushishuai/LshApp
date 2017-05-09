@@ -1,5 +1,7 @@
 package com.linsh.lshapp.model.bean;
 
+import com.linsh.lshapp.tools.ShiyiModelHelper;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -13,6 +15,24 @@ public class Type extends RealmObject implements Typable {
     private String name;
     private int sort;
     private RealmList<TypeDetail> typeDetails;
+
+    public Type() {
+    }
+
+    public Type(String personId, String name, int sort) {
+        this.id = ShiyiModelHelper.getTypeId(personId, name);
+        this.name = name;
+        this.sort = sort;
+        typeDetails = new RealmList<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -36,13 +56,5 @@ public class Type extends RealmObject implements Typable {
 
     public void setTypeDetails(RealmList<TypeDetail> typeDetails) {
         this.typeDetails = typeDetails;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

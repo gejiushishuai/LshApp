@@ -1,5 +1,7 @@
 package com.linsh.lshapp.model.bean;
 
+import com.linsh.lshapp.tools.ShiyiModelHelper;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -13,6 +15,25 @@ public class Person extends RealmObject {
     private String describe;
     private String avatar;
     private int gender;
+
+    public Person() {
+    }
+
+    public Person(String name, String describe, String avatar, int gender) {
+        this.id = ShiyiModelHelper.getPersonId(name);
+        this.name = name;
+        this.describe = describe;
+        this.avatar = avatar;
+        this.gender = gender;
+    }
+
+    public Person(String name, String describe, String avatar, String gender) {
+        this.id = ShiyiModelHelper.getPersonId(name);
+        this.name = name;
+        this.describe = describe;
+        this.avatar = avatar;
+        setGender(gender);
+    }
 
     public String getId() {
         return id;

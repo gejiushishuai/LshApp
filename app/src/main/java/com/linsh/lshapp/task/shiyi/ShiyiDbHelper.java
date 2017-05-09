@@ -13,7 +13,6 @@ import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.tools.LshRxUtils;
-import com.linsh.lshapp.tools.ShiyiModelHelper;
 
 import java.util.List;
 
@@ -47,8 +46,7 @@ public class ShiyiDbHelper {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                PersonDetail personDetail = ShiyiModelHelper.newPersonDetail(personId);
-                realm.copyToRealm(personDetail);
+                realm.copyToRealm(new PersonDetail(personId));
             }
         });
     }
@@ -145,8 +143,7 @@ public class ShiyiDbHelper {
                 Group sameNameGroup = groups.where().equalTo("name", groupName).findFirst();
                 if (sameNameGroup == null) {
                     // 没有该分组则创建
-                    Group group = ShiyiModelHelper.newGroup(groupName, groups.size() + 1);
-                    groups.add(group);
+                    groups.add(new Group(groupName, groups.size() + 1));
                 }
             }
         });
@@ -196,8 +193,7 @@ public class ShiyiDbHelper {
                         Group unnameGroup = groups.where().equalTo("name", "未分组").findFirst();
                         if (unnameGroup == null) {
                             // 没有未分组, 则创建
-                            unnameGroup = ShiyiModelHelper.newGroup("未分组", 0);
-                            groups.add(unnameGroup);
+                            groups.add(new Group("未分组", 0));
                         }
                         RealmList<Person> persons = unnameGroup.getPersons();
                         persons.addAll(realm.copyFromRealm(group.getPersons()));
@@ -233,9 +229,8 @@ public class ShiyiDbHelper {
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
                 Group group = realm.where(Group.class).equalTo("name", groupName).findFirst();
                 if (group != null) {
-                    Person person = ShiyiModelHelper.newPerson(personName, desc, sex);
                     RealmList<Person> persons = group.getPersons();
-                    persons.add(person);
+                    persons.add(new Person(personName, desc, "", sex));
                     // 对联系人进行排序并保存
                     ShiyiDbUtils.sortToRealm(realm, persons, "id");
                 }
@@ -249,7 +244,7 @@ public class ShiyiDbHelper {
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
                 TypeLabel typeLabel = realm.where(TypeLabel.class).equalTo("name", labelName).findFirst();
                 if (typeLabel == null) {
-                    TypeLabel newTypeLabel = ShiyiModelHelper.newTypeLabel(size + 1, labelName);
+                    TypeLabel newTypeLabel = new TypeLabel(labelName, size + 1);
                     realm.copyToRealm(newTypeLabel);
                 }
             }
@@ -267,20 +262,21 @@ public class ShiyiDbHelper {
                     RealmResults<Type> typeResults = personDetail.getTypes().where().equalTo("name", typeName).findAll();
                     if (typeResults.size() > 0) {
                         // 有同名的Type, 则在该Type的TypeDetails最后加上空的TypeDetail
-                        RealmList<TypeDetail> typeDetails = typeResults.get(0).getTypeDetails();
-                        typeDetails.add(ShiyiModelHelper.newTypeDetail(typeDetails.size() + 1, personDetail.getId()));
+                        Type type = typeResults.get(0);
+                        RealmList<TypeDetail> typeDetails = type.getTypeDetails();
+                        typeDetails.add(new TypeDetail(type.getId(), typeDetails.size() + 1, "", ""));
                     } else {
                         // 没有同名的Type, 则在types里面加上一个Type (该Type的TypeDetails里面默认有一个空的TypeDetail)
                         RealmList<Type> types = personDetail.getTypes();
-                        types.add(ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
+                        types.add(new Type(personDetail.getId(), typeName, types.size() + 1));
                     }
                 } else {
                     // 没有该PersonDetail, 则创建一个
-                    personDetail = ShiyiModelHelper.newPersonDetail(personId);
+                    personDetail = new PersonDetail(personId);
                     realm.copyToRealm(personDetail);
                     // 然后添加一个Type到Types里面 (该Type的TypeDetails里面默认有一个空的TypeDetail)
                     RealmList<Type> types = personDetail.getTypes();
-                    types.add(ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
+                    types.add(new Type(personDetail.getId(), typeName, types.size() + 1));
                 }
             }
         });
@@ -297,8 +293,9 @@ public class ShiyiDbHelper {
                     RealmResults<Type> typeResults = personDetail.getTypes().where().equalTo("name", typeName).findAll();
                     if (typeResults.size() > 0) {
                         // 有同名的Type, 则在该Type的TypeDetails最后加上空的TypeDetail
-                        RealmList<TypeDetail> typeDetails = typeResults.get(0).getTypeDetails();
-                        typeDetails.add(ShiyiModelHelper.newTypeDetail(typeDetails.size() + 1, personDetail.getId()));
+                        Type type = typeResults.get(0);
+                        RealmList<TypeDetail> typeDetails = type.getTypeDetails();
+                        typeDetails.add(new TypeDetail(type.getId(), typeDetails.size() + 1, "", ""));
 
                         subscriber.onNext(new Result("已存在该类型, 添加至该类型处"));
                     } else {
@@ -312,16 +309,16 @@ public class ShiyiDbHelper {
                         } else if (saftySort >= types.size()) {
                             saftySort = types.size();
                         }
-                        types.add(saftySort, ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
+                        types.add(saftySort, new Type(personDetail.getId(), typeName, types.size() + 1));
                         ShiyiDbUtils.renewSort(types);
                     }
                 } else {
                     // 没有该PersonDetail, 则创建一个
-                    personDetail = ShiyiModelHelper.newPersonDetail(personId);
+                    personDetail = new PersonDetail(personId);
                     realm.copyToRealm(personDetail);
                     // 然后添加一个Type到Types里面 (该Type的TypeDetails里面默认有一个空的TypeDetail)
                     RealmList<Type> types = personDetail.getTypes();
-                    types.add(ShiyiModelHelper.newType(personDetail.getId(), types.size() + 1, typeName));
+                    types.add(new Type(personDetail.getId(), typeName, types.size() + 1));
                 }
             }
         });

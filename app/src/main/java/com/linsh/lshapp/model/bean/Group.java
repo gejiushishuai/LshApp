@@ -1,5 +1,7 @@
 package com.linsh.lshapp.model.bean;
 
+import com.linsh.lshapp.tools.ShiyiModelHelper;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -14,6 +16,16 @@ public class Group extends RealmObject {
     private String name;
     private int sort;
     private RealmList<Person> persons;
+
+    public Group() {
+    }
+
+    public Group(String name, int sort) {
+        this.id = ShiyiModelHelper.getGroupId(name);
+        this.name = name;
+        this.sort = sort;
+        this.persons = new RealmList<>();
+    }
 
     public String getId() {
         return id;
@@ -46,4 +58,5 @@ public class Group extends RealmObject {
     public void setPersons(RealmList<Person> persons) {
         this.persons = persons;
     }
+
 }

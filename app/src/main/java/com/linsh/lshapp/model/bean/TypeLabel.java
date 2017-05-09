@@ -12,6 +12,14 @@ public class TypeLabel extends RealmObject implements Typable {
     private String name;
     private int sort;
 
+    public TypeLabel() {
+    }
+
+    public TypeLabel(String name, int sort) {
+        this.name = name;
+        this.sort = sort;
+    }
+
     public int getSort() {
         return sort;
     }
@@ -20,6 +28,7 @@ public class TypeLabel extends RealmObject implements Typable {
         this.sort = sort;
     }
 
+    @Override
     public String getName() {
         return name;
     }

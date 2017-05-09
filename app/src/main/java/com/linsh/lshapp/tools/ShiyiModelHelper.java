@@ -1,16 +1,9 @@
 package com.linsh.lshapp.tools;
 
-import com.linsh.lshapp.model.bean.Group;
-import com.linsh.lshapp.model.bean.Person;
-import com.linsh.lshapp.model.bean.PersonDetail;
-import com.linsh.lshapp.model.bean.Type;
-import com.linsh.lshapp.model.bean.TypeDetail;
-import com.linsh.lshapp.model.bean.TypeLabel;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import io.realm.RealmList;
 
 /**
  * Created by Senh Linsh on 17/4/27.
@@ -18,68 +11,48 @@ import io.realm.RealmList;
 
 public class ShiyiModelHelper {
 
+    public static final String ID_REGEX = "^.+_\\d{12}$";
+
     public static String getId(String name) {
-        return LshIdTools.getPinYinId(name) + getIdTimeSuffix();
+        return LshIdTools.getPinYinId(name);
     }
 
-    private static String getIdTimeSuffix() {
+    public static String getIdWithTimeSuffix(String name) {
+        return LshIdTools.getPinYinId(name) + getTimeSuffix();
+    }
+
+    private static String getTimeSuffix() {
         return new SimpleDateFormat("_yyMMddHHmmss").format(new Date());
     }
 
-    public static Group newGroup(String name, int sort) {
-        Group group = new Group();
-        group.setPersons(new RealmList<Person>());
-        group.setName(name);
-        group.setId(getId(name));
-        group.setSort(sort);
-        return group;
+    public static String getGroupId(String groupName) {
+        return getIdWithTimeSuffix(groupName);
     }
 
-    public static Person newPerson(String name, String desc, String sex) {
-        Person person = new Person();
-        person.setName(name);
-        person.setId(getId(name));
-        person.setAvatar("");
-        person.setDescribe(desc);
-        person.setGender(sex);
-        return person;
+    public static String getPersonId(String personName) {
+        return getIdWithTimeSuffix(personName);
     }
 
-    public static TypeLabel newTypeLabel(int sort, String name) {
-        TypeLabel typeLabel = new TypeLabel();
-        typeLabel.setSort(sort);
-        typeLabel.setName(name);
-        return typeLabel;
+    public static String getTypeId(String personId, String typeName) {
+        if (personId.matches(ID_REGEX)) {
+            personId = personId.substring(0, personId.length() - 13);
+            personId += "_";
+            personId += getIdWithTimeSuffix(typeName);
+            return personId;
+        } else {
+            Log.e("LshLog", "getTypeId: 格式异常!!!  personId = " + personId);
+            return personId + typeName;
+        }
     }
 
-    public static PersonDetail newPersonDetail(String personId) {
-        PersonDetail detail = new PersonDetail();
-        detail.setId(personId);
-        detail.setTypes(new RealmList<Type>());
-        return detail;
-    }
-
-    public static Type newType(String personId, int sort, String typeName) {
-        int endIndex = personId.length() - 12;
-        String id = (endIndex > 0 ? personId.substring(0, endIndex) : personId) + "_" + typeName;
-
-        RealmList<TypeDetail> typeDetails = new RealmList<>();
-        typeDetails.add(newTypeDetail(1, id));
-
-        Type type = new Type();
-        type.setName(typeName);
-        type.setId(id);
-        type.setSort(sort);
-        type.setTypeDetails(typeDetails);
-        return type;
-    }
-
-    public static TypeDetail newTypeDetail(int sort, String typeId) {
-        TypeDetail detail = new TypeDetail();
-        detail.setSort(sort);
-        detail.setDetail("");
-        detail.setDescribe("");
-        detail.setId(typeId + getIdTimeSuffix());
-        return detail;
+    public static String getTypeDetailId(String typeId) {
+        if (typeId.matches(ID_REGEX)) {
+            typeId = typeId.substring(0, typeId.length() - 13);
+            typeId += getTimeSuffix();
+            return typeId;
+        } else {
+            Log.e("LshLog", "getTypeDetailId: 格式异常!!!  typeId = " + typeId);
+            return typeId + getTimeSuffix();
+        }
     }
 }

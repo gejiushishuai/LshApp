@@ -10,6 +10,10 @@ public class Shiyi extends RealmObject {
 
     private RealmList<Group> groups;
 
+    public Shiyi() {
+        groups = new RealmList<>();
+    }
+
     public RealmList<Group> getGroups() {
         return groups;
     }

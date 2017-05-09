@@ -12,6 +12,14 @@ public class PersonDetail extends RealmObject {
     private String id;
     private RealmList<Type> types;
 
+    public PersonDetail() {
+    }
+
+    public PersonDetail(String personId) {
+        this.id = personId;
+        this.types = new RealmList<>();
+    }
+
     public String getId() {
         return id;
     }
@@ -27,4 +35,5 @@ public class PersonDetail extends RealmObject {
     public void setTypes(RealmList<Type> types) {
         this.types = types;
     }
+
 }
