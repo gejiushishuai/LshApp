@@ -31,9 +31,15 @@ public class LshFileFactory {
      * 获取log文件夹
      */
     public static String getLogDir() {
-        File audioDir = new File(getAppDir(), "log");
-        makeDir(audioDir);
-        return audioDir.getAbsolutePath();
+        File dir = new File(getAppDir(), "log");
+        makeDir(dir);
+        return dir.getAbsolutePath();
+    }
+
+    public static String getJsonImportDir() {
+        File dir = new File(getAppDir(), "import/json");
+        makeDir(dir);
+        return dir.getAbsolutePath();
     }
 
     private static void makeDir(File dir) {

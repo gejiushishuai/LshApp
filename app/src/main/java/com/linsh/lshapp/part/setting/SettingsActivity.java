@@ -2,12 +2,18 @@ package com.linsh.lshapp.part.setting;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
+import com.linsh.lshapp.common.LshConfig;
+import com.linsh.lshapp.tools.LshFileFactory;
+import com.linsh.lshutils.utils.Basic.LshFileUtils;
 import com.linsh.lshutils.utils.LshFragmentUtils;
+import com.linsh.lshutils.view.LshColorDialog;
+
+import java.io.File;
 
 /**
  * Created by Senh Linsh on 17/5/2.
  */
-public class SettingsActivity extends BaseToolbarActivity<SettingsPresenter> implements SettingsContract.View {
+public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Presenter> implements SettingsContract.View {
 
 
     @Override
@@ -32,5 +38,16 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsPresenter> imp
 
     public void outputDatabase() {
         mPresenter.outputDatabase();
+    }
+
+    public void importGson() {
+        showTextDialog("请确保将Json文本数据按照表格名称存放在SD卡\"" + LshConfig.appNameEn + "/import/json\"目录",
+                "是的", new LshColorDialog.OnPositiveListener() {
+                    @Override
+                    public void onClick(LshColorDialog dialog) {
+                        dialog.dismiss();
+                        mPresenter.importGson();
+                    }
+                }, null, null);
     }
 }

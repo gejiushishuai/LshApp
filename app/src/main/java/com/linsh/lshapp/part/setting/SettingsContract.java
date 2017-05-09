@@ -15,5 +15,7 @@ public interface SettingsContract {
     interface Presenter extends BaseContract.BasePresenter<View> {
 
         void outputDatabase();
+
+        void importGson();
     }
 }
