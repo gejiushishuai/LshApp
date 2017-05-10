@@ -1,6 +1,5 @@
 package com.linsh.lshapp.part.person_detail;
 
-import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -261,13 +260,5 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                 })
                 .setNegativeButton(null, null)
                 .show();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == 200) {
-            setData(mPresenter.getPersonDetail());
-        }
     }
 }
