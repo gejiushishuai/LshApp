@@ -456,4 +456,21 @@ public class ShiyiDbHelper {
             }
         });
     }
+
+    public static Observable<Void> saveGroups(Realm realm, final List<Group> groups) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                // 重新设置sort字段
+                ShiyiDbUtils.renewSort(groups);
+                realm.copyToRealmOrUpdate(groups);
+                // 根据sort字段更新数据排序
+                Shiyi shiyi = realm.where(Shiyi.class).findFirst();
+                if (shiyi != null) {
+                    RealmList<Group> realmGroups = shiyi.getGroups();
+                    ShiyiDbUtils.sortToRealm(realm, realmGroups, "sort");
+                }
+            }
+        });
+    }
 }

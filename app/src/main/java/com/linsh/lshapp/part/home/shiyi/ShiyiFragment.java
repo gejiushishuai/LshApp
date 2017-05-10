@@ -10,6 +10,7 @@ import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.part.edit_person.PersonEditActivity;
+import com.linsh.lshapp.part.edit_type.TypeEditActivity;
 import com.linsh.lshapp.part.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
@@ -77,7 +78,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     private void showGroupLongClickSetting(View view, final int position) {
         LshPopupWindow popupWindow = new LshPopupWindow(getActivity());
         popupWindow.BuildList()
-                .setItems(new String[]{"添加分组", "重命名分组", "删除分组"}, new LshPopupWindow.OnItemClickListener() {
+                .setItems(new String[]{"添加分组", "重命名分组", "管理分组", "删除分组"}, new LshPopupWindow.OnItemClickListener() {
                     @Override
                     public void onClick(LshPopupWindow window, int index) {
                         switch (index) {
@@ -89,8 +90,14 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                             case 1:
                                 showRenameGroupDialog(position);
                                 break;
-                            // 删除分组
+                            // 管理分组
                             case 2:
+                                LshActivityUtils.newIntent(TypeEditActivity.class)
+                                        .putExtra(TypeEditActivity.MANAGER_GROUPS)
+                                        .startActivity(getActivity());
+                                break;
+                            // 删除分组
+                            case 3:
                                 mPresenter.deleteGroup(position);
                                 break;
                         }

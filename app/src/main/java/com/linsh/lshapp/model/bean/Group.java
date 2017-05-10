@@ -10,7 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by Senh Linsh on 17/1/22.
  */
 
-public class Group extends RealmObject {
+public class Group extends RealmObject implements Typable {
     @PrimaryKey
     private String id;
     private String name;

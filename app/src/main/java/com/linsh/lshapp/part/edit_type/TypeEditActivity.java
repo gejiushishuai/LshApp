@@ -24,6 +24,7 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     public static final int MANAGER_TYPE_LABELS = 0;
     public static final int MANAGER_PERSON_TYPES = 1;
+    public static final int MANAGER_GROUPS = 2;
     private TypeEditAdapter mAdapter;
 
     @Override
@@ -33,16 +34,25 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @Override
     protected String getToolbarTitle() {
-        return "管理类型";
+        int intExtra = LshActivityUtils.getIntExtra(getActivity());
+        if (intExtra == MANAGER_PERSON_TYPES) {
+            return "管理联系人类型";
+        } else if (intExtra == MANAGER_GROUPS) {
+            return "管理分组";
+        } else {
+            return "管理类型";
+        }
     }
 
     @Override
     protected TypeEditContract.Presenter initPresenter() {
         int intExtra = LshActivityUtils.getIntExtra(getActivity());
         if (intExtra == MANAGER_PERSON_TYPES) {
-            return new PersonTypeEditPresenter();
+            return new EditPersonTypePresenter();
+        } else if (intExtra == MANAGER_GROUPS) {
+            return new EditGroupPresenter();
         } else {
-            return new TypeLabelEditPresenter();
+            return new EditTypeLabelPresenter();
         }
     }
 
@@ -75,6 +85,7 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_type_edit_confirm) {
+            item.setEnabled(false);
             mPresenter.saveTypes(mAdapter.getData());
             return true;
         }
@@ -83,6 +94,9 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @Override
     public boolean isItemViewSwipeEnabled() {
+        if (mPresenter instanceof EditGroupPresenter) {
+            return false;
+        }
         return true;
     }
 

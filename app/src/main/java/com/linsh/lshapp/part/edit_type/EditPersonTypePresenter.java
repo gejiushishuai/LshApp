@@ -19,7 +19,7 @@ import rx.functions.Actions;
  * Created by Senh Linsh on 17/5/8.
  */
 
-public class PersonTypeEditPresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<Type> {
+public class EditPersonTypePresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<Type> {
 
     public List<Type> mTypes;
 
