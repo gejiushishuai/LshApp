@@ -164,6 +164,8 @@ public class ShiyiDbHelper {
                     if (persons != null && persons.size() > 0) {
                         if ("未分组".equals(group.getName())) {
                             subscriber.onError(new DeleteUnnameGroupThrowable("未分组里的联系人必须移至其他分组后才能删除"));
+                        } else if ("删除".equals(group.getName())) {
+                            group.deleteFromRealm();
                         } else {
                             subscriber.onError(new DeleteUnemptyGroupThrowable("分组中的联系人不会被删除，是否继续删除该分组？"));
                         }
