@@ -78,7 +78,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     private void showGroupLongClickSetting(View view, final int position) {
         LshPopupWindow popupWindow = new LshPopupWindow(getActivity());
         popupWindow.BuildList()
-                .setItems(new String[]{"添加分组", "重命名分组", "管理分组", "删除分组"}, new LshPopupWindow.OnItemClickListener() {
+                .setItems(new String[]{"添加分组", "重命名分组", "删除分组"}, new LshPopupWindow.OnItemClickListener() {
                     @Override
                     public void onClick(LshPopupWindow window, int index) {
                         switch (index) {
@@ -90,14 +90,8 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                             case 1:
                                 showRenameGroupDialog(position);
                                 break;
-                            // 管理分组
-                            case 2:
-                                LshActivityUtils.newIntent(TypeEditActivity.class)
-                                        .putExtra(TypeEditActivity.MANAGER_GROUPS)
-                                        .startActivity(getActivity());
-                                break;
                             // 删除分组
-                            case 3:
+                            case 2:
                                 mPresenter.deleteGroup(position);
                                 break;
                         }
@@ -105,6 +99,12 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                     }
                 })
                 .showAsDropDown(view, view.getWidth() / 2 - popupWindow.getWidth() / 2, 0);
+    }
+
+    private void startManageGroupActivity() {
+        LshActivityUtils.newIntent(TypeEditActivity.class)
+                .putExtra(TypeEditActivity.MANAGER_GROUPS)
+                .startActivity(getActivity());
     }
 
     private void showAddGroupDialog() {
@@ -161,6 +161,9 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                 break;
             case R.id.menu_fragment_shiyi_add_group:
                 showAddGroupDialog();
+                break;
+            case R.id.menu_fragment_shiyi_manage_group:
+                startManageGroupActivity();
                 break;
         }
         return true;

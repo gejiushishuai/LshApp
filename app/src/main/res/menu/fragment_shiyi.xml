@@ -10,4 +10,9 @@
         android:id="@+id/menu_fragment_shiyi_add_group"
         android:title="添加组"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_fragment_shiyi_manage_group"
+        android:title="管理分组"
+        app:showAsAction="never"/>
 </menu>
