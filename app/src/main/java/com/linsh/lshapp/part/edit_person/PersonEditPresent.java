@@ -3,6 +3,7 @@ package com.linsh.lshapp.part.edit_person;
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.action.DismissLoadingAction;
 import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
@@ -76,6 +77,7 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
 
     @Override
     public void savePerson(String group, String name, String desc, String sex) {
+        getView().showLoadingDialog();
         if (mPerson == null) {
             // 创建Person
             ShiyiDbHelper.addPerson(getRealm(), group, name, desc, sex)
@@ -112,11 +114,12 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
             if (observable == null) {
                 getView().finishActivity();
             } else {
-                observable.subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
+                observable.subscribe(new NothingAction<Void>(), new DismissLoadingAction<Throwable>(getView()), new Action0() {
                     @Override
                     public void call() {
                         RxBus.getDefault().post(new GroupsChangedEvent());
                         RxBus.getDefault().post(new PersonChangedEvent());
+                        getView().dismissLoadingDialog();
                         getView().finishActivity();
                     }
                 });
