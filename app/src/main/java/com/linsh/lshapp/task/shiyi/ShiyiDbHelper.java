@@ -191,19 +191,20 @@ public class ShiyiDbHelper {
                     if (group != null) {
                         // 获取未分组分组
                         Group unnameGroup = groups.where().equalTo("name", "未分组").findFirst();
+                        List<Person> copyPersons = realm.copyFromRealm(group.getPersons());
                         if (unnameGroup == null) {
                             // 没有未分组, 则创建
                             unnameGroup = new Group("未分组", 0);
+                            unnameGroup.getPersons().addAll(copyPersons);
                             groups.add(0, unnameGroup);
-                        }
-                        RealmList<Person> persons = unnameGroup.getPersons();
-                        persons.addAll(realm.copyFromRealm(group.getPersons()));
-                        group.getPersons().clear();
-                        group.deleteFromRealm();
-                        if (unnameGroup.isManaged()) {
+                        } else {
+                            RealmList<Person> persons = unnameGroup.getPersons();
+                            persons.addAll(copyPersons);
                             // 对联系人进行排序并保存
                             ShiyiDbUtils.sortToRealm(realm, persons, "id");
                         }
+                        group.getPersons().clear();
+                        group.deleteFromRealm();
                     }
                 }
             }
