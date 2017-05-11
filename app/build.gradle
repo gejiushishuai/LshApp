@@ -1,22 +1,42 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply from: 'tinkerpatch.gradle'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
         applicationId "com.linsh.lshapp"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    // 控制打包apk的文件名
+    applicationVariants.all {
+        variant ->
+            variant.outputs.each { output ->
+                output.outputFile = new File(
+                        output.outputFile.parent,
+                        output.outputFile.name.replace(output.outputFile.name, "LshApp_" + "v${variant.versionName}") + ".apk")
+            }
     }
 }
 
@@ -49,6 +69,12 @@ dependencies {
     // Dagger
     compile 'com.google.dagger:dagger:2.10'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
+    // Multidex
+    compile "com.android.support:multidex:1.0.1"
+
+    // Tinker
+    provided('com.tencent.tinker:tinker-android-anno:1.7.9')
+    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.6") // tinkerpatch
 
     //////////  个人
     compile project(':LshUtils:lshutils')
