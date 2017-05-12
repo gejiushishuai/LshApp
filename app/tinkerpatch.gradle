@@ -1,21 +1,25 @@
 //apply tinker插件
 apply plugin: 'com.tencent.tinker.patch'
 
-def bakPath = file("${buildDir}/bakApk/")
-
+// 每次打包补丁时需要配置的变量
 def baseInfo = "app-1.0-0512-15-14-37"
 
-def variantName = "debug"
-
-def _tinkerId = "1.0"
+def isDebug = true;
 
 def tinkerEnabled = true
 
-def tinkerOldApkPath = "${bakPath}/${baseInfo}/${variantName}/${project.name}-${variantName}.apk" // 旧APK地址
+// 下面不需要每次重新配置
+def variantName = isDebug ? "debug" : "release";
 
-def tinkerApplyMappingPath = "${bakPath}/${baseInfo}/${variantName}/${project.name}-${variantName}-mapping.txt" // 旧Mapping文件地址
+def bakPath = isDebug ? file("${buildDir}/bakApk/") : file("bakApk/");
 
-def tinkerApplyResourcePath = "${bakPath}/${baseInfo}/${variantName}/${project.name}-${variantName}-R.txt" // 旧R文件地址
+def tinkerPathPrefix = "${bakPath}/${baseInfo}/${variantName}";
+
+def tinkerOldApkPath = "${tinkerPathPrefix}/${project.name}-${variantName}.apk" // 旧APK地址
+
+def tinkerApplyMappingPath = "${tinkerPathPrefix}/${project.name}-${variantName}-mapping.txt" // 旧Mapping文件地址
+
+def tinkerApplyResourcePath = "${tinkerPathPrefix}/${project.name}-${variantName}-R.txt" // 旧R文件地址
 
 def date = new Date().format("MMdd-HH-mm-ss")
 
@@ -48,7 +52,7 @@ tinkerPatch {
 
         applyResourceMapping = tinkerApplyResourcePath
 
-        tinkerId = "debug".equals(variantName) ? date : gitSha();
+        tinkerId = isDebug ? date : gitSha();
 
         keepDexApply = false
 
