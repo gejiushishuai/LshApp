@@ -9,4 +9,8 @@
         android:key="import_json"
         android:title="导入Json数据"/>
 
+    <Preference
+        android:key="check_update"
+        android:title="检查更新"/>
+
 </PreferenceScreen>

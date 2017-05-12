@@ -10,8 +10,8 @@ android {
         applicationId "com.linsh.lshapp"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -74,7 +74,7 @@ dependencies {
 
     // Tinker
     provided('com.tencent.tinker:tinker-android-anno:1.7.9')
-    compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.6") // tinkerpatch
+    compile('com.tencent.tinker:tinker-android-lib:1.7.9')
 
     //////////  个人
     compile project(':LshUtils:lshutils')

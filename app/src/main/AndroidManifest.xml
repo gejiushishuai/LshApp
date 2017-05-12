@@ -27,6 +27,7 @@
         <activity android:name=".part.type_detail.TypeDetailActivity"/>
         <activity android:name=".part.edit_type.TypeEditActivity"/>
 
+        <service android:name=".lib.tinker.service.TinkerResultService"/>
     </application>
 
 </manifest>
