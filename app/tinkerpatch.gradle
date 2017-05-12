@@ -4,9 +4,11 @@ apply plugin: 'com.tencent.tinker.patch'
 // 每次打包补丁时需要配置的变量
 def baseInfo = "app-1.0-0512-15-14-37"
 
-def isDebug = true;
+def isDebug = false;
 
 def tinkerEnabled = true
+
+def versionName = "1.0.2" // 和版本号保持一致
 
 // 下面不需要每次重新配置
 def variantName = isDebug ? "debug" : "release";
@@ -117,7 +119,8 @@ android.applicationVariants.all { variant ->
 
             it.doLast {
                 copy {
-                    def pathPrefix = "${bakPath}/${project.name}-${_tinkerId}-${date}/${variantName}/"
+                    def release = isDebug ? "" : "-${versionName}";
+                    def pathPrefix = "${bakPath}/${project.name}${release}-${date}/${variantName}/"
                     def name = "${project.name}-${variantName}"
 
                     def destPath = file(pathPrefix)
