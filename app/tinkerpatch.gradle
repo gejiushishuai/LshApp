@@ -2,7 +2,7 @@
 apply plugin: 'com.tencent.tinker.patch'
 
 // 每次打包补丁时需要配置的变量
-def baseInfo = "app-1.0-0512-15-14-37"
+def baseInfo = "app-1.0.2-0512-17-36-03"
 
 def isDebug = false;
 
@@ -54,7 +54,7 @@ tinkerPatch {
 
         applyResourceMapping = tinkerApplyResourcePath
 
-        tinkerId = isDebug ? date : gitSha();
+        tinkerId = isDebug ? date : "zhdjakdjfhal";
 
         keepDexApply = false
 

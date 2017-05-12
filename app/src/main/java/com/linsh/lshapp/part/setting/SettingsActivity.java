@@ -2,6 +2,7 @@ package com.linsh.lshapp.part.setting;
 
 import android.os.Environment;
 
+import com.linsh.lshapp.BuildConfig;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.common.LshConfig;
@@ -60,7 +61,7 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
             LshToastUtils.showToast("正在升级...");
             TinkerInstaller.onReceiveUpgradePatch(getApplicationContext(), path);
         } else {
-            LshToastUtils.showToast("没有可以升级的补丁");
+            LshToastUtils.showToast("没有可以升级的补丁, 当前版本号: v" + BuildConfig.VERSION_NAME);
         }
     }
 }

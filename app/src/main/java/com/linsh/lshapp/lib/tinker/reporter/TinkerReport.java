@@ -183,6 +183,9 @@ public class TinkerReport {
             case TinkerUtils.ERROR_PATCH_CONDITION_NOT_SATISFIED:
                 reporter.onReport(KEY_TRY_APPLY_CONDITION_NOT_SATISFIED, "KEY_TRY_APPLY_CONDITION_NOT_SATISFIED", "补丁检查失败: 条件不足");
                 break;
+            case TinkerUtils.ERROR_PATCH_RETRY_COUNT_LIMIT:
+                reporter.onReport(-1, "KEY_TRY_APPLY_RETRY_COUNT_LIMIT", "补丁检查失败: 重试次数超过限制");
+                break;
 
         }
     }
