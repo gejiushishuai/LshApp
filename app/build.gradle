@@ -3,6 +3,21 @@ apply plugin: 'realm-android'
 apply from: 'tinkerpatch.gradle'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'lshapp'
+            keyPassword properties.get("KeyPWD")
+            storeFile file('/Users/linsh/WorkSpace/demo/LshTinkerDemo/app/appkey.jks')
+            storePassword '123456'
+        }
+        debug {
+            keyAlias 'key0'
+            keyPassword '123456'
+            storeFile file('/Users/linsh/WorkSpace/demo/LshTinkerDemo/app/appkey.jks')
+            storePassword '123456'
+        }
+    }
+
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
