@@ -8,8 +8,6 @@ def isDebug = false;
 
 def tinkerEnabled = true
 
-def versionName = "1.0.2" // 和版本号保持一致
-
 // 下面不需要每次重新配置
 def variantName = isDebug ? "debug" : "release";
 
@@ -23,20 +21,9 @@ def tinkerApplyMappingPath = "${tinkerPathPrefix}/${project.name}-${variantName}
 
 def tinkerApplyResourcePath = "${tinkerPathPrefix}/${project.name}-${variantName}-R.txt" // 旧R文件地址
 
-def date = new Date().format("MMdd-HH-mm-ss")
+def versionName = android.defaultConfig.versionName
 
-def gitSha() {
-    try {
-        String gitRev = 'git rev-parse --short HEAD'.execute(null, project.rootDir).text.trim()
-        println("-------gitRev-----" + gitRev)
-        if (gitRev == null) {
-            throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
-        }
-        return gitRev
-    } catch (Exception e) {
-        throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
-    }
-}
+def date = new Date().format("MMdd-HH-mm-ss")
 
 tinkerPatch {
 
@@ -54,7 +41,7 @@ tinkerPatch {
 
         applyResourceMapping = tinkerApplyResourcePath
 
-        tinkerId = isDebug ? date : "zhdjakdjfhal";
+        tinkerId = versionName
 
         keepDexApply = false
 
