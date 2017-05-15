@@ -6,15 +6,15 @@ android {
         release {
             //加载资源
             Properties properties = new Properties()
-            InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream() ;
-            properties.load( inputStream )
+            InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream();
+            properties.load(inputStream)
             //读取文件
             def sdkDir = properties.getProperty('storeFile')
-            storeFile file( sdkDir )
+            storeFile file(sdkDir)
             //读取字段
-            def key_keyAlias = properties.getProperty( 'keyAlias' )
-            def key_keyPassword = properties.getProperty( 'keyPassword' ) ;
-            def key_storePassword = properties.getProperty( 'storePassword' ) ;
+            def key_keyAlias = properties.getProperty('keyAlias')
+            def key_keyPassword = properties.getProperty('keyPassword');
+            def key_storePassword = properties.getProperty('storePassword');
 
             storePassword key_storePassword
             keyAlias key_keyAlias
@@ -24,7 +24,6 @@ android {
 
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
-
     defaultConfig {
         applicationId "com.linsh.lshapp"
         minSdkVersion 15
@@ -34,11 +33,10 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
-
     buildTypes {
         release {
             minifyEnabled true
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -47,7 +45,6 @@ android {
             signingConfig signingConfigs.debug
         }
     }
-
     // 控制打包apk的文件名
     applicationVariants.all {
         variant ->
@@ -64,12 +61,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
     ////////// 官方
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
-
     //////////  常用
     // glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
@@ -89,12 +84,10 @@ dependencies {
     compile 'com.google.dagger:dagger:2.10'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
     // Multidex
-    compile "com.android.support:multidex:1.0.1"
-
+    compile 'com.android.support:multidex:1.0.1'
     // Tinker
-    provided('com.tencent.tinker:tinker-android-anno:1.7.9')
-    compile('com.tencent.tinker:tinker-android-lib:1.7.9')
-
+    provided 'com.tencent.tinker:tinker-android-anno:1.7.9'
+    compile 'com.tencent.tinker:tinker-android-lib:1.7.9'
     //////////  个人
     compile project(':LshUtils:lshutils')
 }
