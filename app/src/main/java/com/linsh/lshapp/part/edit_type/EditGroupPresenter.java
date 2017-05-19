@@ -5,7 +5,7 @@ import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
-import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import java.util.List;
 

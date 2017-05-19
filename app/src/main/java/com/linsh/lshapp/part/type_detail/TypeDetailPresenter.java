@@ -6,7 +6,7 @@ import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingAction;
 import com.linsh.lshapp.model.bean.TypeDetail;
 import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
-import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import rx.Subscription;
 import rx.functions.Action0;

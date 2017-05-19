@@ -8,7 +8,7 @@ import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
-import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import io.realm.RealmList;

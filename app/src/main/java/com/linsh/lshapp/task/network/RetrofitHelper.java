@@ -1,7 +1,6 @@
 package com.linsh.lshapp.task.network;
 
 
-import com.linsh.lshapp.common.QCloudConfig;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.LshNetworkUtils;
 
@@ -85,7 +84,6 @@ public class RetrofitHelper {
 
             Request originalRequest = chain.request();
             Request requestWithUserAgent = originalRequest.newBuilder()
-                    .addHeader("User-Agent", QCloudConfig.USER_AGENT)
                     .build();
             return chain.proceed(requestWithUserAgent);
         }

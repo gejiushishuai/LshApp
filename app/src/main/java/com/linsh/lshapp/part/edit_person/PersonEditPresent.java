@@ -9,7 +9,7 @@ import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
-import com.linsh.lshapp.task.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import java.util.List;
 
