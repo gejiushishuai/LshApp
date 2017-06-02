@@ -3,9 +3,12 @@ package com.linsh.lshapp.tools;
 import android.os.Environment;
 
 import com.linsh.lshapp.common.LshConfig;
+import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshFileUtils;
 
 import java.io.File;
+
+import io.realm.Realm;
 
 /**
  * Created by Senh Linsh on 17/5/2.
@@ -25,6 +28,15 @@ public class LshFileFactory {
             mAppDir = appDir.getAbsolutePath();
         }
         return mAppDir;
+    }
+
+    public static File getRealmFile() {
+        File file = new File(LshApplicationUtils.getContext().getFilesDir(), "realm/shiyi.realm");
+        if (!file.exists()) {
+            Realm realm = Realm.getDefaultInstance();
+            realm.writeCopyTo(file);
+        }
+        return file;
     }
 
     /**
