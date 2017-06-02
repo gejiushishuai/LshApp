@@ -35,7 +35,7 @@ public class RetrofitHelper {
     /**
      * 根据传入的baseUrl，和api创建retrofit
      */
-    private static <T> T createApi(Class<T> clazz, String baseUrl) {
+    static <T> T createApi(Class<T> clazz, String baseUrl) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
