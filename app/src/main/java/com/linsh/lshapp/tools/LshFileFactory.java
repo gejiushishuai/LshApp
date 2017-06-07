@@ -30,6 +30,10 @@ public class LshFileFactory {
         return mAppDir;
     }
 
+    private static File getCacheDir() {
+        return LshApplicationUtils.getContext().getExternalCacheDir();
+    }
+
     public static File getRealmFile() {
         File file = new File(LshApplicationUtils.getContext().getFilesDir(), "realm/shiyi.realm");
         if (!file.exists()) {
@@ -37,6 +41,10 @@ public class LshFileFactory {
             realm.writeCopyTo(file);
         }
         return file;
+    }
+
+    public static File getUploadAvatarFile() {
+        return new File(getCacheDir(), "header.jpg");
     }
 
     /**

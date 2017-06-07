@@ -1,5 +1,6 @@
 package com.linsh.lshapp.mvp.edit_person;
 
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,13 +11,16 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
+import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
 import com.linsh.lshutils.utils.LshActivityUtils;
+import com.linsh.lshutils.utils.LshIntentUtils;
 import com.linsh.lshutils.utils.LshListUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
+import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
@@ -37,6 +41,8 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     private MenuItem mConfirmItem;
     private String emptyText = "未填写";
+    private static final int REQUEST_CODE_PICK_PHOTO = 100;
+    private static final int REQUEST_CODE_CROP_PHOTO = 101;
 
     @Override
     protected String getToolbarTitle() {
@@ -57,7 +63,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     public void clickItems(View view) {
         switch (view.getId()) {
             case R.id.rl_shiyi_person_add_avatar_item:
-                // TODO: 17/4/28
+                editAvatar();
                 break;
             case R.id.rl_shiyi_person_add_name_item:
                 addName();
@@ -74,6 +80,10 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
             default:
                 break;
         }
+    }
+
+    private void editAvatar() {
+        LshIntentUtils.gotoPickPhoto(this, REQUEST_CODE_PICK_PHOTO);
     }
 
     private void addName() {
@@ -217,6 +227,27 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
             savePerson();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE_PICK_PHOTO:
+                String filePath = LshIntentUtils.getFilePathFromResult(data);
+                if (filePath != null) {
+                    File file = new File(filePath);
+                    if (file.exists()) {
+                        LshIntentUtils.gotoCropPhotoAsAvartar(this, REQUEST_CODE_CROP_PHOTO, file, LshFileFactory.getUploadAvatarFile());
+                    }
+                }
+                break;
+            case REQUEST_CODE_CROP_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    LshToastUtils.showToast(LshFileFactory.getUploadAvatarFile().exists() ? "保存成功, 准备上传" : "保存失败");
+                }
+                break;
+        }
     }
 
     private void savePerson() {
