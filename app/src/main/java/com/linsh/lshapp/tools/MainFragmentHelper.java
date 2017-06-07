@@ -5,9 +5,9 @@ import android.view.MenuItem;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
-import com.linsh.lshapp.part.home.MainActivity;
-import com.linsh.lshapp.part.home.shiyi.ShiyiFragment;
-import com.linsh.lshapp.part.setting.SettingsActivity;
+import com.linsh.lshapp.mvp.home.MainActivity;
+import com.linsh.lshapp.mvp.home.shiyi.ShiyiFragment;
+import com.linsh.lshapp.mvp.setting.SettingsActivity;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshFragmentUtils;
 

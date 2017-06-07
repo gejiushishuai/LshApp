@@ -51,8 +51,6 @@ public class AvatarUploader {
         //下面这句指定调用相机拍照后的照片存储的路径
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(filePath)));
         activity.startActivityForResult(intent, SELECT_PIC_BY_TAKE_PHOTO);// 采用ForResult打开
-
-
     }
 
     /**
@@ -70,7 +68,7 @@ public class AvatarUploader {
         // outputX outputY 是裁剪图片宽高
         intent.putExtra("outputX", 300);
         intent.putExtra("outputY", 300);
-        intent.putExtra("return-data", true);
+        intent.putExtra("return-data", true); // FIXME: 17/6/7 直接返回 data 图片 Bitmap 资源不推荐, 需要改用 Uri 形式返回图片链接
         activity.startActivityForResult(intent, SELECT_PIC_BY_RESIZE);
     }
 

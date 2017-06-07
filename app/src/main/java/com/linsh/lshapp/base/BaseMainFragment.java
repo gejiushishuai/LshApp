@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.linsh.lshapp.part.home.MainActivity;
+import com.linsh.lshapp.mvp.home.MainActivity;
 
 /**
  * Created by linsh on 17/1/30.

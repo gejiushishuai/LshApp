@@ -9,6 +9,6 @@
         android:id="@+id/rcv_type_edit_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.linsh.lshapp.part.edit_type.TypeEditActivity"/>
+        tools:context="com.linsh.lshapp.mvp.edit_type.TypeEditActivity"/>
 
 </FrameLayout>

@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".part.home.MainActivity"
+            android:name=".mvp.home.MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -21,11 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".part.edit_person.PersonEditActivity"/>
-        <activity android:name=".part.person_detail.PersonDetailActivity"/>
-        <activity android:name=".part.setting.SettingsActivity"/>
-        <activity android:name=".part.type_detail.TypeDetailActivity"/>
-        <activity android:name=".part.edit_type.TypeEditActivity"/>
+        <activity android:name=".mvp.edit_person.PersonEditActivity"/>
+        <activity android:name=".mvp.person_detail.PersonDetailActivity"/>
+        <activity android:name=".mvp.setting.SettingsActivity"/>
+        <activity android:name=".mvp.type_detail.TypeDetailActivity"/>
+        <activity android:name=".mvp.edit_type.TypeEditActivity"/>
 
         <service android:name=".lib.tinker.service.TinkerResultService"/>
     </application>
