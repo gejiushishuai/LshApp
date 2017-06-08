@@ -44,7 +44,7 @@ public class LshFileFactory {
     }
 
     public static File getUploadAvatarFile() {
-        return new File(getCacheDir(), "header.jpg");
+        return new File(LshApplicationUtils.getContext().getExternalCacheDir(), "header.jpg");
     }
 
     /**

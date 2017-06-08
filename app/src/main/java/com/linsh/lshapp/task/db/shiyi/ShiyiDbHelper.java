@@ -228,14 +228,14 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Observable<Void> addPerson(final Realm realm, final String groupName, final String personName, final String desc, final String sex) {
+    public static Observable<Void> addPerson(final Realm realm, final String groupName, final String personName, final String desc, String avatar, final String sex) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
                 Group group = realm.where(Group.class).equalTo("name", groupName).findFirst();
                 if (group != null) {
                     RealmList<Person> persons = group.getPersons();
-                    persons.add(new Person(personName, desc, "", sex));
+                    persons.add(new Person(personName, desc, avatar, sex));
                     // 对联系人进行排序并保存
                     ShiyiDbUtils.sortToRealm(realm, persons, "id");
                 }
@@ -380,6 +380,10 @@ public class ShiyiDbHelper {
     }
 
     public static Observable<Void> editPerson(Realm realm, final String personId, final String name, final String desc, final String sex) {
+        return editPerson(realm, personId, name, desc, sex, "");
+    }
+
+    public static Observable<Void> editPerson(Realm realm, final String personId, final String name, final String desc, String avatar, final String sex) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
@@ -388,6 +392,7 @@ public class ShiyiDbHelper {
                     person.setName(name);
                     person.setDescribe(desc);
                     person.setGender(sex);
+                    person.setAvatar(avatar);
                 }
             }
         });

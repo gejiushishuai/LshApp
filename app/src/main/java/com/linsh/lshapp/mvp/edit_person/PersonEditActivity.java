@@ -11,6 +11,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
+import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
@@ -82,10 +83,12 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         }
     }
 
+    // 点击修改头像
     private void editAvatar() {
         LshIntentUtils.gotoPickPhoto(this, REQUEST_CODE_PICK_PHOTO);
     }
 
+    // 点击修改姓名
     private void addName() {
         final String lastName = getName();
         new LshColorDialog(getActivity())
@@ -110,6 +113,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                 .show();
     }
 
+    // 点击修改描述
     private void addDesc() {
         final String lastDesc = getDesc();
         new LshColorDialog(getActivity())
@@ -134,6 +138,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                 .show();
     }
 
+    // 点击修改性别
     private void addSex() {
         final String[] items = {"男", "女"};
         final String lastSex = getSex();
@@ -154,6 +159,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                 .show();
     }
 
+    // 点击修改组别
     private void selectGroup() {
         final String lastGroup = getGroup();
         final List<String> groups = getGroups();
@@ -244,7 +250,8 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                 break;
             case REQUEST_CODE_CROP_PHOTO:
                 if (resultCode == RESULT_OK) {
-                    LshToastUtils.showToast(LshFileFactory.getUploadAvatarFile().exists() ? "保存成功, 准备上传" : "保存失败");
+                    ImageTools.setImage(ivAvatar, LshFileFactory.getUploadAvatarFile());
+                    ivAvatar.setTag(LshFileFactory.getUploadAvatarFile().getAbsoluteFile());
                 }
                 break;
         }
@@ -252,7 +259,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     private void savePerson() {
         //////添加个人信息到选定的组里面, 并结束Activity
-        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex());
+        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), ivAvatar.getTag() == null ? null : LshFileFactory.getUploadAvatarFile());
     }
 
     @Override
@@ -262,6 +269,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     @Override
     public void setData(Person person) {
+        setAvatar(person.getAvatar());
         setName(person.getName());
         setDesc(person.getDescribe());
         setSex(person.getGender());
@@ -276,6 +284,12 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     @Override
     protected PersonEditContract.Presenter initPresenter() {
         return new PersonEditPresent();
+    }
+
+    private void setAvatar(String avatar) {
+        if (!LshStringUtils.isEmpty(avatar)) {
+            ImageTools.setImage(ivAvatar, avatar);
+        }
     }
 
     public String getName() {

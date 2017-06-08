@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class ShiyiModelHelper {
 
-    public static final String ID_REGEX = "^.+_\\d{12}$";
+    private static final String ID_REGEX = "^.+_\\d{12}$";
 
     public static String getId(String name) {
         return LshIdTools.getPinYinId(name);
@@ -21,7 +21,7 @@ public class ShiyiModelHelper {
         return LshIdTools.getPinYinId(name) + getTimeSuffix();
     }
 
-    private static String getTimeSuffix() {
+    public static String getTimeSuffix() {
         return new SimpleDateFormat("_yyMMddHHmmss").format(new Date());
     }
 
@@ -54,5 +54,9 @@ public class ShiyiModelHelper {
             Log.e("LshLog", "getTypeDetailId: 格式异常!!!  typeId = " + typeId);
             return typeId + getTimeSuffix();
         }
+    }
+
+    public static String removeTimeSuffix(String str) {
+        return str.replaceAll("_\\d{12}", "");
     }
 }

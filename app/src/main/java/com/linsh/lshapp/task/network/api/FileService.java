@@ -8,6 +8,7 @@ import com.linsh.lshapp.model.bean.http.UploadInfo;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -35,6 +36,6 @@ public interface FileService {
     Observable<NoDataInfo> delete(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName,
                                   @Query("op") String op);
 
-    @POST("{dirName}/{fileName}")
+    @GET("{dirName}/{fileName}")
     Observable<ResponseBody> download(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName);
 }

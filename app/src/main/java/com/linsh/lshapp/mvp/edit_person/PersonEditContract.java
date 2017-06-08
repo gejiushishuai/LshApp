@@ -4,6 +4,7 @@ import com.linsh.lshapp.base.BaseContract;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -31,6 +32,6 @@ public interface PersonEditContract {
 
         void addGroup(String inputText);
 
-        void savePerson(String group, String name, String desc, String sex);
+        void savePerson(String group, String name, String desc, String sex, File avatarFile);
     }
 }

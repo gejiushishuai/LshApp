@@ -23,6 +23,9 @@ public class Sign {
      */
     private static String appSignatureBase(Credentials cred, String bucketName, String cosPath, long expired,
                                            boolean uploadFlag) throws Exception {
+        if (!cosPath.startsWith("/")) {
+            cosPath = "/" + cosPath;
+        }
         int appId = cred.getAppId();
         String secretId = cred.getSecretId();
         String secretKey = cred.getSecretKey();
