@@ -14,12 +14,13 @@ public class Person extends RealmObject {
     private String name;
     private String describe;
     private String avatar;
+    private String avatarThumb;
     private int gender;
 
     public Person() {
     }
 
-    public Person(String name, String describe, String avatar, int gender) {
+    public Person(String name, String describe, String avatar, String avatarThumb, int gender) {
         this.id = ShiyiModelHelper.getPersonId(name);
         this.name = name;
         this.describe = describe;
@@ -27,7 +28,7 @@ public class Person extends RealmObject {
         this.gender = gender;
     }
 
-    public Person(String name, String describe, String avatar, String gender) {
+    public Person(String name, String describe, String avatar, String avatarThumb, String gender) {
         this.id = ShiyiModelHelper.getPersonId(name);
         this.name = name;
         this.describe = describe;
@@ -65,6 +66,14 @@ public class Person extends RealmObject {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getAvatarThumb() {
+        return avatarThumb;
+    }
+
+    public void setAvatarThumb(String avatarThumb) {
+        this.avatarThumb = avatarThumb;
     }
 
     public String getGender() {

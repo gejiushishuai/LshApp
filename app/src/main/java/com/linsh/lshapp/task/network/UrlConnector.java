@@ -41,6 +41,11 @@ public class UrlConnector {
         return uploadFile("avatar", fileName, file);
     }
 
+    public static Observable<HttpInfo<UploadInfo>> uploadThumb(String thumbName, File file) {
+        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        return uploadFile("thumb", thumbName, file);
+    }
+
     public static Observable<HttpInfo<UploadInfo>> uploadFile(String dirName, String fileName, File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 

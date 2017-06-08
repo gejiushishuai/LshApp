@@ -43,8 +43,12 @@ public class LshFileFactory {
         return file;
     }
 
-    public static File getUploadAvatarFile() {
-        return new File(LshApplicationUtils.getContext().getExternalCacheDir(), "header.jpg");
+    public static File getUploadAvatarFile(String id) {
+        return new File(LshApplicationUtils.getContext().getExternalCacheDir(), "avatar_" + id + ".jpg");
+    }
+
+    public static File getUploadThumbFile(String id) {
+        return new File(LshApplicationUtils.getContext().getExternalCacheDir(), "thumb_" + id + ".jpg");
     }
 
     /**

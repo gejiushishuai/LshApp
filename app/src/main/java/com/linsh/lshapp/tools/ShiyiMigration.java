@@ -30,6 +30,7 @@ public class ShiyiMigration implements RealmMigration {
                 schema.get("TypeDetail").addPrimaryKey("id");
             case 4:
                 schema.get("TypeLabel").addPrimaryKey("name");
+                schema.get("Person").addField("avatarThumb", String.class);
                 break;
         }
     }

@@ -13,6 +13,7 @@ import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.tools.LshFileFactory;
+import com.linsh.lshapp.tools.LshIdTools;
 import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
@@ -44,6 +45,8 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     private String emptyText = "未填写";
     private static final int REQUEST_CODE_PICK_PHOTO = 100;
     private static final int REQUEST_CODE_CROP_PHOTO = 101;
+
+    private File mCurPickedFile;
 
     @Override
     protected String getToolbarTitle() {
@@ -239,27 +242,31 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+            // 选择照片后返回
             case REQUEST_CODE_PICK_PHOTO:
                 String filePath = LshIntentUtils.getFilePathFromResult(data);
                 if (filePath != null) {
                     File file = new File(filePath);
                     if (file.exists()) {
-                        LshIntentUtils.gotoCropPhotoAsAvartar(this, REQUEST_CODE_CROP_PHOTO, file, LshFileFactory.getUploadAvatarFile());
+                        mCurPickedFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
+                        LshIntentUtils.gotoCropPhotoAsAvatar(this, REQUEST_CODE_CROP_PHOTO, file, mCurPickedFile);
                     }
                 }
                 break;
+            // 剪裁照片后返回
             case REQUEST_CODE_CROP_PHOTO:
                 if (resultCode == RESULT_OK) {
-                    ImageTools.setImage(ivAvatar, LshFileFactory.getUploadAvatarFile());
-                    ivAvatar.setTag(LshFileFactory.getUploadAvatarFile().getAbsoluteFile());
+                    ImageTools.setImage(ivAvatar, mCurPickedFile);
+                    ivAvatar.setTag(mCurPickedFile.getAbsolutePath());
                 }
                 break;
         }
     }
 
     private void savePerson() {
-        //////添加个人信息到选定的组里面, 并结束Activity
-        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), ivAvatar.getTag() == null ? null : LshFileFactory.getUploadAvatarFile());
+        ////// 添加个人信息到选定的组里面, 并结束Activity
+        File avatarFile = ivAvatar.getTag() == null ? null : new File((String) ivAvatar.getTag());
+        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), avatarFile);
     }
 
     @Override

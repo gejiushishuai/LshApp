@@ -3,14 +3,17 @@ package com.linsh.lshapp.mvp.edit_person;
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
 import com.linsh.lshapp.model.bean.Group;
 import com.linsh.lshapp.model.bean.Person;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
+import com.linsh.lshapp.tools.LshFileFactory;
+import com.linsh.lshapp.tools.LshIdTools;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
+import com.linsh.lshutils.utils.Basic.LshLogUtils;
+import com.linsh.lshutils.utils.LshImageUtils;
 
 import java.io.File;
 import java.util.List;
@@ -85,32 +88,58 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
 
         Observable<Void> observable;
         if (avatarFile != null) {
-            // 上传头像, 获取 avatar 地址
-            String personId = new Person(name, null, null, null).getId();
-            String fileName = "avatar_" + ShiyiModelHelper.removeTimeSuffix(personId) + ShiyiModelHelper.getTimeSuffix();
-            observable = UrlConnector.uploadAvatar(fileName, avatarFile)
-                    .subscribeOn(Schedulers.io())
+            String avatarName = "avatar_" + ShiyiModelHelper.getPersonId(name);
+            String thumbName = "thumb_" + avatarName;
+            File thumbFile = LshFileFactory.getUploadThumbFile(LshIdTools.getTimeId());
+            final String[] thumbUrl = {null};
+
+            // 生成缩略图
+            observable = Observable.unsafeCreate(subscriber -> {
+                LshLogUtils.i("生成缩略图");
+                boolean success = LshImageUtils.compressImage(avatarFile, thumbFile, 256, 256, 100);
+                if (success) {
+                    subscriber.onNext(null);
+                } else {
+                    subscriber.onError(new RuntimeException("生成缩略图失败!"));
+                }
+                subscriber.onCompleted();
+            }).subscribeOn(Schedulers.io())
+                    .flatMap(uploadInfoHttpInfo -> {
+                        LshLogUtils.i("上传缩略图");
+                        return UrlConnector.uploadThumb(thumbName, thumbFile);
+                    })
+                    .flatMap(uploadInfoHttpInfo -> {
+                        LshLogUtils.i("上传头像");
+                        thumbUrl[0] = uploadInfoHttpInfo.data.source_url;
+                        return UrlConnector.uploadAvatar(avatarName, avatarFile);
+                    })
                     .observeOn(AndroidSchedulers.mainThread())
-                    .flatMap(uploadInfoHttpInfo ->
-                            getSavePersonObservable(personId, name, desc, uploadInfoHttpInfo.data.source_url, sex));
+                    .flatMap(uploadInfoHttpInfo -> {
+                        LshLogUtils.i("保存联系人");
+                        return getSavePersonObservable(group, name, desc,
+                                uploadInfoHttpInfo.data.source_url, thumbUrl[0], sex);
+                    });
+
         } else {
-            observable = getSavePersonObservable(group, name, desc, null, sex);
+            observable = getSavePersonObservable(group, name, desc, null, null, sex);
         }
-        observable.subscribe(Actions.empty(), new DismissLoadingThrowableAction(getView()), new Action0() {
-            @Override
-            public void call() {
-                RxBus.getDefault().post(new GroupsChangedEvent());
-                RxBus.getDefault().post(new PersonChangedEvent());
-                getView().dismissLoadingDialog();
-                getView().finishActivity();
-            }
-        });
+        observable.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Actions.empty(), throwable -> {
+                    getView().dismissLoadingDialog();
+                    getView().showToast("保存失败(" + throwable.getMessage() + ")");
+                }, () -> {
+                    RxBus.getDefault().post(new GroupsChangedEvent());
+                    RxBus.getDefault().post(new PersonChangedEvent());
+                    getView().dismissLoadingDialog();
+                    getView().finishActivity();
+                });
     }
 
-    private Observable<Void> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String sex) {
+    private Observable<Void> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex) {
         if (mPerson == null) {
             // 创建Person
-            return ShiyiDbHelper.addPerson(getRealm(), group, name, desc, avatarUrl == null ? "" : avatarUrl, sex);
+            String avatar = avatarUrl == null ? "" : avatarUrl;
+            return ShiyiDbHelper.addPerson(getRealm(), group, name, desc, avatar, avatarThumbUrl, sex);
         } else {
             // 属性有变化, 则修改Person属性
             Observable<Void> observable = null;
