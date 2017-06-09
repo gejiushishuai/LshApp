@@ -49,7 +49,7 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
             Person person = getSecondLevelData().get(getSecondPosition(position));
             secondLevelHolder.tvName.setText(person.getName());
             secondLevelHolder.tvDetail.setText(person.getDescribe());
-            ImageTools.setImage(secondLevelHolder.ivAvatar, person.getAvatar());
+            ImageTools.loadAvatar(secondLevelHolder.ivAvatar, person.getAvatarThumb(), person.getAvatar());
         }
     }
 

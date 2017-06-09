@@ -276,7 +276,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     @Override
     public void setData(Person person) {
-        setAvatar(person.getAvatar());
+        setAvatar(person.getAvatarThumb(), person.getAvatar());
         setName(person.getName());
         setDesc(person.getDescribe());
         setSex(person.getGender());
@@ -293,9 +293,9 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         return new PersonEditPresent();
     }
 
-    private void setAvatar(String avatar) {
+    private void setAvatar(String avatarThumb, String avatar) {
         if (!LshStringUtils.isEmpty(avatar)) {
-            ImageTools.setImage(ivAvatar, avatar);
+            ImageTools.loadAvatar(ivAvatar, avatarThumb, avatar);
         }
     }
 

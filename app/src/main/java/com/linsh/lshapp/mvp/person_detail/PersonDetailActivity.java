@@ -18,6 +18,7 @@ import com.linsh.lshapp.model.bean.TypeLabel;
 import com.linsh.lshapp.mvp.edit_person.PersonEditActivity;
 import com.linsh.lshapp.mvp.edit_type.TypeEditActivity;
 import com.linsh.lshapp.mvp.type_detail.TypeDetailActivity;
+import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
 import com.linsh.lshutils.utils.LshActivityUtils;
@@ -150,6 +151,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
             } else if (gender == 2) {
                 ivSex.setImageResource(R.drawable.ic_sex_female);
             }
+            ImageTools.loadAvatar(ivAvatar, person.getAvatarThumb(), person.getAvatar());
         }
     }
 
