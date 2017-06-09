@@ -47,6 +47,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     private static final int REQUEST_CODE_CROP_PHOTO = 101;
 
     private File mCurPickedFile;
+    private File mCurSelectedFile;
 
     @Override
     protected String getToolbarTitle() {
@@ -249,7 +250,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                     File file = new File(filePath);
                     if (file.exists()) {
                         mCurPickedFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
-                        LshIntentUtils.gotoCropPhotoAsAvatar(this, REQUEST_CODE_CROP_PHOTO, file, mCurPickedFile);
+                        LshIntentUtils.gotoCropPhoto(this, REQUEST_CODE_CROP_PHOTO, file, mCurPickedFile, 1, 1, 1600, 1600);
                     }
                 }
                 break;
@@ -257,7 +258,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
             case REQUEST_CODE_CROP_PHOTO:
                 if (resultCode == RESULT_OK) {
                     ImageTools.setImage(ivAvatar, mCurPickedFile);
-                    ivAvatar.setTag(mCurPickedFile.getAbsolutePath());
+                    mCurSelectedFile = mCurPickedFile;
                 }
                 break;
         }
@@ -265,8 +266,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     private void savePerson() {
         ////// 添加个人信息到选定的组里面, 并结束Activity
-        File avatarFile = ivAvatar.getTag() == null ? null : new File((String) ivAvatar.getTag());
-        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), avatarFile);
+        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), mCurSelectedFile);
     }
 
     @Override

@@ -96,7 +96,8 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
             // 生成缩略图
             observable = Observable.unsafeCreate(subscriber -> {
                 LshLogUtils.i("生成缩略图");
-                boolean success = LshImageUtils.compressImage(avatarFile, thumbFile, 256, 256, 100);
+                // 宽高 256*256  最大尺寸 50Kb
+                boolean success = LshImageUtils.compressImage(avatarFile, thumbFile, 256, 256, 50);
                 if (success) {
                     subscriber.onNext(null);
                 } else {
