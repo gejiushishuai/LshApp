@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linsh.lshapp.R;
+import com.linsh.lshutils.utils.LshRecourseUtils;
+import com.linsh.lshutils.utils.LshSystemUtils;
 
 /**
  * Created by linsh on 17/2/2.
@@ -23,6 +25,8 @@ public abstract class BaseToolbarActivity<T extends BaseContract.BasePresenter> 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 设置沉浸状态栏
+        LshSystemUtils.setStatusBarColor(this, LshRecourseUtils.getColor(R.color.color_theme_dark_blue_pressed));
         // 初始化ToolBar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);

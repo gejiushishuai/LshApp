@@ -9,8 +9,6 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.view.ShapeLoadingDialog;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.utils.LshRecourseUtils;
-import com.linsh.lshutils.utils.LshSystemUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import java.util.List;
@@ -29,8 +27,6 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 设置沉浸状态栏
-        LshSystemUtils.setTransparentStatusBar(this, LshRecourseUtils.getColor(R.color.color_theme_dark_blue_pressed));
         // 初始化Presenter
         mPresenter = initPresenter();
         mPresenter.attachView(this);
