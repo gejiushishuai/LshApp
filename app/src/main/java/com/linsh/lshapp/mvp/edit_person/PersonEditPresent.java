@@ -144,8 +144,8 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
         } else {
             // 属性有变化, 则修改Person属性
             Observable<Void> observable = null;
-            if (!name.equals(mPerson.getName()) || !desc.equals(mPerson.getDescribe())
-                    || !sex.equals(mPerson.getGender())) {
+            if (!name.equals(mPerson.getName()) || !desc.equals(mPerson.getDescribe()) || !sex.equals(mPerson.getGender()) ||
+                    (avatarUrl != null && !avatarUrl.equals(mPerson.getAvatar()))) {
                 if (avatarUrl == null) {
                     observable = ShiyiDbHelper.editPerson(getRealm(), mPerson.getId(), name, desc, sex);
                 } else {
