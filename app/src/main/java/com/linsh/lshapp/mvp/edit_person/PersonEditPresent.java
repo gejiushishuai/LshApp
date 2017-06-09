@@ -149,7 +149,7 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
                 if (avatarUrl == null) {
                     observable = ShiyiDbHelper.editPerson(getRealm(), mPerson.getId(), name, desc, sex);
                 } else {
-                    observable = ShiyiDbHelper.editPerson(getRealm(), mPerson.getId(), name, desc, avatarUrl, sex);
+                    observable = ShiyiDbHelper.editPerson(getRealm(), mPerson.getId(), name, desc, avatarUrl, avatarThumbUrl, sex);
                 }
             }
             // 组别有变化, 则修改组别

@@ -13,6 +13,7 @@ import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.tools.LshRxUtils;
+import com.linsh.lshutils.utils.Basic.LshStringUtils;
 
 import java.util.List;
 
@@ -381,10 +382,11 @@ public class ShiyiDbHelper {
     }
 
     public static Observable<Void> editPerson(Realm realm, final String personId, final String name, final String desc, final String sex) {
-        return editPerson(realm, personId, name, desc, sex, "");
+        return editPerson(realm, personId, name, desc, null, null, sex);
     }
 
-    public static Observable<Void> editPerson(Realm realm, final String personId, final String name, final String desc, String avatar, final String sex) {
+    public static Observable<Void> editPerson(Realm realm, final String personId, final String name,
+                                              final String desc, String avatar, String avatarThumb, String sex) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
@@ -393,7 +395,12 @@ public class ShiyiDbHelper {
                     person.setName(name);
                     person.setDescribe(desc);
                     person.setGender(sex);
-                    person.setAvatar(avatar);
+                    if (!LshStringUtils.isEmpty(avatar)) {
+                        person.setAvatar(avatar);
+                    }
+                    if (!LshStringUtils.isEmpty(avatarThumb)) {
+                        person.setAvatarThumb(avatarThumb);
+                    }
                 }
             }
         });
