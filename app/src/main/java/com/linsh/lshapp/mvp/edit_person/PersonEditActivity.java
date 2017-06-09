@@ -259,6 +259,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                 if (resultCode == RESULT_OK) {
                     ImageTools.setImage(ivAvatar, mCurPickedFile);
                     mCurSelectedFile = mCurPickedFile;
+                    onPersonModified();
                 }
                 break;
         }
