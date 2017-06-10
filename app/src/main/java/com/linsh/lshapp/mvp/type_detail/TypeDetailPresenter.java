@@ -4,7 +4,7 @@ import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingAction;
-import com.linsh.lshapp.model.bean.TypeDetail;
+import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 

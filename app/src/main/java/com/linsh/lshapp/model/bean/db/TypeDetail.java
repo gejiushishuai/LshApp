@@ -1,5 +1,6 @@
-package com.linsh.lshapp.model.bean;
+package com.linsh.lshapp.model.bean.db;
 
+import com.linsh.lshapp.model.bean.Sortable;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 
 import java.text.SimpleDateFormat;
@@ -10,6 +11,9 @@ import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Senh Linsh on 17/1/22.
+ * <p>
+ * 类型详情
+ * 目前联系人信息的最小单位
  */
 public class TypeDetail extends RealmObject implements Sortable {
     @PrimaryKey

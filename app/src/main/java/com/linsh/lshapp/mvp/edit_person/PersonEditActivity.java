@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
-import com.linsh.lshapp.model.bean.Group;
-import com.linsh.lshapp.model.bean.Person;
+import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;

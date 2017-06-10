@@ -6,8 +6,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.linsh.lshapp.R;
-import com.linsh.lshapp.model.bean.Type;
-import com.linsh.lshapp.model.bean.TypeDetail;
+import com.linsh.lshapp.model.bean.db.Type;
+import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshutils.adapter.LshNestedDataRcvAdapter;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshRecourseUtils;

@@ -7,8 +7,8 @@ import android.view.View;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
-import com.linsh.lshapp.model.bean.Group;
-import com.linsh.lshapp.model.bean.Person;
+import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.mvp.edit_person.PersonEditActivity;
 import com.linsh.lshapp.mvp.edit_type.TypeEditActivity;
 import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;

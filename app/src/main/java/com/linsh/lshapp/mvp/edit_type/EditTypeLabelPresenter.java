@@ -3,7 +3,7 @@ package com.linsh.lshapp.mvp.edit_type;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.bean.TypeLabel;
+import com.linsh.lshapp.model.bean.db.TypeLabel;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbUtils;
 import com.linsh.lshapp.tools.LshRxUtils;

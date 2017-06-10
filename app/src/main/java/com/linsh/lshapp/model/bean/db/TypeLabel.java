@@ -1,10 +1,15 @@
-package com.linsh.lshapp.model.bean;
+package com.linsh.lshapp.model.bean.db;
+
+import com.linsh.lshapp.model.bean.Typable;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Senh Linsh on 17/5/2.
+ * <p>
+ * 类型标签
+ * 用于通过标签来快速生成类型和管理类型
  */
 
 public class TypeLabel extends RealmObject implements Typable {

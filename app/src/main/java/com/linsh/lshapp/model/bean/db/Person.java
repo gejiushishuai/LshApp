@@ -1,4 +1,4 @@
-package com.linsh.lshapp.model.bean;
+package com.linsh.lshapp.model.bean.db;
 
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 
@@ -7,6 +7,9 @@ import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Senh Linsh on 17/1/22.
+ * <p>
+ * 联系人
+ * 用于保存联系人基本信息, 详细类型信息需要使用 id 通过 PersonDetail 进行查找
  */
 public class Person extends RealmObject {
     @PrimaryKey

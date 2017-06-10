@@ -1,5 +1,6 @@
-package com.linsh.lshapp.model.bean;
+package com.linsh.lshapp.model.bean.db;
 
+import com.linsh.lshapp.model.bean.Typable;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 
 import io.realm.RealmList;
@@ -8,22 +9,26 @@ import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Senh Linsh on 17/1/22.
+ * <p>
+ * 组别
+ * 用于给联系人进行分组
  */
-public class Type extends RealmObject implements Typable {
+
+public class Group extends RealmObject implements Typable {
     @PrimaryKey
     private String id;
     private String name;
     private int sort;
-    private RealmList<TypeDetail> typeDetails;
+    private RealmList<Person> persons;
 
-    public Type() {
+    public Group() {
     }
 
-    public Type(String personId, String name, int sort) {
-        this.id = ShiyiModelHelper.getTypeId(personId, name);
+    public Group(String name, int sort) {
+        this.id = ShiyiModelHelper.getGroupId(name);
         this.name = name;
         this.sort = sort;
-        typeDetails = new RealmList<>();
+        this.persons = new RealmList<>();
     }
 
     public String getId() {
@@ -50,11 +55,12 @@ public class Type extends RealmObject implements Typable {
         this.sort = sort;
     }
 
-    public RealmList<TypeDetail> getTypeDetails() {
-        return typeDetails;
+    public RealmList<Person> getPersons() {
+        return persons;
     }
 
-    public void setTypeDetails(RealmList<TypeDetail> typeDetails) {
-        this.typeDetails = typeDetails;
+    public void setPersons(RealmList<Person> persons) {
+        this.persons = persons;
     }
+
 }

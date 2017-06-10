@@ -32,6 +32,15 @@ public class ShiyiMigration implements RealmMigration {
                 schema.get("TypeLabel").addPrimaryKey("name");
                 schema.get("Person").addField("avatarThumb", String.class);
                 break;
+            case 5:
+                schema.create("ImageUrl")
+                        .addField("url", String.class)
+                        .addField("thumbUrl", String.class);
+                schema.create("PersonAlbum")
+                        .addField("id", String.class)
+                        .addRealmListField("pictures", schema.get("ImageUrl"))
+                        .addRealmListField("avatars", schema.get("ImageUrl"));
+                break;
         }
     }
 }

@@ -3,7 +3,7 @@ package com.linsh.lshapp.mvp.edit_type;
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.bean.Group;
+import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 

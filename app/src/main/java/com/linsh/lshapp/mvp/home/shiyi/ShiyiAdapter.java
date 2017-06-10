@@ -7,8 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.linsh.lshapp.R;
-import com.linsh.lshapp.model.bean.Group;
-import com.linsh.lshapp.model.bean.Person;
+import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
 import com.linsh.lshutils.adapter.LshViewHolder;

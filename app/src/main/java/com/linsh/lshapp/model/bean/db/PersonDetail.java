@@ -1,4 +1,4 @@
-package com.linsh.lshapp.model.bean;
+package com.linsh.lshapp.model.bean.db;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -6,6 +6,9 @@ import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Senh Linsh on 17/1/22.
+ * <p>
+ * 联系人详情
+ * 保存该联系人的所有类型信息
  */
 public class PersonDetail extends RealmObject {
     @PrimaryKey
