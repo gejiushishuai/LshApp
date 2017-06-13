@@ -31,7 +31,19 @@ public class LshFileFactory {
     }
 
     private static File getCacheDir() {
-        return LshApplicationUtils.getContext().getExternalCacheDir();
+        File cacheDir = LshApplicationUtils.getContext().getExternalCacheDir();
+        if (cacheDir == null) {
+            cacheDir = LshApplicationUtils.getContext().getCacheDir();
+        }
+        return cacheDir;
+    }
+
+    private static File getFileAir() {
+        File filesDir = LshApplicationUtils.getContext().getExternalFilesDir(null);
+        if (filesDir == null) {
+            filesDir = LshApplicationUtils.getContext().getFilesDir();
+        }
+        return filesDir;
     }
 
     public static File getRealmFile() {
@@ -68,5 +80,17 @@ public class LshFileFactory {
 
     private static void makeDir(File dir) {
         LshFileUtils.makeDirs(dir);
+    }
+
+    public static File getApkDir() {
+        File dir = new File(getFileAir(), "apk");
+        makeDir(dir);
+        return dir;
+    }
+
+    public static File getPatchFile(String fileName) {
+        File dir = new File(getFileAir(), "patch");
+        makeDir(dir);
+        return new File(dir, fileName);
     }
 }

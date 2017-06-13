@@ -17,5 +17,7 @@ public interface SettingsContract {
         void outputDatabase();
 
         void importGson();
+
+        void checkUpdate();
     }
 }

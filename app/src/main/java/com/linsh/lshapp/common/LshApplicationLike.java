@@ -12,6 +12,7 @@ import com.linsh.lshapp.lib.tinker.util.TinkerManager;
 import com.linsh.lshapp.tools.LshTinkerReporter;
 import com.linsh.lshapp.tools.RealmTool;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
+import com.linsh.lshutils.utils.LshActivityLifecycleUtils;
 import com.tencent.tinker.anno.DefaultLifeCycle;
 import com.tencent.tinker.lib.tinker.Tinker;
 import com.tencent.tinker.lib.tinker.TinkerInstaller;
@@ -55,8 +56,10 @@ public class LshApplicationLike extends DefaultApplicationLike {
     @Override
     public void onCreate() {
         super.onCreate();
-        LshApplicationUtils.init(getApplication());
+        Application application = getApplication();
+        LshApplicationUtils.init(application);
         // 初始化数据库
-        RealmTool.init(getApplication());
+        RealmTool.init(application);
+        LshActivityLifecycleUtils.init(application);
     }
 }

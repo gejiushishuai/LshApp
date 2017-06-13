@@ -16,20 +16,20 @@ import rx.functions.Func1;
  * Created by Senh Linsh on 17/5/19.
  */
 
-public class FileTransfer implements Func1<ResponseBody, Observable<File>> {
+public class FileProgressTransfer implements Func1<ResponseBody, Observable<Float>> {
 
     private File destFile;
 
-    public FileTransfer(String destFile) {
+    public FileProgressTransfer(String destFile) {
         this(new File(destFile));
     }
 
-    public FileTransfer(File destFile) {
+    public FileProgressTransfer(File destFile) {
         this.destFile = destFile;
     }
 
     @Override
-    public Observable<File> call(ResponseBody responseBody) {
+    public Observable<Float> call(ResponseBody responseBody) {
         return Observable.create(subscriber -> {
             try {
                 saveFile(responseBody, subscriber);
@@ -40,13 +40,16 @@ public class FileTransfer implements Func1<ResponseBody, Observable<File>> {
         });
     }
 
-    private void saveFile(ResponseBody response, Subscriber<? super File> subscriber) throws IOException {
+    private void saveFile(ResponseBody response, Subscriber<? super Float> subscriber) throws IOException {
         InputStream is = null;
         byte[] buf = new byte[2048];
         int len = 0;
         FileOutputStream fos = null;
         try {
             is = response.byteStream();
+            final long total = response.contentLength();
+
+            long sum = 0;
 
             if (destFile == null) {
                 throw new RuntimeException("没有传入文件");
@@ -55,10 +58,12 @@ public class FileTransfer implements Func1<ResponseBody, Observable<File>> {
 
             fos = new FileOutputStream(destFile);
             while ((len = is.read(buf)) != -1) {
+                sum += len;
                 fos.write(buf, 0, len);
+                final long finalSum = sum;
+                subscriber.onNext(finalSum * 1.0f / total);
             }
             fos.flush();
-            subscriber.onNext(destFile);
         } finally {
             LshIOUtils.close(response, is, fos);
         }
