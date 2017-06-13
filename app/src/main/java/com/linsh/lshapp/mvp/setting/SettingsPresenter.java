@@ -7,6 +7,8 @@ import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Shiyi;
+import com.linsh.lshapp.model.bean.db.Type;
+import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
 import com.linsh.lshapp.model.bean.http.UpdateInfo;
 import com.linsh.lshapp.service.InstallApkReceiver;
@@ -21,12 +23,12 @@ import com.linsh.lshutils.utils.LshAppUtils;
 import com.tencent.tinker.lib.tinker.TinkerInstaller;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -81,32 +83,47 @@ public class SettingsPresenter extends BasePresenterImpl<SettingsContract.View> 
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
                 boolean success = false;
                 File importDir = new File(LshFileFactory.getJsonImportDir());
+                LshFileUtils.makeDirs(importDir);
                 if (importDir.exists() && importDir.isDirectory()) {
                     File[] files = importDir.listFiles();
-                    for (File file : files) {
-                        String name = file.getName();
+                    if (files != null && files.length > 0) {
+                        for (File file : files) {
+                            String name = file.getName();
 
-                        if (name.equalsIgnoreCase("Shiyi.txt")) {
-                            String json = LshFileUtils.readFile(file).toString();
-                            Shiyi shiyi = new Gson().fromJson(json, Shiyi.class);
+                            if (name.equalsIgnoreCase("Shiyi.txt")) {
+                                String json = LshFileUtils.readFile(file).toString();
+                                Shiyi shiyi = new Gson().fromJson(json, Shiyi.class);
 
-                            Shiyi realmShiyi = realm.where(Shiyi.class).findFirst();
-                            realmShiyi.getGroups().addAll(shiyi.getGroups());
-                            success = true;
-                        } else if (name.equalsIgnoreCase("PersonDetail.txt") || name.equalsIgnoreCase("PersonDetails.txt")) {
-                            String json = LshFileUtils.readFile(file).toString();
-                            Type type = new TypeToken<ArrayList<PersonDetail>>() {
-                            }.getType();
-                            List<PersonDetail> personDetails = new Gson().fromJson(json, type);
-                            realm.copyToRealmOrUpdate(personDetails);
-                            success = true;
-                        } else if (name.equalsIgnoreCase("TypeLabel.txt") || name.equalsIgnoreCase("TypeLabels.txt")) {
-                            String json = LshFileUtils.readFile(file).toString();
-                            Type type = new TypeToken<ArrayList<TypeLabel>>() {
-                            }.getType();
-                            List<TypeLabel> typeLabels = new Gson().fromJson(json, type);
-                            realm.copyToRealmOrUpdate(typeLabels);
-                            success = true;
+                                Shiyi realmShiyi = realm.where(Shiyi.class).findFirst();
+                                realmShiyi.getGroups().addAll(shiyi.getGroups());
+                                success = true;
+                            } else if (name.equalsIgnoreCase("PersonDetail.txt") || name.equalsIgnoreCase("PersonDetails.txt")) {
+                                String json = LshFileUtils.readFile(file).toString();
+                                java.lang.reflect.Type typeOfT = new TypeToken<ArrayList<PersonDetail>>() {
+                                }.getType();
+                                List<PersonDetail> personDetails = new Gson().fromJson(json, typeOfT);
+                                // 因为生成导入文件时, PersonDetail 中的 Type 中的 TypeDetail 有很大的几率 id 是一样的,
+                                // 会导致 TypeDetail 被重复 id 的覆盖的情况, 所以需要先把 id 给去重复了
+                                for (PersonDetail personDetail : personDetails) {
+                                    for (Type type : personDetail.getTypes()) {
+                                        RealmList<TypeDetail> typeDetails = type.getTypeDetails();
+                                        for (int i = 0; i < typeDetails.size(); i++) {
+                                            TypeDetail typeDetail = typeDetails.get(i);
+                                            // 把末尾的数字去掉, 并拼上序号 i
+                                            typeDetail.setId(typeDetail.getId().substring(0, typeDetail.getId().length() - 1) + i);
+                                        }
+                                    }
+                                }
+                                realm.copyToRealmOrUpdate(personDetails);
+                                success = true;
+                            } else if (name.equalsIgnoreCase("TypeLabel.txt") || name.equalsIgnoreCase("TypeLabels.txt")) {
+                                String json = LshFileUtils.readFile(file).toString();
+                                java.lang.reflect.Type type = new TypeToken<ArrayList<TypeLabel>>() {
+                                }.getType();
+                                List<TypeLabel> typeLabels = new Gson().fromJson(json, type);
+                                realm.copyToRealmOrUpdate(typeLabels);
+                                success = true;
+                            }
                         }
                     }
                 }
