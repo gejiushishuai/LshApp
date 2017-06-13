@@ -18,8 +18,10 @@
 
 
 #---------------------------------1.实体类---------------------------------
--keep class com.linsh.lshapp.model.bean.** { *; }
+-keep class com.linsh.lshapp.model.** { *; }
+-keep class com.linsh.lshapp.model.action.** { *; }
 -keep class com.linsh.lshapp.view.** {*;}
+-keep class com.linsh.lshutils.view.** {*;}
 
 #---------------------------------2.第三方包-------------------------------
 #gson
@@ -98,7 +100,8 @@
 -dontwarn org.**
 -keep class sun.** {*;}
 -dontwarn sun.**
-
+-keep class rx.** {*;}
+-dontwarn rx.**
 
 
 -keepattributes *Annotation*

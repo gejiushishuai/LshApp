@@ -2,11 +2,11 @@
 apply plugin: 'com.tencent.tinker.patch'
 
 // 每次打包补丁时需要配置的变量
-def baseInfo = "app-1.0.2-0515-10-32-10"
-
-def isDebug = true
+def baseInfo = ""
 
 def tinkerEnabled = false
+
+def isDebug = false
 
 // 下面不需要每次重新配置
 def variantName = isDebug ? "debug" : "release";
