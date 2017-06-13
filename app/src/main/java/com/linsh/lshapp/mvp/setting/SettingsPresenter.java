@@ -163,6 +163,7 @@ public class SettingsPresenter extends BasePresenterImpl<SettingsContract.View> 
                                 Map<String, UpdateInfo.ApkBean> patches = httpInfo.data.patchs;
                                 UpdateInfo.ApkBean patch = patches.get(LshAppUtils.getVersionName());
                                 if (patch != null && patch.version.compareTo(LshAppUtils.getVersionName()) > 0) {
+                                    getView().showToast("正在进行补丁升级...");
                                     UrlConnector.downloadPatch(patch.url)
                                             .subscribe(file -> {
                                                 TinkerInstaller.onReceiveUpgradePatch(LshApplicationUtils.getContext(), file.getAbsolutePath());
