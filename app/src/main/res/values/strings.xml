@@ -9,6 +9,4 @@
     <string name="shiyi_unnamed_group">未分组</string>
     <string name="shiyi_add_new_type">添加新类型</string>
     <string name="shiyi_settings_output_database">导出数据库到本地</string>
-
-    <string name="provider_file_authorities">com.linsh.lshapp.fileProvider</string>
 </resources>
