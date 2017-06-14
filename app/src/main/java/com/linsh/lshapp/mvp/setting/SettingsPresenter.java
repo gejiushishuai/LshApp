@@ -16,9 +16,12 @@ import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.HttpErrorCatcher;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshRxUtils;
+import com.linsh.lshapp.tools.RealmTool;
+import com.linsh.lshapp.tools.SharedPreferenceTools;
 import com.linsh.lshutils.tools.LshDownloadManager;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshFileUtils;
+import com.linsh.lshutils.utils.Basic.LshToastUtils;
 import com.linsh.lshutils.utils.LshAppUtils;
 import com.tencent.tinker.lib.tinker.TinkerInstaller;
 
@@ -36,6 +39,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Senh Linsh on 17/5/2.
@@ -181,5 +185,22 @@ public class SettingsPresenter extends BasePresenterImpl<SettingsContract.View> 
                     getView().showToast(error);
                 });
         addSubscription(checkUpdateSub);
+    }
+
+    @Override
+    public void backupDatabase() {
+        if (!RealmTool.checkBackupRealm()) {
+            LshToastUtils.showToast("数据库没有发生更改, 无须备份");
+            return;
+        }
+        UrlConnector.uploadRealmData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(uploadInfoHttpInfo -> {
+                    if (uploadInfoHttpInfo != null && uploadInfoHttpInfo.data != null) {
+                        LshToastUtils.showToast("已成功备份至云端");
+                        SharedPreferenceTools.refreshLastBackupRealmTime();
+                    }
+                }, new DefaultThrowableAction());
     }
 }

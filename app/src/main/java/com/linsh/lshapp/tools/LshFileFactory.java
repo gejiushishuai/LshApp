@@ -5,6 +5,7 @@ import android.os.Environment;
 import com.linsh.lshapp.common.LshConfig;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshFileUtils;
+import com.linsh.lshutils.utils.Basic.LshIOUtils;
 
 import java.io.File;
 
@@ -48,10 +49,16 @@ public class LshFileFactory {
 
     public static File getRealmFile() {
         File file = new File(LshApplicationUtils.getContext().getFilesDir(), "realm/shiyi.realm");
-        if (!file.exists()) {
-            Realm realm = Realm.getDefaultInstance();
-            realm.writeCopyTo(file);
+        if (file.exists()) {
+            if (!file.delete()) {
+                return file;
+            }
+        } else {
+            LshFileUtils.makeParentDirs(file);
         }
+        Realm realm = Realm.getDefaultInstance();
+        realm.writeCopyTo(file);
+        LshIOUtils.close(realm);
         return file;
     }
 

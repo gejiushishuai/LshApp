@@ -1,8 +1,12 @@
 package com.linsh.lshapp.tools;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.linsh.lshapp.common.LshConfig;
+import com.linsh.lshutils.utils.Basic.LshIOUtils;
+
+import java.io.File;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -33,4 +37,22 @@ public class RealmTool {
         return password;
     }
 
+    // 检查 Realm 数据库是否需要备份
+    public static boolean checkBackupRealm() {
+        long lastBackupRealmTime = SharedPreferenceTools.getLastBackupRealmTime();
+
+        Realm realm = Realm.getDefaultInstance();
+        File file = new File(realm.getPath());
+        try {
+            if (file.exists()) {
+                long lastModified = file.lastModified();
+                return lastModified > lastBackupRealmTime;
+            } else {
+                Log.i("LshLog", "file not exists");
+            }
+        } finally {
+            LshIOUtils.close(realm);
+        }
+        return false;
+    }
 }

@@ -1,5 +1,6 @@
 package com.linsh.lshapp.task.network;
 
+import com.linsh.lshapp.BuildConfig;
 import com.linsh.lshapp.common.QCloudConfig;
 import com.linsh.lshapp.lib.qcloud.QcloudSignCreater;
 import com.linsh.lshapp.model.bean.http.CreateDirInfo;
@@ -71,7 +72,7 @@ public class UrlConnector {
 
     public static Observable<HttpInfo<UploadInfo>> uploadRealmData() {
         File file = LshFileFactory.getRealmFile();
-        String fileName = "shiyi_" + LshTimeUtils.getCurrentTimeStringEN() + ".realm";
+        String fileName = "shiyi_" + LshTimeUtils.getCurrentTimeStringEN() + (BuildConfig.DEBUG ? "_debug" : "") + ".realm";
         RequestBody.create(MediaType.parse("multipart/form-data"), file);
         return uploadFile("shiyi/realm", fileName, file);
     }

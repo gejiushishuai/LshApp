@@ -50,4 +50,8 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
     public void checkUpdate() {
         mPresenter.checkUpdate();
     }
+
+    public void backupDatabase() {
+        mPresenter.backupDatabase();
+    }
 }

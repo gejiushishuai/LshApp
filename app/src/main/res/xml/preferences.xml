@@ -10,6 +10,10 @@
         android:title="导入Json数据"/>
 
     <Preference
+        android:key="backup_database"
+        android:title="备份数据库"/>
+
+    <Preference
         android:key="check_update"
         android:title="检查更新"/>
 
