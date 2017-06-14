@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.linsh.lshapp.R;
 import com.linsh.lshutils.tools.LshDownloadManager;
 import com.linsh.lshutils.utils.LshActivityLifecycleUtils;
 import com.linsh.lshutils.utils.LshAppUtils;
@@ -29,7 +30,8 @@ public class InstallApkReceiver extends BroadcastReceiver {
         if (id == mId) {
             File file = LshDownloadManager.getFileIfDownloaded(id);
             if (file != null && file.exists() && file.getName().endsWith(".apk")) {
-                LshAppUtils.installApk(LshActivityLifecycleUtils.getTopActivity(), file);
+                LshAppUtils.installApk(LshActivityLifecycleUtils.getTopActivity(),
+                        context.getString(R.string.provider_file_authorities), file);
             }
         }
     }
