@@ -250,7 +250,8 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                     File file = new File(filePath);
                     if (file.exists()) {
                         mCurPickedFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
-                        LshIntentUtils.gotoCropPhoto(this, REQUEST_CODE_CROP_PHOTO, file, mCurPickedFile, 1, 1, 1600, 1600);
+                        String authority = getActivity().getString(R.string.provider_file_authorities);
+                        LshIntentUtils.gotoCropPhoto(this, REQUEST_CODE_CROP_PHOTO, authority, file, mCurPickedFile, 1, 1, 1600, 1600);
                     }
                 }
                 break;
