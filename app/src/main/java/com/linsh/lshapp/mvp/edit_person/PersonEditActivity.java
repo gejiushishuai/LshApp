@@ -218,6 +218,9 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     // 个人信息被修改
     public void onPersonModified() {
         // 只有名字和组别填写之后才设置确认修改按钮为可用
+        if (mConfirmItem == null) {
+            mConfirmItem = getToolbar().getMenu().findItem(R.id.menu_shiyi_add_person_confirm);
+        }
         if (!mConfirmItem.isEnabled() && !isEmpty(getName()) && !isEmpty(getGroup())) {
             mConfirmItem.setEnabled(true);
         }
