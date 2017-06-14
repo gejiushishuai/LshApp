@@ -1,6 +1,7 @@
 package com.linsh.lshapp.mvp.edit_person;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -245,14 +246,9 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         switch (requestCode) {
             // 选择照片后返回
             case REQUEST_CODE_PICK_PHOTO:
-                String filePath = LshIntentUtils.getFilePathFromResult(data);
-                if (filePath != null) {
-                    File file = new File(filePath);
-                    if (file.exists()) {
-                        mCurPickedFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
-                        String authority = getActivity().getString(R.string.provider_file_authorities);
-                        LshIntentUtils.gotoCropPhoto(this, REQUEST_CODE_CROP_PHOTO, authority, file, mCurPickedFile, 1, 1, 1600, 1600);
-                    }
+                if (resultCode == RESULT_OK && data != null) {
+                    mCurPickedFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
+                    LshIntentUtils.gotoCropPhoto(this, REQUEST_CODE_CROP_PHOTO, data.getData(), Uri.fromFile(mCurPickedFile), 1, 1, 1600, 1600);
                 }
                 break;
             // 剪裁照片后返回
