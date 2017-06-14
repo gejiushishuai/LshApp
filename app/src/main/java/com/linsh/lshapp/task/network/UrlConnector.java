@@ -72,7 +72,8 @@ public class UrlConnector {
 
     public static Observable<HttpInfo<UploadInfo>> uploadRealmData() {
         File file = LshFileFactory.getRealmFile();
-        String fileName = "shiyi_" + LshTimeUtils.getCurrentTimeStringEN() + (BuildConfig.DEBUG ? "_debug" : "") + ".realm";
+        String time = LshTimeUtils.getTimeString(System.currentTimeMillis(), "yyyyMMdd_HHmmss");
+        String fileName = "shiyi_" + time + (BuildConfig.DEBUG ? "_debug" : "") + ".realm";
         RequestBody.create(MediaType.parse("multipart/form-data"), file);
         return uploadFile("shiyi/realm", fileName, file);
     }
