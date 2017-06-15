@@ -20,6 +20,7 @@ import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Actions;
 
 /**
  * Created by Senh Linsh on 17/4/28.
@@ -122,14 +123,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void addType(String typeName, int sort) {
         Subscription subscription = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
-                .subscribe(new Action1<Result>() {
-                    @Override
-                    public void call(Result result) {
-                        if (!result.isEmpty()) {
-                            getView().showToast(result.getMessage());
-                        }
-                    }
-                }, new DismissLoadingThrowableAction(getView()), new Action0() {
+                .subscribe(Actions.empty(), new DismissLoadingThrowableAction(getView()), new Action0() {
                     @Override
                     public void call() {
                         getView().setData(mPersonDetail);

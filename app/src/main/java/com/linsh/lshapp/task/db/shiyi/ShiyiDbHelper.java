@@ -259,6 +259,10 @@ public class ShiyiDbHelper {
     }
 
     public static Observable<Void> addType(final Realm realm, final String personId, final String typeName) {
+        return addType(realm, personId, typeName, -1);
+    }
+
+    public static Observable<Void> addType(final Realm realm, final String personId, final String typeName, final int sort) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
@@ -275,48 +279,16 @@ public class ShiyiDbHelper {
                     } else {
                         // 没有同名的Type, 则在types里面加上一个Type (该Type的TypeDetails里面默认有一个空的TypeDetail)
                         RealmList<Type> types = personDetail.getTypes();
-                        types.add(new Type(personDetail.getId(), typeName, types.size() + 1));
-                    }
-                } else {
-                    // 没有该PersonDetail, 则创建一个
-                    personDetail = new PersonDetail(personId);
-                    realm.copyToRealm(personDetail);
-                    // 然后添加一个Type到Types里面 (该Type的TypeDetails里面默认有一个空的TypeDetail)
-                    RealmList<Type> types = personDetail.getTypes();
-                    types.add(new Type(personDetail.getId(), typeName, types.size() + 1));
-                }
-            }
-        });
-    }
-
-    public static Observable<Result> addType(final Realm realm, final String personId, final String typeName, final int sort) {
-        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Result>() {
-            @Override
-            protected void execute(Realm realm, Subscriber<? super Result> subscriber) {
-                // 通过Id查询该PersonDetail
-                PersonDetail personDetail = realm.where(PersonDetail.class).equalTo("id", personId).findFirst();
-                if (personDetail != null) {
-                    // 有该PersonDetail, 获取Types, 查询是否有同名的Type
-                    RealmResults<Type> typeResults = personDetail.getTypes().where().equalTo("name", typeName).findAll();
-                    if (typeResults.size() > 0) {
-                        // 有同名的Type, 则在该Type的TypeDetails最后加上空的TypeDetail
-                        Type type = typeResults.get(0);
-                        RealmList<TypeDetail> typeDetails = type.getTypeDetails();
-                        typeDetails.add(new TypeDetail(type.getId(), typeDetails.size() + 1, "", ""));
-
-                        subscriber.onNext(new Result("已存在该类型, 添加至该类型处"));
-                    } else {
-                        // 没有同名的Type, 则在types里面加上一个Type (该Type的TypeDetails里面默认有一个空的TypeDetail)
-                        RealmList<Type> types = personDetail.getTypes();
-
+                        // 创建一个新的 Type, 在里面添加一个空的 TypeDetail
+                        Type newType = new Type(personDetail.getId(), typeName, types.size() + 1);
+                        newType.getTypeDetails().add(new TypeDetail(newType.getId(), 1, "", ""));
                         // 添加类型到指定的地方
-                        int saftySort = sort;
-                        if (saftySort < 0) {
-                            saftySort = 0;
-                        } else if (saftySort >= types.size()) {
-                            saftySort = types.size();
+                        if (sort >= 0 && sort < types.size()) {
+                            types.add(sort, newType);
+                        } else {
+                            types.add(newType);
                         }
-                        types.add(saftySort, new Type(personDetail.getId(), typeName, types.size() + 1));
+                        // 重新排序
                         ShiyiDbUtils.renewSort(types);
                     }
                 } else {
