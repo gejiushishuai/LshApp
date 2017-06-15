@@ -1,5 +1,7 @@
 package com.linsh.lshapp.model.action;
 
+import com.linsh.lshapp.model.throwabes.CustomThrowable;
+import com.linsh.lshapp.tools.HttpErrorCatcher;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
 
 import rx.functions.Action1;
@@ -17,6 +19,12 @@ public class DefaultThrowableAction implements Action1<Throwable> {
 
     public static void showThrowableMsg(Throwable throwable) {
         throwable.printStackTrace();
-        LshToastUtils.showToast(throwable.getMessage());
+        if (HttpErrorCatcher.isHttpError(throwable)) {
+            LshToastUtils.showToast(HttpErrorCatcher.dispatchError(throwable));
+        } else if (throwable instanceof CustomThrowable) {
+            LshToastUtils.showToast(throwable.getMessage());
+        } else {
+            LshToastUtils.showToast(throwable.getMessage());
+        }
     }
 }
