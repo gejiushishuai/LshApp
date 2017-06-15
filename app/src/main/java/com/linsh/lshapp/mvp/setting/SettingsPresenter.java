@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.action.HttpThrowableAction;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Shiyi;
 import com.linsh.lshapp.model.bean.db.Type;
@@ -171,7 +172,7 @@ public class SettingsPresenter extends BasePresenterImpl<SettingsContract.View> 
                                     UrlConnector.downloadPatch(patch.url)
                                             .subscribe(file -> {
                                                 TinkerInstaller.onReceiveUpgradePatch(LshApplicationUtils.getContext(), file.getAbsolutePath());
-                                            });
+                                            }, new HttpThrowableAction());
                                 } else {
                                     getView().showToast("暂无更新");
                                 }
