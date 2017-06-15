@@ -8,6 +8,7 @@ import com.linsh.lshapp.model.bean.http.HttpInfo;
 import com.linsh.lshapp.model.bean.http.NoDataInfo;
 import com.linsh.lshapp.model.bean.http.UpdateInfo;
 import com.linsh.lshapp.model.bean.http.UploadInfo;
+import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.model.transfer.FileTransfer;
 import com.linsh.lshapp.task.network.api.CommonApi;
 import com.linsh.lshapp.task.network.api.DirService;
@@ -25,6 +26,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -38,13 +40,15 @@ public class UrlConnector {
 
         if (LshFileUtils.getFileSize(file, FileSize.MB) < 20) {
             return RetrofitHelper.createApi(FileService.class, QCloudConfig.HOST)
-                    .upload(QcloudSignCreater.getPeriodSign(dirName + "/" + fileName), dirName, fileName, "upload", 1, requestBody);
+                    .upload(QcloudSignCreater.getPeriodSign(dirName + "/" + fileName), dirName, fileName, "upload", 1, requestBody)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
         } else {
             // TODO: 17/6/2  分片上传
             return Observable.unsafeCreate(new Observable.OnSubscribe<HttpInfo<UploadInfo>>() {
                 @Override
                 public void call(Subscriber<? super HttpInfo<UploadInfo>> subscriber) {
-                    subscriber.onError(new RuntimeException("暂不支持上传 20M 以上文件"));
+                    subscriber.onError(new CustomThrowable("暂不支持上传 20M 以上文件"));
                 }
             });
         }
@@ -52,22 +56,30 @@ public class UrlConnector {
 
     private static Observable<ResponseBody> downloadFile(String dirName, String fileName) {
         return RetrofitHelper.createApi(FileService.class, QCloudConfig.HOST_DOWNLOAD)
-                .download(QcloudSignCreater.getPeriodSign(dirName + "/" + fileName), dirName, fileName);
+                .download(QcloudSignCreater.getPeriodSign(dirName + "/" + fileName), dirName, fileName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private static Observable<NoDataInfo> deleteFile(String dirName, String fileName) {
         return RetrofitHelper.createApi(FileService.class, QCloudConfig.HOST_DOWNLOAD)
-                .delete(QcloudSignCreater.getOnceSign(dirName + "/" + fileName), dirName, fileName, "delete");
+                .delete(QcloudSignCreater.getOnceSign(dirName + "/" + fileName), dirName, fileName, "delete")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private static Observable<HttpInfo<CreateDirInfo>> createDir(String dirName) {
         return RetrofitHelper.createApi(DirService.class, QCloudConfig.HOST_DOWNLOAD)
-                .create(QcloudSignCreater.getPeriodSign(dirName), dirName, "create");
+                .create(QcloudSignCreater.getPeriodSign(dirName), dirName, "create")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private static Observable<NoDataInfo> deleteDir(String dirName) {
         return RetrofitHelper.createApi(DirService.class, QCloudConfig.HOST_DOWNLOAD)
-                .delete(QcloudSignCreater.getOnceSign(dirName), dirName, "delete");
+                .delete(QcloudSignCreater.getOnceSign(dirName), dirName, "delete")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public static Observable<HttpInfo<UploadInfo>> uploadRealmData() {
@@ -91,7 +103,8 @@ public class UrlConnector {
     public static Observable<HttpInfo<UpdateInfo>> checkUpdate() {
         return RetrofitHelper.createApi(CommonApi.class, QCloudConfig.HOST_DOWNLOAD)
                 .update(QcloudSignCreater.getDownLoadSign("json/update.json"), "json", "update.json")
-                .subscribeOn(Schedulers.io());
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public static Observable<File> downloadApk(String url, File destFile) {
@@ -112,7 +125,9 @@ public class UrlConnector {
 
     public static Observable<File> downloadPatch(String url) {
         String fileName = getFileNameFromUrl(url);
-        return downloadFile("file/apk", fileName)
-                .flatMap(new FileTransfer(LshFileFactory.getPatchFile(fileName)));
+        return downloadFile("file/patch", fileName)
+                .flatMap(new FileTransfer(LshFileFactory.getPatchFile(fileName)))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }
