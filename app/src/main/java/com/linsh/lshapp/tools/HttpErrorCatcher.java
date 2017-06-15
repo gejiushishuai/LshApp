@@ -25,7 +25,7 @@ public class HttpErrorCatcher {
             try {
                 ResponseBody body = ((HttpException) thr).response().errorBody();
                 if (body != null) {
-                    errorInfo.msg = "请求失败: " + body.string();
+                    errorInfo.msg = "请求失败(" + body.string() + ")";
                 }
             } catch (IOException e1) {
                 e1.printStackTrace();

@@ -9,9 +9,11 @@ import android.support.multidex.MultiDex;
 
 import com.linsh.lshapp.lib.tinker.Log.MyLogImp;
 import com.linsh.lshapp.lib.tinker.util.TinkerManager;
+import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshTinkerReporter;
 import com.linsh.lshapp.tools.RealmTool;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
+import com.linsh.lshutils.utils.Basic.LshLogUtils;
 import com.linsh.lshutils.utils.LshActivityLifecycleUtils;
 import com.tencent.tinker.anno.DefaultLifeCycle;
 import com.tencent.tinker.lib.tinker.Tinker;
@@ -58,8 +60,8 @@ public class LshApplicationLike extends DefaultApplicationLike {
         super.onCreate();
         Application application = getApplication();
         LshApplicationUtils.init(application);
-        // 初始化数据库
-        RealmTool.init(application);
-        LshActivityLifecycleUtils.init(application);
+        RealmTool.init(application); // 初始化数据库
+        LshActivityLifecycleUtils.init(application); // 初始化 Activity 生命周期管理
+        LshLogUtils.Printer.setLogFilePath(LshFileFactory.getLogFile("lshlog.txt")); // 设置打印本地的 Log 位置
     }
 }

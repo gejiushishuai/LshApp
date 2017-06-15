@@ -73,10 +73,10 @@ public class LshFileFactory {
     /**
      * 获取log文件夹
      */
-    public static String getLogDir() {
-        File dir = new File(getAppDir(), "log");
-        makeDir(dir);
-        return dir.getAbsolutePath();
+    public static String getLogFile(String fileName) {
+        File file = new File(getAppDir(), "log/" + fileName);
+        LshFileUtils.makeParentDirs(file);
+        return file.getAbsolutePath();
     }
 
     public static String getJsonImportDir() {
