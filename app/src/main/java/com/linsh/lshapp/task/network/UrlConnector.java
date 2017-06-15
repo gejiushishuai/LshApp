@@ -86,18 +86,21 @@ public class UrlConnector {
         File file = LshFileFactory.getRealmFile();
         String time = LshTimeUtils.getTimeString(System.currentTimeMillis(), "yyyyMMdd_HHmmss");
         String fileName = "shiyi_" + time + (BuildConfig.DEBUG ? "_debug" : "") + ".realm";
+        String dirName = BuildConfig.DEBUG ? "shiyi/realm/debug" : "shiyi/realm";
         RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        return uploadFile("shiyi/realm", fileName, file);
+        return uploadFile(dirName, fileName, file);
     }
 
     public static Observable<HttpInfo<UploadInfo>> uploadAvatar(String fileName, File file) {
         RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        return uploadFile("avatar", fileName, file);
+        String dirName = BuildConfig.DEBUG ? "avatar/debug" : "avatar";
+        return uploadFile(dirName, fileName, file);
     }
 
     public static Observable<HttpInfo<UploadInfo>> uploadThumb(String thumbName, File file) {
         RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        return uploadFile("thumb", thumbName, file);
+        String dirName = BuildConfig.DEBUG ? "thumb/debug" : "thumb";
+        return uploadFile(dirName, thumbName, file);
     }
 
     public static Observable<HttpInfo<UpdateInfo>> checkUpdate() {
