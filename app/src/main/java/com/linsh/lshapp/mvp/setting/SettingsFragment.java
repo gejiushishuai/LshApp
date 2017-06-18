@@ -20,6 +20,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
         findPreference("output_database").setOnPreferenceClickListener(this);
         findPreference("import_json").setOnPreferenceClickListener(this);
+        findPreference("import_contacts").setOnPreferenceClickListener(this);
         findPreference("backup_database").setOnPreferenceClickListener(this);
         findPreference("check_update").setOnPreferenceClickListener(this);
     }
@@ -32,6 +33,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 break;
             case "import_json":
                 ((SettingsActivity)getActivity()).importGson();
+                break;
+            case "import_contacts":
+                ((SettingsActivity)getActivity()).importContacts();
                 break;
             case "backup_database":
                 ((SettingsActivity)getActivity()).backupDatabase();

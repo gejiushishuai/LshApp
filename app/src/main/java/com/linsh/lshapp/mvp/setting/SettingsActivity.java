@@ -1,9 +1,12 @@
 package com.linsh.lshapp.mvp.setting;
 
+import android.Manifest;
+
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.common.LshConfig;
 import com.linsh.lshutils.utils.LshFragmentUtils;
+import com.linsh.lshutils.utils.LshPermissionUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
 /**
@@ -53,5 +56,9 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
 
     public void backupDatabase() {
         mPresenter.backupDatabase();
+    }
+
+    public void importContacts() {
+        mPresenter.importContacts();
     }
 }

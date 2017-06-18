@@ -21,5 +21,7 @@ public interface SettingsContract {
         void checkUpdate();
 
         void backupDatabase();
+
+        void importContacts();
     }
 }
