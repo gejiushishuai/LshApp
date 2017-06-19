@@ -11,7 +11,6 @@ import com.linsh.lshapp.model.bean.db.TypeLabel;
 import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
-import com.linsh.lshapp.model.result.Result;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import java.util.List;
@@ -147,7 +146,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void deleteTypeDetail(String typeDetailId) {
         Subscription subscription = ShiyiDbHelper.deleteTypeDetail(getRealm(), typeDetailId)
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
+                .subscribe(new NothingAction<>(), new DefaultThrowableAction(), new Action0() {
                     @Override
                     public void call() {
                         getView().setData(mPersonDetail);
@@ -159,7 +158,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void deletePerson() {
         Subscription subscription = ShiyiDbHelper.deletePerson(getRealm(), mPersonDetail.getId())
-                .subscribe(new NothingAction<Result>(), new DefaultThrowableAction(), new Action0() {
+                .subscribe(new NothingAction<>(), new DefaultThrowableAction(), new Action0() {
                     @Override
                     public void call() {
                         RxBus.getDefault().post(new GroupsChangedEvent());

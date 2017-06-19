@@ -1,10 +1,13 @@
 package com.linsh.lshapp.mvp.setting;
 
 import android.Manifest;
+import android.support.annotation.NonNull;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.common.LshConfig;
+import com.linsh.lshapp.mvp.import_contacts.ImportContactsActivity;
+import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshFragmentUtils;
 import com.linsh.lshutils.utils.LshPermissionUtils;
 import com.linsh.lshutils.view.LshColorDialog;
@@ -12,7 +15,7 @@ import com.linsh.lshutils.view.LshColorDialog;
 /**
  * Created by Senh Linsh on 17/5/2.
  */
-public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Presenter> implements SettingsContract.View {
+public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Presenter> implements SettingsContract.View, LshPermissionUtils.PermissionListener {
 
 
     @Override
@@ -59,6 +62,33 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
     }
 
     public void importContacts() {
-        mPresenter.importContacts();
+        LshPermissionUtils.checkAndRequestPermission(this, Manifest.permission.READ_CONTACTS, this);
+    }
+
+    @Override
+    public void onGranted(String permission) {
+        if (permission.equals(Manifest.permission.READ_CONTACTS)) {
+            LshActivityUtils.newIntent(ImportContactsActivity.class).startActivity(this);
+        }
+    }
+
+    @Override
+    public void onDenied(String permission, boolean isNeverAsked) {
+        if (permission.equals(Manifest.permission.READ_CONTACTS)) {
+            showToast("您已拒绝了联系人权限, 无法进行此操作");
+        }
+    }
+
+    @Override
+    public void onBeforeAndroidM(String permission) {
+        if (permission.equals(Manifest.permission.READ_CONTACTS)) {
+            LshActivityUtils.newIntent(ImportContactsActivity.class).startActivity(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        LshPermissionUtils.onRequestPermissionsResult(this, requestCode, permissions, grantResults, this);
     }
 }

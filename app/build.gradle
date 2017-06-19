@@ -95,6 +95,9 @@ dependencies {
     // Tinker
     provided 'com.tencent.tinker:tinker-android-anno:1.7.9'
     compile 'com.tencent.tinker:tinker-android-lib:1.7.9'
+    // 通讯录
+    compile 'com.github.tamir7.contacts:contacts:1.1.7'
+
     //////////  个人
     compile project(':LshUtils:lshutils')
 }

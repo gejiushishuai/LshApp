@@ -14,6 +14,7 @@ public abstract class AsyncTransaction<T> implements Realm.Transaction {
     @Override
     public void execute(Realm realm) {
         execute(realm, mSubscriber);
+        mSubscriber.onCompleted();
     }
 
     protected abstract void execute(Realm realm, Subscriber<? super T> subscriber);

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_item_import_contacts_name"
+            style="@style/Text_title"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            tools:text="我的好友"/>
+
+        <TextView
+            android:id="@+id/tv_item_import_contacts_number"
+            style="@style/Text_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:padding="5dp"
+            android:text="电话: 15311448120&amp;18810670812"
+            android:textSize="14sp"/>
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/line_whitebg"/>
+
+        <TextView
+            android:id="@+id/tv_item_import_contacts_add"
+            style="@style/Text_title2"
+            android:layout_gravity="center_vertical|right"
+            android:layout_margin="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="添加"
+            android:textColor="@drawable/selector_press_color_theme_blue"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_item_import_contacts_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/tv_item_import_contacts_detail_text"
+            style="@style/Text_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="12sp"
+            tools:text="地址:北京芍药居 | 生日: 1992-02-13"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
+</LinearLayout>

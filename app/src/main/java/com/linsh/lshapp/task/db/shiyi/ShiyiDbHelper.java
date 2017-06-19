@@ -9,10 +9,12 @@ import com.linsh.lshapp.model.bean.db.Shiyi;
 import com.linsh.lshapp.model.bean.db.Type;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
-import com.linsh.lshapp.model.result.Result;
+import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
+import com.linsh.lshapp.model.throwabes.PersonRepeatThrowable;
 import com.linsh.lshapp.tools.LshRxUtils;
+import com.linsh.lshapp.tools.ShiyiModelHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 
 import java.util.List;
@@ -229,17 +231,26 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Observable<Void> addPerson(final Realm realm, final String groupName, final String personName,
-                                             final String desc, String avatar, String avatarThumb, final String sex) {
+    public static Observable<Void> addPerson(final Realm realm, String groupName, Person person) {
+        return addPerson(realm, groupName, person, false);
+    }
+
+    public static Observable<Void> addPerson(final Realm realm, String groupName, Person person, boolean forceAdd) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                if (!forceAdd && realm.where(Person.class).equalTo("name", person.getName()).findFirst() != null) {
+                    subscriber.onError(new PersonRepeatThrowable("已经存在该联系人"));
+                    return;
+                }
                 Group group = realm.where(Group.class).equalTo("name", groupName).findFirst();
                 if (group != null) {
                     RealmList<Person> persons = group.getPersons();
-                    persons.add(new Person(personName, desc, avatar, avatarThumb, sex));
+                    persons.add(person);
                     // 对联系人进行排序并保存
                     ShiyiDbUtils.sortToRealm(realm, persons, "id");
+                } else {
+                    subscriber.onError(new CustomThrowable("没有创建该分组, 无法添加"));
                 }
             }
         });
@@ -263,6 +274,16 @@ public class ShiyiDbHelper {
     }
 
     public static Observable<Void> addType(final Realm realm, final String personId, final String typeName, final int sort) {
+        return addTypeDetail(realm, personId, typeName, sort, "", "");
+    }
+
+    public static Observable<Void> addTypeDetail(final Realm realm, final String personId, final String typeName,
+                                                 String typeDetail, String typeDetailDesc) {
+        return addTypeDetail(realm, personId, typeName, -1, typeDetail, typeDetailDesc);
+    }
+
+    private static Observable<Void> addTypeDetail(final Realm realm, final String personId, final String typeName,
+                                                  final int sort, String typeDetail, String typeDetailDesc) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
@@ -275,13 +296,13 @@ public class ShiyiDbHelper {
                         // 有同名的Type, 则在该Type的TypeDetails最后加上空的TypeDetail
                         Type type = typeResults.get(0);
                         RealmList<TypeDetail> typeDetails = type.getTypeDetails();
-                        typeDetails.add(new TypeDetail(type.getId(), typeDetails.size() + 1, "", ""));
+                        typeDetails.add(new TypeDetail(type.getId(), typeDetails.size() + 1, typeDetail, typeDetailDesc));
                     } else {
                         // 没有同名的Type, 则在types里面加上一个Type (该Type的TypeDetails里面默认有一个空的TypeDetail)
                         RealmList<Type> types = personDetail.getTypes();
                         // 创建一个新的 Type, 在里面添加一个空的 TypeDetail
                         Type newType = new Type(personDetail.getId(), typeName, types.size() + 1);
-                        newType.getTypeDetails().add(new TypeDetail(newType.getId(), 1, "", ""));
+                        newType.getTypeDetails().add(new TypeDetail(newType.getId(), 1, typeDetail, typeDetailDesc));
                         // 添加类型到指定的地方
                         if (sort >= 0 && sort < types.size()) {
                             types.add(sort, newType);
@@ -297,7 +318,9 @@ public class ShiyiDbHelper {
                     realm.copyToRealm(personDetail);
                     // 然后添加一个Type到Types里面 (该Type的TypeDetails里面默认有一个空的TypeDetail)
                     RealmList<Type> types = personDetail.getTypes();
-                    types.add(new Type(personDetail.getId(), typeName, types.size() + 1));
+                    Type newType = new Type(personDetail.getId(), typeName, types.size() + 1);
+                    types.add(newType);
+                    newType.getTypeDetails().add(new TypeDetail(newType.getId(), 1, typeDetail, typeDetailDesc));
                 }
             }
         });
@@ -325,10 +348,10 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Observable<Result> deletePerson(final Realm realm, final String personId) {
-        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Result>() {
+    public static Observable<Void> deletePerson(final Realm realm, final String personId) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
-            protected void execute(Realm realm, Subscriber<? super Result> subscriber) {
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
                 // 删除Person
                 RealmResults<Person> personResults = realm.where(Person.class).equalTo("id", personId).findAll();
                 personResults.deleteAllFromRealm();
@@ -339,10 +362,10 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Observable<Result> editTypeDetail(final Realm realm, final String typeDetailId, final String info, final String desc) {
-        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Result>() {
+    public static Observable<Void> editTypeDetail(final Realm realm, final String typeDetailId, final String info, final String desc) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
-            protected void execute(Realm realm, Subscriber<? super Result> subscriber) {
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
                 TypeDetail typeDetail = realm.where(TypeDetail.class).equalTo("id", typeDetailId).findFirst();
                 if (typeDetail != null) {
                     typeDetail.setDetail(info);
@@ -456,6 +479,90 @@ public class ShiyiDbHelper {
                 if (shiyi != null) {
                     RealmList<Group> realmGroups = shiyi.getGroups();
                     ShiyiDbUtils.sortToRealm(realm, realmGroups, "sort");
+                }
+            }
+        });
+    }
+
+    public static Observable<Void> addPersonAddDetail(Realm realm, String group, Person person, PersonDetail personDetail) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
+                if (realmPerson != null) {
+                    subscriber.onError(new PersonRepeatThrowable("已经存在该联系人"));
+                    return;
+                }
+                String groupName = group;
+                if (LshStringUtils.isEmpty(groupName)) {
+                    groupName = ShiyiModelHelper.UNNAME_GROUP_NAME;
+                }
+                Group realmGroup = realm.where(Group.class).equalTo("name", groupName).findFirst();
+                if (realmGroup != null) {
+                    realmGroup.getPersons().add(person);
+                    realm.copyToRealmOrUpdate(personDetail);
+                } else {
+                    subscriber.onError(new CustomThrowable("没有该分组, 请先创建"));
+                    return;
+                }
+            }
+        });
+    }
+
+    public static Observable<Void> coverPersonAddDetail(Realm realm, Person person, PersonDetail personDetail) {
+        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                // 获取 Person
+                Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
+                if (realmPerson != null) {
+                    // 覆盖添加 Person 字段
+                    if (LshStringUtils.isEmpty(person.getDescribe())) {
+                        realmPerson.setDescribe(person.getDescribe());
+                    }
+                    if (LshStringUtils.isEmpty(person.getAvatar())) {
+                        realmPerson.setAvatar(person.getAvatar());
+                    }
+                    if (LshStringUtils.isEmpty(person.getAvatarThumb())) {
+                        realmPerson.setAvatarThumb(person.getAvatarThumb());
+                    }
+                    if (person.getIntGender() != 0) {
+                        realmPerson.setGender(person.getIntGender());
+                    }
+                    // 获取 PersonDetail
+                    PersonDetail realmPersonDetail = realm.where(PersonDetail.class).equalTo("id", realmPerson.getId()).findFirst();
+                    if (realmPersonDetail != null) {
+                        RealmList<Type> types = personDetail.getTypes();
+                        RealmList<Type> realmTypes = realmPersonDetail.getTypes();
+                        for (Type type : types) {
+                            Type realmType = realmTypes.where().equalTo("name", type.getName()).findFirst();
+                            if (realmType != null) {
+                                RealmList<TypeDetail> realmTypeDetails = realmType.getTypeDetails();
+                                RealmList<TypeDetail> typeDetails = type.getTypeDetails();
+                                for (TypeDetail typeDetail : typeDetails) {
+                                    String detail = typeDetail.getDetail();
+                                    String describe = typeDetail.getDescribe();
+                                    if (realmTypeDetails.where().equalTo("detail", detail).findFirst() == null) {
+                                        realmTypeDetails.add(new TypeDetail(realmType.getId(), realmTypeDetails.size() + 1, detail, describe));
+                                    }
+                                }
+                            } else {
+                                realmType = new Type(realmPersonDetail.getId(), type.getName(), realmTypes.size() + 1);
+                                realmTypes.add(realmType);
+                                RealmList<TypeDetail> realmTypeDetails = realmType.getTypeDetails();
+                                RealmList<TypeDetail> typeDetails = type.getTypeDetails();
+                                for (TypeDetail typeDetail : typeDetails) {
+                                    String detail = typeDetail.getDetail();
+                                    String describe = typeDetail.getDescribe();
+                                    realmTypeDetails.add(new TypeDetail(realmType.getId(), realmTypeDetails.size() + 1, detail, describe));
+                                }
+                            }
+                        }
+                    } else {
+                        realm.copyToRealmOrUpdate(personDetail);
+                    }
+                } else {
+                    subscriber.onError(new CustomThrowable("该联系人不存在"));
                 }
             }
         });

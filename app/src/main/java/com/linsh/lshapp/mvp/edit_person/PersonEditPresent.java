@@ -140,7 +140,7 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
         if (mPerson == null) {
             // 创建Person
             String avatar = avatarUrl == null ? "" : avatarUrl;
-            return ShiyiDbHelper.addPerson(getRealm(), group, name, desc, avatar, avatarThumbUrl, sex);
+            return ShiyiDbHelper.addPerson(getRealm(), group, new Person(name, desc, avatar, avatarThumbUrl, sex));
         } else {
             // 属性有变化, 则修改Person属性
             Observable<Void> observable = null;

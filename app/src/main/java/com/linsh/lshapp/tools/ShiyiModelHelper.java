@@ -12,6 +12,7 @@ import java.util.Date;
 public class ShiyiModelHelper {
 
     private static final String ID_REGEX = "^.+_\\d{12}$";
+    public static final String UNNAME_GROUP_NAME = "未分组";
 
     public static String getId(String name) {
         return LshIdTools.getPinYinId(name);

@@ -204,9 +204,4 @@ public class SettingsPresenter extends BasePresenterImpl<SettingsContract.View> 
                     }
                 }, new DefaultThrowableAction());
     }
-
-    @Override
-    public void importContacts() {
-
-    }
 }

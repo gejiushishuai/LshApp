@@ -19,7 +19,7 @@ public class TypeEditAdapter extends LshRecyclerViewAdapter<Typable, TypeEditAda
     }
 
     @Override
-    protected MyViewHolder getViewHolder(View view, int viewType) {
+    protected MyViewHolder createViewHolder(View view, int viewType) {
         return new MyViewHolder(view);
     }
 
