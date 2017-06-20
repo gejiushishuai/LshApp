@@ -36,7 +36,8 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
     protected void onBindViewHolder(MyViewHolder holder, Contact data, int position) {
         String name = data.getDisplayName();
         List<PhoneNumber> phoneNumbers = data.getPhoneNumbers();
-        String number = LshListUtils.joint(phoneNumbers, "&");
+        String number = LshListUtils.joint(LshListUtils.getStringList(phoneNumbers,
+                phoneNumber -> phoneNumber.getNormalizedNumber()), " & ");
 
         holder.tvName.setText(name);
         holder.tvNumber.setText("电话: " + number);
