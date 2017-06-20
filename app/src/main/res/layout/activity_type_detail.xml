@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/selector_editline"
-        android:enabled="false"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"/>
 
@@ -30,7 +29,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:background="@drawable/selector_editframe"
-        android:enabled="false"
         android:gravity="top"
         android:lines="5"/>
 

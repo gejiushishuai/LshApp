@@ -2,6 +2,7 @@ package com.linsh.lshapp.mvp.type_detail;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -10,11 +11,12 @@ import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshActivityUtils;
+import com.linsh.lshutils.utils.LshClipboardUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import butterknife.BindView;
 
-public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.Presenter> implements TypeDetailContract.View {
+public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.Presenter> implements TypeDetailContract.View, View.OnLongClickListener {
 
     @BindView(R.id.et_type_detail_info)
     EditText etInfo;
@@ -103,15 +105,36 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
             etDesc.setText(LshStringUtils.nullStrToEmpty(describe));
             etInfo.clearFocus();
             etDesc.clearFocus();
+            etInfo.setOnLongClickListener(this);
+            etDesc.setOnLongClickListener(this);
+            etInfo.setFocusable(false);
+            etDesc.setFocusable(false);
+            etInfo.setFocusableInTouchMode(false);
+            etDesc.setFocusableInTouchMode(false);
         }
         invalidateOptionsMenu();
     }
 
     private void setEditMode() {
         isEditMode = true;
-        etInfo.setEnabled(true);
-        etDesc.setEnabled(true);
+        etInfo.setOnLongClickListener(null);
+        etDesc.setOnLongClickListener(null);
+        etInfo.setFocusableInTouchMode(true);
+        etDesc.setFocusableInTouchMode(true);
+        etInfo.setFocusable(true);
+        etDesc.setFocusable(true);
         etInfo.requestFocus();
         etInfo.setSelection(etInfo.getText().length());
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        String text = ((TextView) v).getText().toString();
+        if (!isEditMode && !LshStringUtils.isEmpty(text)) {
+            LshClipboardUtils.putText(text);
+            showToast("文本已复制");
+            return true;
+        }
+        return false;
     }
 }
