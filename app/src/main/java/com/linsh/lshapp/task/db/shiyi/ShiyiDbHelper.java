@@ -498,12 +498,18 @@ public class ShiyiDbHelper {
                     groupName = ShiyiModelHelper.UNNAME_GROUP_NAME;
                 }
                 Group realmGroup = realm.where(Group.class).equalTo("name", groupName).findFirst();
+                if (realmGroup == null && ShiyiModelHelper.UNNAME_GROUP_NAME.equals(groupName)) {
+                    Shiyi shiyi = realm.where(Shiyi.class).findFirst();
+                    realmGroup = new Group(ShiyiModelHelper.UNNAME_GROUP_NAME, 1);
+                    RealmList<Group> groups = shiyi.getGroups();
+                    groups.add(0, realmGroup);
+                    ShiyiDbUtils.renewSort(groups);
+                }
                 if (realmGroup != null) {
                     realmGroup.getPersons().add(person);
                     realm.copyToRealmOrUpdate(personDetail);
                 } else {
                     subscriber.onError(new CustomThrowable("没有该分组, 请先创建"));
-                    return;
                 }
             }
         });
