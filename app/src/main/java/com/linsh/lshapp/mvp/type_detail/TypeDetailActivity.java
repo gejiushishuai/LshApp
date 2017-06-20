@@ -1,5 +1,7 @@
 package com.linsh.lshapp.mvp.type_detail;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +18,8 @@ import com.linsh.lshutils.view.LshColorDialog;
 
 import butterknife.BindView;
 
-public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.Presenter> implements TypeDetailContract.View, View.OnLongClickListener {
+public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.Presenter>
+        implements TypeDetailContract.View, View.OnLongClickListener, View.OnClickListener {
 
     @BindView(R.id.et_type_detail_info)
     EditText etInfo;
@@ -111,12 +114,19 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
             etDesc.setFocusable(false);
             etInfo.setFocusableInTouchMode(false);
             etDesc.setFocusableInTouchMode(false);
+
+            // 判断是电话界面, 则可以点击拨打电话
+            String title = getToolbarTitle();
+            if ("电话".equals(title) || "电话号码".equals(title)) {
+                etInfo.setOnClickListener(this);
+            }
         }
         invalidateOptionsMenu();
     }
 
     private void setEditMode() {
         isEditMode = true;
+        etInfo.setOnClickListener(null);
         etInfo.setOnLongClickListener(null);
         etDesc.setOnLongClickListener(null);
         etInfo.setFocusableInTouchMode(true);
@@ -136,5 +146,22 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.et_type_detail_info:
+                String number = etInfo.getText().toString();
+                if (!LshStringUtils.isEmpty(number) && number.matches("^\\d[\\d\\s-]+\\d$")) {
+                    number = number.replaceAll("\\s", "").replaceAll("-", "");
+                    Uri uri = Uri.parse("tel:" + number);
+                    Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                    startActivity(intent);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
