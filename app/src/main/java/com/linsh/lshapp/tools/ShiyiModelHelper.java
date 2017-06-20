@@ -13,6 +13,8 @@ public class ShiyiModelHelper {
 
     private static final String ID_REGEX = "^.+_\\d{12}$";
     public static final String UNNAME_GROUP_NAME = "未分组";
+    private static String sCurTypeId; // 避免 TypeDetailId 重复
+    private static long sCurTimeSecond; // 避免 TypeDetailId 重复
 
     public static String getId(String name) {
         return LshIdTools.getPinYinId(name);
@@ -24,6 +26,10 @@ public class ShiyiModelHelper {
 
     public static String getTimeSuffix() {
         return new SimpleDateFormat("_yyMMddHHmmss").format(new Date());
+    }
+
+    public static String getTimeSuffix(long time) {
+        return new SimpleDateFormat("_yyMMddHHmmss").format(new Date(time));
     }
 
     public static String getGroupId(String groupName) {
@@ -48,9 +54,18 @@ public class ShiyiModelHelper {
 
     public static String getTypeDetailId(String typeId) {
         if (typeId.matches(ID_REGEX)) {
-            typeId = typeId.substring(0, typeId.length() - 13);
-            typeId += getTimeSuffix();
-            return typeId;
+            if (typeId.equals(sCurTypeId)) {
+                long curTimeSecond = System.currentTimeMillis() / 1000;
+                if (sCurTimeSecond < curTimeSecond) {
+                    sCurTimeSecond = curTimeSecond;
+                } else {
+                    sCurTimeSecond++;
+                }
+            } else {
+                sCurTypeId = typeId;
+                sCurTimeSecond = System.currentTimeMillis() / 1000;
+            }
+            return typeId.substring(0, typeId.length() - 13) + getTimeSuffix(sCurTimeSecond * 1000);
         } else {
             Log.e("LshLog", "getTypeDetailId: 格式异常!!!  typeId = " + typeId);
             return typeId + getTimeSuffix();
