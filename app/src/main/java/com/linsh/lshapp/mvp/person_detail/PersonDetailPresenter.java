@@ -4,7 +4,6 @@ import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
-import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
@@ -15,10 +14,9 @@ import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import java.util.List;
 
-import io.realm.RealmResults;
+import io.realm.RealmObject;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Actions;
 
 /**
@@ -32,54 +30,50 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
 
     @Override
     protected void attachView() {
+        // 获取联系人信息
         Subscription getPersonSub = ShiyiDbHelper.getPerson(getRealm(), getView().getPersonId())
-                .subscribe(new Action1<Person>() {
-                    @Override
-                    public void call(Person person) {
-                        if (person != null) {
-                            mPerson = person;
+                .subscribe(person -> {
+                    if (person != null) {
+                        mPerson = person;
+                        getView().setData(mPerson);
+                        RealmObject.removeChangeListener(mPerson, element -> {
                             getView().setData(mPerson);
-                        }
+                        });
                     }
                 }, new DefaultThrowableAction());
-
+        // 获取联系人详情
         Subscription getPersonDetailSub = ShiyiDbHelper.getPersonDetail(getRealm(), getView().getPersonId())
-                .subscribe(new Action1<PersonDetail>() {
-                    @Override
-                    public void call(PersonDetail personDetail) {
-                        if (personDetail != null) {
-                            mPersonDetail = personDetail;
+                .subscribe(personDetail -> {
+                    if (personDetail != null) {
+                        mPersonDetail = personDetail;
+                        getView().setData(mPersonDetail);
+                        RealmObject.removeChangeListener(mPersonDetail, element -> {
                             getView().setData(mPersonDetail);
-                        }
+                        });
                     }
                 }, new DefaultThrowableAction());
+        // 获取类型标签
         Subscription getTypeLabelsSub = ShiyiDbHelper.getTypeLabels(getRealm())
-                .subscribe(new Action1<RealmResults<TypeLabel>>() {
-                    @Override
-                    public void call(RealmResults<TypeLabel> typeLabels) {
-                        if (typeLabels != null) {
-                            mTypeLabels = typeLabels;
-                        }
+                .subscribe(typeLabels -> {
+                    if (typeLabels != null) {
+                        mTypeLabels = typeLabels;
                     }
                 }, new DefaultThrowableAction());
         addSubscription(getPersonSub, getPersonDetailSub, getTypeLabelsSub);
 
+
+
+        // 添加联系人和联系人详情变动的广播
         Subscription personChangeBus = RxBus.getDefault().toObservable(PersonChangedEvent.class)
-                .subscribe(new Action1<PersonChangedEvent>() {
-                    @Override
-                    public void call(PersonChangedEvent personChangedEvent) {
-                        if (mPerson.isValid()) {
-                            getView().setData(mPerson);
-                        }
+                .subscribe(personChangedEvent -> {
+                    if (mPerson.isValid()) {
+                        getView().setData(mPerson);
                     }
                 });
         Subscription personDetailChangeBus = RxBus.getDefault().toObservable(PersonDetailChangedEvent.class)
-                .subscribe(new Action1<PersonDetailChangedEvent>() {
-                    @Override
-                    public void call(PersonDetailChangedEvent personDetailChangedEvent) {
-                        if (mPersonDetail.isValid()) {
-                            getView().setData(mPersonDetail);
-                        }
+                .subscribe(personDetailChangedEvent -> {
+                    if (mPersonDetail.isValid()) {
+                        getView().setData(mPersonDetail);
                     }
                 });
         addRxBusSub(personChangeBus, personDetailChangeBus);
@@ -88,6 +82,8 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void detachView() {
         super.detachView();
+        RealmObject.removeAllChangeListeners(mPerson);
+        RealmObject.removeAllChangeListeners(mPersonDetail);
     }
 
     @Override
@@ -98,7 +94,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void addTypeLabel(final String labelName) {
         Subscription subscription = ShiyiDbHelper.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
                     @Override
                     public void call() {
                         addType(labelName);
@@ -110,55 +106,35 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void addType(String typeName) {
         Subscription subscription = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName)
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
-                    @Override
-                    public void call() {
-                        getView().setData(mPersonDetail);
-                    }
-                });
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
         addSubscription(subscription);
     }
 
     @Override
     public void addType(String typeName, int sort) {
         Subscription subscription = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
-                .subscribe(Actions.empty(), new DismissLoadingThrowableAction(getView()), new Action0() {
-                    @Override
-                    public void call() {
-                        getView().setData(mPersonDetail);
-                    }
-                });
+                .subscribe(Actions.empty(), new DismissLoadingThrowableAction(getView()), Actions.empty());
         addSubscription(subscription);
     }
 
     @Override
     public void deleteType(String typeId) {
         Subscription subscription = ShiyiDbHelper.deleteType(getRealm(), typeId)
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), new Action0() {
-                    @Override
-                    public void call() {
-                        getView().setData(mPersonDetail);
-                    }
-                });
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
         addSubscription(subscription);
     }
 
     @Override
     public void deleteTypeDetail(String typeDetailId) {
         Subscription subscription = ShiyiDbHelper.deleteTypeDetail(getRealm(), typeDetailId)
-                .subscribe(new NothingAction<>(), new DefaultThrowableAction(), new Action0() {
-                    @Override
-                    public void call() {
-                        getView().setData(mPersonDetail);
-                    }
-                });
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
         addSubscription(subscription);
     }
 
     @Override
     public void deletePerson() {
         Subscription subscription = ShiyiDbHelper.deletePerson(getRealm(), mPersonDetail.getId())
-                .subscribe(new NothingAction<>(), new DefaultThrowableAction(), new Action0() {
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
                     @Override
                     public void call() {
                         RxBus.getDefault().post(new GroupsChangedEvent());
