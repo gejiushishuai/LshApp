@@ -37,7 +37,7 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
         String name = data.getDisplayName();
         List<PhoneNumber> phoneNumbers = data.getPhoneNumbers();
         String number = LshListUtils.joint(LshListUtils.getStringList(phoneNumbers,
-                PhoneNumber::getNormalizedNumber), " & ");
+                phoneNumber -> phoneNumber.getNormalizedNumber()), " & ");
 
         holder.tvName.setText(name);
         holder.tvNumber.setText("电话: " + number);
@@ -61,11 +61,9 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
                 holder.rlDetailLayout.setVisibility(View.GONE);
                 holder.tvDetailText.setText("");
             } else {
+                holder.rlDetailLayout.setVisibility(View.VISIBLE);
                 String detail = getDetail(getData().get(holder.getAdapterPosition()));
-                if (!LshStringUtils.isEmpty(detail)) {
-                    holder.rlDetailLayout.setVisibility(View.VISIBLE);
-                    holder.tvDetailText.setText(detail);
-                }
+                holder.tvDetailText.setText(detail);
             }
         }
     }
@@ -76,22 +74,18 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
         if (birthday != null) {
             builder.append("生日:").append(birthday.getStartDate());
         }
+        builder.append(" | ");
         List<Address> addresses = contact.getAddresses();
         if (addresses != null && addresses.size() > 0) {
-            if (builder.length() > 0) {
-                builder.append(" | ");
-            }
             builder.append("地址:");
             for (Address address : addresses) {
                 builder.append(address.getFormattedAddress());
                 builder.append(" ");
             }
         }
+        builder.append(" | ");
         String note = contact.getNote();
-        if (!LshStringUtils.isEmpty(note)) {
-            if (builder.length() > 0) {
-                builder.append(" | ");
-            }
+        if (LshStringUtils.isEmpty(note)) {
             builder.append("备注:").append(note);
         }
         return builder.toString();
