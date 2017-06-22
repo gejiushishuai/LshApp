@@ -35,8 +35,8 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
     protected abstract T initPresenter();
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         mPresenter.subscribe();
     }
 
