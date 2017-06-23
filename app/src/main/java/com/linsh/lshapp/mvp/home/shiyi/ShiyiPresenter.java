@@ -1,17 +1,17 @@
 package com.linsh.lshapp.mvp.home.shiyi;
 
-import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshutils.view.LshColorDialog;
 
-import io.realm.RealmList;
+import java.util.List;
+
+import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -23,33 +23,20 @@ import rx.functions.Actions;
 
 public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implements ShiyiContract.Presenter {
 
-    private RealmList<Group> mGroups;
+    private RealmResults<Group> mGroups;
 
     @Override
     protected void attachView() {
-        Subscription subscription = ShiyiDbHelper.getGroups(getRealm())
-                .subscribe(new Action1<RealmList<Group>>() {
-                    @Override
-                    public void call(RealmList<Group> groups) {
-                        mGroups = groups;
-                        getView().setData(groups);
-                    }
-                }, new DefaultThrowableAction());
-        addSubscription(subscription);
-
-        Subscription groupChangedBus = RxBus.getDefault().toObservable(GroupsChangedEvent.class)
-                .subscribe(new Action1<GroupsChangedEvent>() {
-                    @Override
-                    public void call(GroupsChangedEvent groupsChangedEvent) {
-                        getView().setData(mGroups);
-                    }
-                });
-        addRxBusSub(groupChangedBus);
+        mGroups = ShiyiDbHelper.getGroups(getRealm());
+        mGroups.addChangeListener(element -> {
+            getView().setData(mGroups);
+        });
     }
 
     @Override
     public void detachView() {
         super.detachView();
+        mGroups.removeAllChangeListeners();
     }
 
     @Override
@@ -63,7 +50,7 @@ public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implem
     }
 
     @Override
-    public RealmList<Group> getGroups() {
+    public List<Group> getGroups() {
         return mGroups;
     }
 

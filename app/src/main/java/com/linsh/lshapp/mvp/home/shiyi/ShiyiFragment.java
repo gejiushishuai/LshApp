@@ -19,7 +19,7 @@ import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
-import io.realm.RealmList;
+import java.util.List;
 
 /**
  * Created by linsh on 17/1/25.
@@ -170,7 +170,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     }
 
     @Override
-    public void setData(RealmList<Group> groups) {
+    public void setData(List<Group> groups) {
         mShiyiAdapter.setData(groups);
     }
 

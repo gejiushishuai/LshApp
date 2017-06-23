@@ -3,7 +3,7 @@ package com.linsh.lshapp.mvp.home.shiyi;
 import com.linsh.lshapp.base.BaseContract;
 import com.linsh.lshapp.model.bean.db.Group;
 
-import io.realm.RealmList;
+import java.util.List;
 
 /**
  * Created by Senh Linsh on 17/4/24.
@@ -14,7 +14,7 @@ public interface ShiyiContract {
 
     interface View extends BaseContract.BaseView {
 
-        void setData(RealmList<Group> groups);
+        void setData(List<Group> groups);
     }
 
     interface Presenter extends BaseContract.BasePresenter<View> {
@@ -25,6 +25,6 @@ public interface ShiyiContract {
 
         void renameGroup(int position, String groupName);
 
-        RealmList<Group> getGroups();
+        List<Group> getGroups();
     }
 }

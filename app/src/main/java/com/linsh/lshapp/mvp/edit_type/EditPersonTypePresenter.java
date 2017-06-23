@@ -10,7 +10,6 @@ import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import java.util.List;
 
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
@@ -21,23 +20,25 @@ import rx.functions.Actions;
 
 public class EditPersonTypePresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<Type> {
 
+    private PersonDetail mPersonDetail;
     public List<Type> mTypes;
 
     @Override
     protected void attachView() {
-        Subscription subscription = ShiyiDbHelper.getPersonDetail(getRealm(), getView().getPersonId())
-                .subscribe(new Action1<PersonDetail>() {
-                    @Override
-                    public void call(PersonDetail personDetail) {
-                        if (personDetail != null) {
-                            mTypes = getRealm().copyFromRealm(personDetail.getTypes());
-                            getView().setData(mTypes);
-                        }
-                    }
-                }, new DefaultThrowableAction());
-        addSubscription(subscription);
+        mPersonDetail = ShiyiDbHelper.getPersonDetail(getRealm(), getView().getPersonId());
+        mPersonDetail.addChangeListener(element -> {
+            if (mPersonDetail.isValid()) {
+                mTypes = getRealm().copyFromRealm(mPersonDetail.getTypes());
+                getView().setData(mTypes);
+            }
+        });
     }
 
+    @Override
+    public void detachView() {
+        super.detachView();
+        mPersonDetail.removeAllChangeListeners();
+    }
 
     @Override
     public void saveTypes(final List<Type> data) {

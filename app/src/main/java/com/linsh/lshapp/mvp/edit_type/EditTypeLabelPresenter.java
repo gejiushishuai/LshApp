@@ -11,10 +11,8 @@ import com.linsh.lshapp.tools.LshRxUtils;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
@@ -25,29 +23,29 @@ import rx.functions.Actions;
 
 public class EditTypeLabelPresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<TypeLabel> {
 
-    public List<TypeLabel> mTypeLabels;
+    private RealmResults<TypeLabel> mTypeLabels;
 
     @Override
     protected void attachView() {
-        Subscription subscription = ShiyiDbHelper.getTypeLabels(getRealm())
-                .subscribe(new Action1<RealmResults<TypeLabel>>() {
-                    @Override
-                    public void call(RealmResults<TypeLabel> typeLabels) {
-                        if (mTypeLabels == null) {
-                            mTypeLabels = new RealmList<>();
-                        }
-                        if (typeLabels != null) {
-                            mTypeLabels = getRealm().copyFromRealm(typeLabels);
-                            getView().setData(mTypeLabels);
-                        }
-                    }
-                }, new DefaultThrowableAction());
-        addSubscription(subscription);
+        mTypeLabels = ShiyiDbHelper.getTypeLabels(getRealm());
+        mTypeLabels.addChangeListener(element -> {
+            if (mTypeLabels.isValid()) {
+                List<TypeLabel> typeLabels = getRealm().copyFromRealm(mTypeLabels);
+                getView().setData(typeLabels);
+            }
+        });
     }
 
+    @Override
+    public void detachView() {
+        super.detachView();
+        mTypeLabels.removeAllChangeListeners();
+    }
 
     @Override
     public void saveTypes(final List<TypeLabel> data) {
+        if (mTypeLabels == null) return;
+
         LshRxUtils.getAsyncTransactionObservable(getRealm(), new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {

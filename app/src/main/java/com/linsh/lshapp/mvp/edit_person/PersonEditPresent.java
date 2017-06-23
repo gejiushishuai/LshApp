@@ -5,7 +5,6 @@ import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.event.GroupsChangedEvent;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
@@ -18,12 +17,9 @@ import com.linsh.lshutils.utils.LshImageUtils;
 import java.io.File;
 import java.util.List;
 
-import io.realm.RealmList;
+import io.realm.RealmResults;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Actions;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -34,33 +30,29 @@ import rx.schedulers.Schedulers;
 
 public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View> implements PersonEditContract.Presenter {
 
-    private RealmList<Group> mGroups;
+    private RealmResults<Group> mGroups;
     private Person mPerson;
 
     @Override
     protected void attachView() {
-        Subscription getGroupsSub = ShiyiDbHelper.getGroups(getRealm())
-                .subscribe(new Action1<RealmList<Group>>() {
-                    @Override
-                    public void call(RealmList<Group> groups) {
-                        mGroups = groups;
-                    }
-                }, new DefaultThrowableAction());
-        addSubscription(getGroupsSub);
+        mGroups = ShiyiDbHelper.getGroups(getRealm());
 
         String personId = getView().getPersonId();
         if (personId != null) {
-            Subscription getPersonSub = ShiyiDbHelper.getPerson(getRealm(), personId)
-                    .subscribe(new Action1<Person>() {
-                        @Override
-                        public void call(Person person) {
-                            if (person != null) {
-                                mPerson = person;
-                                getView().setData(mPerson);
-                            }
-                        }
-                    }, new DefaultThrowableAction());
-            addSubscription(getPersonSub);
+            mPerson = ShiyiDbHelper.getPerson(getRealm(), personId);
+            mPerson.addChangeListener(element -> {
+                if (mPerson.isValid()) {
+                    getView().setData(mPerson);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void detachView() {
+        super.detachView();
+        if (mPerson != null && mPerson.isValid()) {
+            mPerson.removeAllChangeListeners();
         }
     }
 
@@ -72,13 +64,9 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
     @Override
     public void addGroup(final String inputText) {
         ShiyiDbHelper.addGroup(getRealm(), inputText)
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
-                    @Override
-                    public void call() {
-                        getView().setGroup(inputText);
-                        getView().onPersonModified();
-                        RxBus.getDefault().post(new GroupsChangedEvent());
-                    }
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), () -> {
+                    getView().setGroup(inputText);
+                    getView().onPersonModified();
                 });
     }
 
@@ -129,7 +117,6 @@ public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View
                     getView().dismissLoadingDialog();
                     getView().showToast("保存失败(" + throwable.getMessage() + ")");
                 }, () -> {
-                    RxBus.getDefault().post(new GroupsChangedEvent());
                     RxBus.getDefault().post(new PersonChangedEvent());
                     getView().dismissLoadingDialog();
                     getView().finishActivity();

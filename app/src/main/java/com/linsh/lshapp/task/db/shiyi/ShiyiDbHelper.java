@@ -1,7 +1,6 @@
 package com.linsh.lshapp.task.db.shiyi;
 
 import com.linsh.lshapp.model.action.AsyncTransaction;
-import com.linsh.lshapp.model.action.ResultListFilterFunc;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
@@ -24,7 +23,6 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func1;
 
 /**
  * Created by Senh Linsh on 17/5/5.
@@ -54,83 +52,25 @@ public class ShiyiDbHelper {
         });
     }
 
-    /**
-     * 获取所有分组信息
-     */
-    public static Observable<RealmList<Group>> getGroups(final Realm realm) {
-        return realm.where(Shiyi.class).findAllAsync().asObservable()
-                .filter(new ResultListFilterFunc<Shiyi>())
-                .map(new Func1<RealmResults<Shiyi>, RealmList<Group>>() {
-                    @Override
-                    public RealmList<Group> call(RealmResults<Shiyi> shiyis) {
-                        if (shiyis.size() == 0) {
-                            createShiyi(realm);
-                            return null;
-                        } else {
-                            return shiyis.get(0).getGroups();
-                        }
-                    }
-                });
+    public static RealmResults<Group> getGroups(Realm realm) {
+        return realm.where(Group.class).findAllAsync();
     }
 
-    public static Observable<Person> getPerson(final Realm realm, String personId) {
-        return realm.where(Person.class).equalTo("id", personId).findAllAsync().asObservable()
-                .filter(new ResultListFilterFunc<Person>())
-                .map(new Func1<RealmResults<Person>, Person>() {
-                    @Override
-                    public Person call(RealmResults<Person> persons) {
-                        if (persons.size() == 0) {
-                            return null;
-                        }
-                        return persons.get(0);
-                    }
-                });
+    public static Person getPerson(Realm realm, String personId) {
+        return realm.where(Person.class).equalTo("id", personId).findFirstAsync();
     }
 
-    public static Observable<PersonDetail> getPersonDetail(final Realm realm, final String personId) {
-        return realm.where(PersonDetail.class).equalTo("id", personId).findAllAsync().asObservable()
-                .filter(new Func1<RealmResults<PersonDetail>, Boolean>() {
-                    @Override
-                    public Boolean call(RealmResults<PersonDetail> shiyis) {
-                        return shiyis.isLoaded();
-                    }
-                })
-                .map(new Func1<RealmResults<PersonDetail>, PersonDetail>() {
-                    @Override
-                    public PersonDetail call(RealmResults<PersonDetail> details) {
-                        if (details.size() == 0) {
-                            createPersonDetail(realm, personId);
-                            return null;
-                        }
-                        return details.get(0);
-                    }
-                });
+    public static PersonDetail getPersonDetail(Realm realm, String personId) {
+        return realm.where(PersonDetail.class).equalTo("id", personId).findFirstAsync();
     }
 
-    public static Observable<RealmResults<TypeLabel>> getTypeLabels(Realm realm) {
-        return realm.where(TypeLabel.class).findAllSortedAsync("sort").asObservable()
-                .filter(new Func1<RealmResults<TypeLabel>, Boolean>() {
-                    @Override
-                    public Boolean call(RealmResults<TypeLabel> typeLabels) {
-                        return typeLabels.isLoaded();
-                    }
-                });
+    public static RealmResults<TypeLabel> getTypeLabels(Realm realm) {
+        return realm.where(TypeLabel.class).findAllSortedAsync("sort");
     }
 
-    public static Observable<TypeDetail> getTypeDetail(final Realm realm, String typeDetailId) {
-        return realm.where(TypeDetail.class).equalTo("id", typeDetailId).findAllAsync().asObservable()
-                .filter(new ResultListFilterFunc<TypeDetail>())
-                .map(new Func1<RealmResults<TypeDetail>, TypeDetail>() {
-                    @Override
-                    public TypeDetail call(RealmResults<TypeDetail> details) {
-                        if (details.size() == 0) {
-                            return null;
-                        }
-                        return details.get(0);
-                    }
-                });
+    public static TypeDetail getTypeDetail(final Realm realm, String typeDetailId) {
+        return realm.where(TypeDetail.class).equalTo("id", typeDetailId).findFirstAsync();
     }
-
 
     /**
      * 添加分组

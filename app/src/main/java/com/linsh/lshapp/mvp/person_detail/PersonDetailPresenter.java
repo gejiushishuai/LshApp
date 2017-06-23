@@ -1,20 +1,16 @@
 package com.linsh.lshapp.mvp.person_detail;
 
-import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
-import com.linsh.lshapp.model.event.GroupsChangedEvent;
-import com.linsh.lshapp.model.event.PersonChangedEvent;
-import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import java.util.List;
 
-import io.realm.RealmObject;
+import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Actions;
@@ -26,64 +22,53 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
 
     private Person mPerson;
     private PersonDetail mPersonDetail;
-    private List<TypeLabel> mTypeLabels;
+    private RealmResults<TypeLabel> mTypeLabels;
 
     @Override
     protected void attachView() {
         // 获取联系人信息
-        Subscription getPersonSub = ShiyiDbHelper.getPerson(getRealm(), getView().getPersonId())
-                .subscribe(person -> {
-                    if (person != null) {
-                        mPerson = person;
-                        getView().setData(mPerson);
-                        RealmObject.removeChangeListener(mPerson, element -> {
-                            getView().setData(mPerson);
-                        });
-                    }
-                }, new DefaultThrowableAction());
+        mPerson = ShiyiDbHelper.getPerson(getRealm(), getView().getPersonId());
+        mPerson.addChangeListener(element -> {
+            if (mPerson.isValid()) {
+                getView().setData(mPerson);
+                mPerson.removeAllChangeListeners();
+            }
+        });
         // 获取联系人详情
-        Subscription getPersonDetailSub = ShiyiDbHelper.getPersonDetail(getRealm(), getView().getPersonId())
-                .subscribe(personDetail -> {
-                    if (personDetail != null) {
-                        mPersonDetail = personDetail;
-                        getView().setData(mPersonDetail);
-                        RealmObject.removeChangeListener(mPersonDetail, element -> {
-                            getView().setData(mPersonDetail);
-                        });
-                    }
-                }, new DefaultThrowableAction());
+        mPersonDetail = ShiyiDbHelper.getPersonDetail(getRealm(), getView().getPersonId());
+        mPersonDetail.addChangeListener(element -> {
+            if (mPersonDetail.isValid()) {
+                getView().setData(mPersonDetail);
+                mPersonDetail.removeAllChangeListeners();
+            }
+        });
         // 获取类型标签
-        Subscription getTypeLabelsSub = ShiyiDbHelper.getTypeLabels(getRealm())
-                .subscribe(typeLabels -> {
-                    if (typeLabels != null) {
-                        mTypeLabels = typeLabels;
-                    }
-                }, new DefaultThrowableAction());
-        addSubscription(getPersonSub, getPersonDetailSub, getTypeLabelsSub);
+        mTypeLabels = ShiyiDbHelper.getTypeLabels(getRealm());
+    }
 
-
-
-        // 添加联系人和联系人详情变动的广播
-        Subscription personChangeBus = RxBus.getDefault().toObservable(PersonChangedEvent.class)
-                .subscribe(personChangedEvent -> {
-                    if (mPerson.isValid()) {
-                        getView().setData(mPerson);
-                    }
-                });
-        Subscription personDetailChangeBus = RxBus.getDefault().toObservable(PersonDetailChangedEvent.class)
-                .subscribe(personDetailChangedEvent -> {
-                    if (mPersonDetail.isValid()) {
-                        getView().setData(mPersonDetail);
-                    }
-                });
-        addRxBusSub(personChangeBus, personDetailChangeBus);
+    @Override
+    public void invalidateView() {
+        super.invalidateView();
+        if (mPerson.isValid()) {
+            getView().setData(mPerson);
+        } else {
+            // 更改分组时, 联系人会被删除重新创建, 所以在 isValid 为 false 的时候, 需要重新查询该联系人
+            mPerson = ShiyiDbHelper.getPerson(getRealm(), getView().getPersonId());
+            mPerson.addChangeListener(element -> {
+                if (mPerson.isValid()) {
+                    getView().setData(mPerson);
+                    mPerson.removeAllChangeListeners();
+                }
+            });
+        }
+        if (mPersonDetail.isValid()) {
+            getView().setData(mPersonDetail);
+        }
     }
 
     @Override
     public void detachView() {
         super.detachView();
-        RealmObject.removeAllChangeListeners(mPerson);
-        RealmObject.removeAllChangeListeners(mPersonDetail);
     }
 
     @Override
@@ -134,13 +119,7 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     @Override
     public void deletePerson() {
         Subscription subscription = ShiyiDbHelper.deletePerson(getRealm(), mPersonDetail.getId())
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
-                    @Override
-                    public void call() {
-                        RxBus.getDefault().post(new GroupsChangedEvent());
-                        getView().finishActivity();
-                    }
-                });
+                .subscribe(Actions.empty(), new DefaultThrowableAction(), () -> getView().finishActivity());
         addSubscription(subscription);
     }
 
@@ -153,4 +132,5 @@ public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContrac
     public Person getPerson() {
         return mPerson;
     }
+
 }
