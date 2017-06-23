@@ -129,6 +129,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
         new LshColorDialog(getMyActivity())
                 .buildInput()
                 .setTitle("重命名分组")
+                .setText(mShiyiAdapter.getData().get(position).getName())
                 .setNegativeButton(null, null)
                 .setPositiveButton("重命名", new LshColorDialog.OnInputPositiveListener() {
                     @Override
