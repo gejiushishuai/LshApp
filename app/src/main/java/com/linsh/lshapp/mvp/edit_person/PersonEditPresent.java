@@ -4,7 +4,10 @@ import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.PersonAlbum;
+import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
@@ -12,7 +15,9 @@ import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
+import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshImageUtils;
+import com.linsh.lshutils.utils.LshRegexUtils;
 
 import java.io.File;
 import java.util.List;
@@ -123,26 +128,27 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
     }
 
     private Observable<Void> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex) {
+        ImageUrl imageUrl = null;
+        if (!LshStringUtils.isEmpty(avatarUrl) && LshRegexUtils.isURL(avatarUrl)) {
+            imageUrl = new ImageUrl(avatarUrl, avatarThumbUrl);
+        }
         if (mPerson == null) {
-            // 创建Person
-            String avatar = avatarUrl == null ? "" : avatarUrl;
-            return ShiyiDbHelper.addPerson(getRealm(), group, new Person(name, desc, avatar, avatarThumbUrl, sex));
+            Person person = new Person(name, desc, avatarUrl, avatarThumbUrl, sex);
+            return ShiyiDbHelper.addPerson(getRealm(), group, person, new PersonDetail(person.getId()), new PersonAlbum(person.getId(), imageUrl));
         } else {
-            // 属性有变化, 则修改Person属性
             Observable<Void> observable;
             Person person = getRealm().copyFromRealm(mPerson);
             person.setName(name);
             person.setDescribe(desc);
             person.setGender(sex);
             if (avatarUrl != null) {
-                person.setAvatar(avatarUrl);
-                person.setAvatarThumb(avatarThumbUrl);
+                person.setAvatar(avatarUrl, avatarThumbUrl);
             }
             String primaryGroup = getView().getPrimaryGroup();
             if (group.equals(primaryGroup)) {
-                observable = ShiyiDbHelper.editPerson(getRealm(), person);
+                observable = ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
             } else {
-                observable = ShiyiDbHelper.editPerson(getRealm(), group, person);
+                observable = ShiyiDbHelper.editPerson(getRealm(), group, person, imageUrl);
             }
             return observable;
         }

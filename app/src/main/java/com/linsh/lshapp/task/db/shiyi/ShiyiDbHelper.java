@@ -2,7 +2,9 @@ package com.linsh.lshapp.task.db.shiyi;
 
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.PersonAlbum;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Shiyi;
 import com.linsh.lshapp.model.bean.db.Type;
@@ -15,6 +17,7 @@ import com.linsh.lshapp.model.throwabes.PersonRepeatThrowable;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshRegexUtils;
 
 import java.util.List;
 
@@ -171,31 +174,6 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Observable<Void> addPerson(final Realm realm, String groupName, Person person) {
-        return addPerson(realm, groupName, person, false);
-    }
-
-    public static Observable<Void> addPerson(final Realm realm, String groupName, Person person, boolean forceAdd) {
-        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
-            @Override
-            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
-                if (!forceAdd && realm.where(Person.class).equalTo("name", person.getName()).findFirst() != null) {
-                    subscriber.onError(new PersonRepeatThrowable("已经存在该联系人"));
-                    return;
-                }
-                Group group = realm.where(Group.class).equalTo("name", groupName).findFirst();
-                if (group != null) {
-                    RealmList<Person> persons = group.getPersons();
-                    persons.add(person);
-                    // 对联系人进行排序并保存
-                    ShiyiDbUtils.sortToRealm(realm, persons, "id");
-                } else {
-                    subscriber.onError(new CustomThrowable("没有创建该分组, 无法添加"));
-                }
-            }
-        });
-    }
-
     public static Observable<Void> addTypeLabel(final Realm realm, final String labelName, final int size) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -317,30 +295,40 @@ public class ShiyiDbHelper {
     }
 
     public static Observable<Void> editPerson(Realm realm, Person person) {
-        if (person.isManaged())
-            throw new IllegalArgumentException("无法处理被 Realm 所管理的对象");
-        return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
-            @Override
-            protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
-                Person realmPerson = realm.where(Person.class).equalTo("id", person.getId()).findFirst();
-                if (realmPerson != null) {
-                    realm.copyToRealmOrUpdate(person);
-                }
-            }
-        });
+        return editPerson(realm, null, person, null);
+    }
+
+    public static Observable<Void> editPerson(Realm realm, Person person,  ImageUrl avatar) {
+        return editPerson(realm, null, person, avatar);
     }
 
     public static Observable<Void> editPerson(Realm realm, String newGroupName, Person person) {
+        return editPerson(realm, newGroupName, person, null);
+    }
+
+    public static Observable<Void> editPerson(Realm realm, String newGroupName, Person person, ImageUrl avatar) {
         if (person.isManaged())
             throw new IllegalArgumentException("无法处理被 Realm 所管理的对象");
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                // 查找 Person
                 Person realmPerson = realm.where(Person.class).equalTo("id", person.getId()).findFirst();
                 if (realmPerson != null) {
+                    // 更新 Person
                     realm.copyToRealmOrUpdate(person);
+                    // 在相册中保存头像
+                    if (avatar != null && !LshStringUtils.isEmpty(avatar.getUrl()) && LshRegexUtils.isURL(avatar.getUrl())) {
+                        PersonAlbum personAlbum = realm.where(PersonAlbum.class).equalTo("id", person.getId()).findFirst();
+                        if (personAlbum == null) {
+                            personAlbum = realm.copyToRealm(new PersonAlbum(person.getId()));
+                        }
+                        personAlbum.addAvatar(avatar);
+                    }
+                    // 分组名不为空时, 更改分组
                     if (newGroupName != null) {
                         Group oldGroup = realm.where(Group.class).equalTo("persons.id", realmPerson.getId()).findFirst();
+                        // 组名不一样, 确定更改
                         if (oldGroup != null && !oldGroup.getName().equals(newGroupName)) {
                             Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
                             if (newGroup != null) {
@@ -416,15 +404,26 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Observable<Void> addPersonAddDetail(Realm realm, String group, Person person, PersonDetail personDetail) {
+    public static Observable<Void> addPerson(Realm realm, String group, Person person) {
+        return addPerson(realm, group, person, new PersonDetail(person.getId()), new PersonAlbum(person.getId()));
+    }
+
+    public static Observable<Void> addPerson(Realm realm, String group, Person person, PersonDetail personDetail) {
+        return addPerson(realm, group, person, personDetail, new PersonAlbum(person.getId()));
+    }
+
+    public static Observable<Void> addPerson(Realm realm, String group, Person person, PersonDetail personDetail, PersonAlbum personAlbum) {
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
+                // 查找联系人
                 Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
+                // 无法保存已经存在的联系人
                 if (realmPerson != null) {
                     subscriber.onError(new PersonRepeatThrowable("已经存在该联系人"));
                     return;
                 }
+                // 没有指定组名, 则保存在"未分组"分组里面
                 String groupName = group;
                 if (LshStringUtils.isEmpty(groupName)) {
                     groupName = ShiyiModelHelper.UNNAME_GROUP_NAME;
@@ -437,11 +436,13 @@ public class ShiyiDbHelper {
                     groups.add(0, realmGroup);
                     ShiyiDbUtils.renewSort(groups);
                 }
+                // 保存联系人
                 if (realmGroup != null) {
                     realmGroup.getPersons().add(person);
                     realm.copyToRealmOrUpdate(personDetail);
+                    realm.copyToRealmOrUpdate(personAlbum);
                 } else {
-                    subscriber.onError(new CustomThrowable("没有该分组, 请先创建"));
+                    subscriber.onError(new CustomThrowable("没有创建该分组, 无法添加"));
                 }
             }
         });
@@ -458,11 +459,8 @@ public class ShiyiDbHelper {
                     if (LshStringUtils.isEmpty(person.getDescribe())) {
                         realmPerson.setDescribe(person.getDescribe());
                     }
-                    if (LshStringUtils.isEmpty(person.getAvatar())) {
-                        realmPerson.setAvatar(person.getAvatar());
-                    }
-                    if (LshStringUtils.isEmpty(person.getAvatarThumb())) {
-                        realmPerson.setAvatarThumb(person.getAvatarThumb());
+                    if (!LshStringUtils.isEmpty(person.getAvatar())) {
+                        realmPerson.setAvatar(person.getAvatar(), person.getAvatarThumb());
                     }
                     if (person.getIntGender() != 0) {
                         realmPerson.setGender(person.getIntGender());

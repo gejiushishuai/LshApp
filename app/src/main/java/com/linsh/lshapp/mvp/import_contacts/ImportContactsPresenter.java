@@ -64,7 +64,7 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
 
         Person person = getPerson(contact);
         PersonDetail personDetail = getPersonDetail(contact, person.getId());
-        Subscription addPersonAddDetailSub = ShiyiDbHelper.addPersonAddDetail(getRealm(), ShiyiModelHelper.UNNAME_GROUP_NAME, person, personDetail)
+        Subscription addPersonAddDetailSub = ShiyiDbHelper.addPerson(getRealm(), ShiyiModelHelper.UNNAME_GROUP_NAME, person, personDetail)
                 .subscribe(Actions.empty(), throwable -> {
                     getView().dismissLoadingDialog();
                     if (throwable instanceof PersonRepeatThrowable) {

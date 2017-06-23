@@ -4,9 +4,11 @@ import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
 import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.PersonAlbum;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshutils.utils.Basic.LshLogUtils;
 
 import java.util.List;
 
@@ -44,6 +46,13 @@ public class PersonDetailPresenter extends RealmPresenterImpl<PersonDetailContra
         });
         // 获取类型标签
         mTypeLabels = ShiyiDbHelper.getTypeLabels(getRealm());
+
+        PersonAlbum personAlbum = getRealm().where(PersonAlbum.class).equalTo("id", getView().getPersonId()).findFirst();
+        if (personAlbum != null) {
+            LshLogUtils.i("personAlbum size = " + personAlbum.getAvatars().size());
+        } else {
+            LshLogUtils.i("personAlbum = null");
+        }
     }
 
     @Override

@@ -1,6 +1,10 @@
 package com.linsh.lshapp.tools;
 
+import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshRegexUtils;
+
 import io.realm.DynamicRealm;
+import io.realm.DynamicRealmObject;
 import io.realm.RealmMigration;
 import io.realm.RealmSchema;
 
@@ -31,16 +35,27 @@ public class ShiyiMigration implements RealmMigration {
             case 4:
                 schema.get("TypeLabel").addPrimaryKey("name");
                 schema.get("Person").addField("avatarThumb", String.class);
-                break;
             case 5:
                 schema.create("ImageUrl")
                         .addField("url", String.class)
                         .addField("thumbUrl", String.class);
                 schema.create("PersonAlbum")
                         .addField("id", String.class)
+                        .addPrimaryKey("id")
                         .addRealmListField("pictures", schema.get("ImageUrl"))
                         .addRealmListField("avatars", schema.get("ImageUrl"));
-                break;
+                schema.get("Person")
+                        .transform(obj -> {
+                            DynamicRealmObject personAlbum = realm.createObject("PersonAlbum", obj.get("id"));
+                            String avatar = obj.get("avatar");
+                            String avatarThumb = obj.get("avatarThumb");
+                            if (!LshStringUtils.isEmpty(avatar) && LshRegexUtils.isURL(avatar)) {
+                                DynamicRealmObject imageUrl = realm.createObject("ImageUrl");
+                                imageUrl.setString("url", avatar);
+                                imageUrl.setString("thumbUrl", avatarThumb);
+                                personAlbum.getList("avatars").add(imageUrl);
+                            }
+                        });
         }
     }
 }
