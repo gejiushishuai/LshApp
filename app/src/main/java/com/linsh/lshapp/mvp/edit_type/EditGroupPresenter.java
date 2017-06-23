@@ -1,6 +1,6 @@
 package com.linsh.lshapp.mvp.edit_type;
 
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
@@ -15,7 +15,7 @@ import rx.functions.Actions;
  * Created by Senh Linsh on 17/5/10.
  * 管理分组
  */
-public class EditGroupPresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<Group> {
+public class EditGroupPresenter extends RealmPresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<Group> {
 
     private RealmResults<Group> mGroups;
 

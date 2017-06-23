@@ -1,7 +1,7 @@
 package com.linsh.lshapp.mvp.edit_type;
 
 import com.linsh.lshapp.Rx.RxBus;
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Type;
@@ -18,7 +18,7 @@ import rx.functions.Actions;
  * Created by Senh Linsh on 17/5/8.
  */
 
-public class EditPersonTypePresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<Type> {
+public class EditPersonTypePresenter extends RealmPresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<Type> {
 
     private PersonDetail mPersonDetail;
     public List<Type> mTypes;

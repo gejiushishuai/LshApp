@@ -2,7 +2,7 @@ package com.linsh.lshapp.mvp.setting;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.HttpThrowableAction;
@@ -46,7 +46,7 @@ import rx.schedulers.Schedulers;
  * Created by Senh Linsh on 17/5/2.
  */
 
-public class SettingsPresenter extends BasePresenterImpl<SettingsContract.View> implements SettingsContract.Presenter {
+public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View> implements SettingsContract.Presenter {
 
     @Override
     protected void attachView() {

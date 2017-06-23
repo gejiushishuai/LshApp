@@ -5,7 +5,7 @@ import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Contacts;
 import com.github.tamir7.contacts.Event;
 import com.github.tamir7.contacts.PhoneNumber;
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
@@ -31,7 +31,7 @@ import rx.schedulers.Schedulers;
  * Created by Senh Linsh on 17/5/2.
  */
 
-public class ImportContactsPresenter extends BasePresenterImpl<ImportContactsContract.View> implements ImportContactsContract.Presenter {
+public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsContract.View> implements ImportContactsContract.Presenter {
 
     @Override
     protected void attachView() {

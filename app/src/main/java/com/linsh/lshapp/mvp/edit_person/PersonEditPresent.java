@@ -1,7 +1,7 @@
 package com.linsh.lshapp.mvp.edit_person;
 
 import com.linsh.lshapp.Rx.RxBus;
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
@@ -28,7 +28,7 @@ import rx.schedulers.Schedulers;
  * Created by Senh Linsh on 17/4/28.
  */
 
-public class PersonEditPresent extends BasePresenterImpl<PersonEditContract.View> implements PersonEditContract.Presenter {
+public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.View> implements PersonEditContract.Presenter {
 
     private RealmResults<Group> mGroups;
     private Person mPerson;

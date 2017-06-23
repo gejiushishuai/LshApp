@@ -1,7 +1,7 @@
 package com.linsh.lshapp.mvp.type_detail;
 
 import com.linsh.lshapp.Rx.RxBus;
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
@@ -15,7 +15,7 @@ import rx.functions.Actions;
  * Created by Senh Linsh on 17/5/5.
  */
 
-public class TypeDetailPresenter extends BasePresenterImpl<TypeDetailContract.View> implements TypeDetailContract.Presenter {
+public class TypeDetailPresenter extends RealmPresenterImpl<TypeDetailContract.View> implements TypeDetailContract.Presenter {
 
     private TypeDetail mTypeDetail;
 

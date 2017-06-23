@@ -1,6 +1,6 @@
 package com.linsh.lshapp.mvp.home.shiyi;
 
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.NothingAction;
 import com.linsh.lshapp.model.bean.db.Group;
@@ -21,7 +21,7 @@ import rx.functions.Actions;
  * Created by Senh Linsh on 17/4/24.
  */
 
-public class ShiyiPresenter extends BasePresenterImpl<ShiyiContract.View> implements ShiyiContract.Presenter {
+public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> implements ShiyiContract.Presenter {
 
     private RealmResults<Group> mGroups;
 

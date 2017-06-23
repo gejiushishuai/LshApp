@@ -1,6 +1,6 @@
 package com.linsh.lshapp.mvp.edit_type;
 
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
@@ -21,7 +21,7 @@ import rx.functions.Actions;
  * Created by Senh Linsh on 17/5/8.
  */
 
-public class EditTypeLabelPresenter extends BasePresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<TypeLabel> {
+public class EditTypeLabelPresenter extends RealmPresenterImpl<TypeEditContract.View> implements TypeEditContract.Presenter<TypeLabel> {
 
     private RealmResults<TypeLabel> mTypeLabels;
 

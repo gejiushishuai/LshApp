@@ -53,8 +53,6 @@ public interface BaseContract {
 
         void detachView();
 
-        void invalidateView();
-
         void subscribe();
 
         void unsubscribe();

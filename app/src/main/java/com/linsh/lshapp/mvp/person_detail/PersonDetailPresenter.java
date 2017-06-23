@@ -1,6 +1,6 @@
 package com.linsh.lshapp.mvp.person_detail;
 
-import com.linsh.lshapp.base.BasePresenterImpl;
+import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
 import com.linsh.lshapp.model.bean.db.Person;
@@ -18,7 +18,7 @@ import rx.functions.Actions;
 /**
  * Created by Senh Linsh on 17/4/28.
  */
-public class PersonDetailPresenter extends BasePresenterImpl<PersonDetailContract.View> implements PersonDetailContract.Presenter {
+public class PersonDetailPresenter extends RealmPresenterImpl<PersonDetailContract.View> implements PersonDetailContract.Presenter {
 
     private Person mPerson;
     private PersonDetail mPersonDetail;
