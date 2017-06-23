@@ -316,48 +316,40 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Observable<Void> editPerson(Realm realm, final String personId, final String name, final String desc, final String sex) {
-        return editPerson(realm, personId, name, desc, null, null, sex);
-    }
-
-    public static Observable<Void> editPerson(Realm realm, final String personId, final String name,
-                                              final String desc, String avatar, String avatarThumb, String sex) {
+    public static Observable<Void> editPerson(Realm realm, Person person) {
+        if (person.isManaged())
+            throw new IllegalArgumentException("无法处理被 Realm 所管理的对象");
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
-                Person person = realm.where(Person.class).equalTo("id", personId).findFirst();
-                if (person != null) {
-                    person.setName(name);
-                    person.setDescribe(desc);
-                    person.setGender(sex);
-                    if (!LshStringUtils.isEmpty(avatar)) {
-                        person.setAvatar(avatar);
-                    }
-                    if (!LshStringUtils.isEmpty(avatarThumb)) {
-                        person.setAvatarThumb(avatarThumb);
-                    }
+                Person realmPerson = realm.where(Person.class).equalTo("id", person.getId()).findFirst();
+                if (realmPerson != null) {
+                    realm.copyToRealmOrUpdate(person);
                 }
             }
         });
     }
 
-    public static Observable<Void> movePersonToGroup(Realm realm, final String personId, final String newGroupName) {
+    public static Observable<Void> editPerson(Realm realm, String newGroupName, Person person) {
+        if (person.isManaged())
+            throw new IllegalArgumentException("无法处理被 Realm 所管理的对象");
         return LshRxUtils.getAsyncTransactionObservable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
-                Person person = realm.where(Person.class).equalTo("id", personId).findFirst();
-                if (person != null) {
-                    Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
-                    if (newGroup != null) {
-                        // 获取person的copy
-                        Person copy = realm.copyFromRealm(person);
-                        // 删除原来的person
-                        person.deleteFromRealm();
-                        // 添加copy到新分组去
-                        RealmList<Person> persons = newGroup.getPersons();
-                        persons.add(copy);
-                        // 对联系人进行排序并保存
-                        ShiyiDbUtils.sortToRealm(realm, persons, "id");
+                Person realmPerson = realm.where(Person.class).equalTo("id", person.getId()).findFirst();
+                if (realmPerson != null) {
+                    realm.copyToRealmOrUpdate(person);
+                    if (newGroupName != null) {
+                        Group oldGroup = realm.where(Group.class).equalTo("persons.id", realmPerson.getId()).findFirst();
+                        if (oldGroup != null && !oldGroup.getName().equals(newGroupName)) {
+                            Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
+                            if (newGroup != null) {
+                                oldGroup.getPersons().remove(realmPerson);
+                                newGroup.getPersons().add(realmPerson);
+                                // 对联系人进行排序并保存
+                                ShiyiDbUtils.sortToRealm(realm, newGroup.getPersons(), "id");
+                            }
+                        }
                     }
                 }
             }

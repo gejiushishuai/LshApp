@@ -51,15 +51,6 @@ public class PersonDetailPresenter extends RealmPresenterImpl<PersonDetailContra
         super.invalidateView();
         if (mPerson.isValid()) {
             getView().setData(mPerson);
-        } else {
-            // 更改分组时, 联系人会被删除重新创建, 所以在 isValid 为 false 的时候, 需要重新查询该联系人
-            mPerson = ShiyiDbHelper.getPerson(getRealm(), getView().getPersonId());
-            mPerson.addChangeListener(element -> {
-                if (mPerson.isValid()) {
-                    getView().setData(mPerson);
-                    mPerson.removeAllChangeListeners();
-                }
-            });
         }
         if (mPersonDetail.isValid()) {
             getView().setData(mPersonDetail);

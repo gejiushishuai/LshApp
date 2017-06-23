@@ -21,7 +21,6 @@ import io.realm.RealmResults;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Actions;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -130,29 +129,20 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
             return ShiyiDbHelper.addPerson(getRealm(), group, new Person(name, desc, avatar, avatarThumbUrl, sex));
         } else {
             // 属性有变化, 则修改Person属性
-            Observable<Void> observable = null;
-            if (!name.equals(mPerson.getName()) || !desc.equals(mPerson.getDescribe()) || !sex.equals(mPerson.getGender()) ||
-                    (avatarUrl != null && !avatarUrl.equals(mPerson.getAvatar()))) {
-                if (avatarUrl == null) {
-                    observable = ShiyiDbHelper.editPerson(getRealm(), mPerson.getId(), name, desc, sex);
-                } else {
-                    observable = ShiyiDbHelper.editPerson(getRealm(), mPerson.getId(), name, desc, avatarUrl, avatarThumbUrl, sex);
-                }
+            Observable<Void> observable;
+            Person person = getRealm().copyFromRealm(mPerson);
+            person.setName(name);
+            person.setDescribe(desc);
+            person.setGender(sex);
+            if (avatarUrl != null) {
+                person.setAvatar(avatarUrl);
+                person.setAvatarThumb(avatarThumbUrl);
             }
-            // 组别有变化, 则修改组别
             String primaryGroup = getView().getPrimaryGroup();
-            if (!group.equals(primaryGroup)) {
-                final Observable<Void> movePersonToGroup = ShiyiDbHelper.movePersonToGroup(getRealm(), mPerson.getId(), group);
-                if (observable == null) {
-                    observable = movePersonToGroup;
-                } else {
-                    observable.flatMap(new Func1<Void, Observable<?>>() {
-                        @Override
-                        public Observable<?> call(Void aVoid) {
-                            return movePersonToGroup;
-                        }
-                    });
-                }
+            if (group.equals(primaryGroup)) {
+                observable = ShiyiDbHelper.editPerson(getRealm(), person);
+            } else {
+                observable = ShiyiDbHelper.editPerson(getRealm(), group, person);
             }
             return observable;
         }
