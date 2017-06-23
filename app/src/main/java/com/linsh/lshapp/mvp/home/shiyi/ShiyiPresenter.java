@@ -35,8 +35,8 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
 
     @Override
     public void detachView() {
-        super.detachView();
         mGroups.removeAllChangeListeners();
+        super.detachView();
     }
 
     @Override

@@ -22,6 +22,7 @@ public abstract class RealmPresenterImpl<T extends BaseContract.BaseView> extend
 
     @Override
     public void detachView() {
+        super.detachView();
         mRealm.close();
     }
 
@@ -30,6 +31,7 @@ public abstract class RealmPresenterImpl<T extends BaseContract.BaseView> extend
 
     @Override
     public void subscribe() {
+        super.subscribe();
         mUnsubscribed = false;
         if (onChangedWhenUnsubscribe) {
             invalidateView();
@@ -38,6 +40,7 @@ public abstract class RealmPresenterImpl<T extends BaseContract.BaseView> extend
 
     @Override
     public void unsubscribe() {
+        super.unsubscribe();
         mUnsubscribed = true;
         onChangedWhenUnsubscribe = false;
     }
