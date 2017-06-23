@@ -26,6 +26,7 @@
         <activity android:name=".mvp.setting.SettingsActivity"/>
         <activity android:name=".mvp.type_detail.TypeDetailActivity"/>
         <activity android:name=".mvp.edit_type.TypeEditActivity"/>
+        <activity android:name=".mvp.photo_view.PhotoViewActivity"/>
 
         <service android:name=".lib.tinker.service.TinkerResultService"/>
 

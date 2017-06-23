@@ -1,5 +1,6 @@
 package com.linsh.lshapp.mvp.person_detail;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -17,10 +18,12 @@ import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
 import com.linsh.lshapp.mvp.edit_person.PersonEditActivity;
 import com.linsh.lshapp.mvp.edit_type.TypeEditActivity;
+import com.linsh.lshapp.mvp.photo_view.PhotoViewActivity;
 import com.linsh.lshapp.mvp.type_detail.TypeDetailActivity;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
+import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshListUtils;
 import com.linsh.lshutils.utils.LshScreenUtils;
@@ -159,6 +162,20 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     public void setData(PersonDetail personDetail) {
         if (personDetail != null) {
             mDetailAdapter.setData(personDetail.getTypes());
+        }
+    }
+
+    @OnClick(R.id.iv_person_detail_avatar)
+    public void onAvatarClick(View view) {
+        Person person = mPresenter.getPerson();
+        if (person != null && person.isValid()) {
+            String avatar = person.getAvatar();
+            String signedUrl = ImageTools.getSignedUrl(avatar);
+            if (!LshStringUtils.isEmpty(avatar)) {
+                Intent intent = new Intent(getActivity(), PhotoViewActivity.class);
+                intent.putExtra(PhotoViewActivity.EXTRA_URL, signedUrl);
+                startActivity(intent);
+            }
         }
     }
 

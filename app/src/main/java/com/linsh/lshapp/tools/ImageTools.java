@@ -91,4 +91,8 @@ public class ImageTools {
         // "source_url": "http://accesslog-10055004.cossh.myqcloud.com/testfolder/111.txt"
         return downloadUrl.replaceFirst("https?://.+\\.com", "");
     }
+
+    public static String getSignedUrl(String url) {
+        return url + "?sign=" + QcloudSignCreater.getDownLoadSign(ImageTools.getCosPathFromUrl(url));
+    }
 }
