@@ -8,20 +8,20 @@ import java.util.List;
 
 public class SearchResult {
 
-    public String personName;
-    public String personDesc;
-    public List<String> typeDetail;
+    public CharSequence personName;
+    public CharSequence personDesc;
+    public List<CharSequence> typeDetail;
 
-    public SearchResult(String personName) {
+    public SearchResult(CharSequence personName) {
         this.personName = personName;
     }
 
-    public SearchResult(String personName, String personDesc) {
+    public SearchResult(CharSequence personName, CharSequence personDesc) {
         this.personName = personName;
         this.personDesc = personDesc;
     }
 
-    public SearchResult(String personName, List<String> typeDetail) {
+    public SearchResult(CharSequence personName, List<CharSequence> typeDetail) {
         this.personName = personName;
         this.typeDetail = typeDetail;
     }

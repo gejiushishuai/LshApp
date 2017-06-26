@@ -7,8 +7,6 @@ import android.widget.TextView;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.model.result.SearchResult;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshListUtils;
 
 /**
  * Created by Senh Linsh on 17/6/26.
@@ -30,10 +28,10 @@ class SearchAdapter extends LshRecyclerViewAdapter<SearchResult, SearchAdapter.M
     @Override
     protected void onBindViewHolder(MyViewHolder holder, SearchResult data, int position) {
         holder.tvName.setText(data.personName);
-        holder.tvDesc.setText(LshStringUtils.nullStrToEmpty(data.personDesc));
+        holder.tvDesc.setText(data.personDesc == null ? "" : data.personDesc);
         if (data.typeDetail != null && data.typeDetail.size() > 0) {
             holder.tvDetail.setVisibility(View.VISIBLE);
-            holder.tvDetail.setText(LshListUtils.joint(data.typeDetail, "\r\n"));
+            holder.tvDetail.setText(data.typeDetail.get(0));
         } else {
             holder.tvDetail.setVisibility(View.GONE);
             holder.tvDetail.setText("");
