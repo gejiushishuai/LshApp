@@ -12,8 +12,6 @@ import com.linsh.lshapp.model.result.SearchResult;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import butterknife.BindView;
@@ -85,9 +83,7 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
     }
 
     @Override
-    public void showResults(Collection<SearchResult> results) {
-        List<SearchResult> list = new ArrayList<>();
-        list.addAll(results);
-        mAdapter.setData(list);
+    public void showResults(List<SearchResult> results) {
+        mAdapter.setData(results);
     }
 }
