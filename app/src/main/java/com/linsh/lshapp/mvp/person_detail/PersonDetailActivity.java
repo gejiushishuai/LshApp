@@ -16,6 +16,7 @@ import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Type;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
+import com.linsh.lshapp.mvp.album.AlbumActivity;
 import com.linsh.lshapp.mvp.edit_person.PersonEditActivity;
 import com.linsh.lshapp.mvp.edit_type.TypeEditActivity;
 import com.linsh.lshapp.mvp.photo_view.PhotoViewActivity;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContract.Presenter> implements PersonDetailContract.View {
 
@@ -177,6 +179,17 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                 startActivity(intent);
             }
         }
+    }
+
+    @OnLongClick(R.id.iv_person_detail_avatar)
+    public boolean onAvatarLongClick() {
+        Person person = mPresenter.getPerson();
+        if (person != null && person.isValid()) {
+            LshActivityUtils.newIntent(AlbumActivity.class)
+                    .putExtra(person.getId())
+                    .startActivity(getActivity());
+        }
+        return true;
     }
 
     @OnClick(R.id.rl_person_detail_info_layout)

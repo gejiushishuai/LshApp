@@ -29,6 +29,7 @@
         <activity android:name=".mvp.import_contacts.ImportContactsActivity"/>
         <activity android:name=".mvp.photo_view.PhotoViewActivity"/>
         <activity android:name=".mvp.search.SearchActivity"/>
+        <activity android:name=".mvp.album.AlbumActivity"/>
 
         <service android:name=".lib.tinker.service.TinkerResultService"/>
     </application>

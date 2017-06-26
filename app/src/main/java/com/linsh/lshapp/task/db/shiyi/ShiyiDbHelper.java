@@ -75,6 +75,10 @@ public class ShiyiDbHelper {
         return realm.where(TypeDetail.class).equalTo("id", typeDetailId).findFirstAsync();
     }
 
+    public static PersonAlbum getPersonAlbum(Realm realm, String personId) {
+        return realm.where(PersonAlbum.class).equalTo("id", personId).findFirstAsync();
+    }
+
     /**
      * 添加分组
      */
