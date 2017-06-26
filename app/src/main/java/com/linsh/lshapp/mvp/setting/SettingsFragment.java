@@ -5,6 +5,8 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import com.linsh.lshapp.R;
+import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshAppUtils;
 
 /**
  * Created by Senh Linsh on 17/5/2.
@@ -22,7 +24,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         findPreference("import_json").setOnPreferenceClickListener(this);
         findPreference("import_contacts").setOnPreferenceClickListener(this);
         findPreference("backup_database").setOnPreferenceClickListener(this);
-        findPreference("check_update").setOnPreferenceClickListener(this);
+        Preference checkUpdate = findPreference("check_update");
+        checkUpdate.setOnPreferenceClickListener(this);
+        checkUpdate.setTitle(checkUpdate.getTitle() + LshStringUtils.format(" (当前版本: {版本号})", LshAppUtils.getVersionName()));
     }
 
     @Override
