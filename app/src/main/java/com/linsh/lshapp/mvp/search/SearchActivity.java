@@ -1,14 +1,20 @@
 package com.linsh.lshapp.mvp.search;
 
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
+import com.linsh.lshapp.model.result.SearchResult;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -16,6 +22,7 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
 
     @BindView(R.id.rcv_search)
     RecyclerView mRecyclerView;
+    private SearchAdapter mAdapter;
 
     @Override
     protected String getToolbarTitle() {
@@ -29,6 +36,9 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
 
     @Override
     protected void initView() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new SearchAdapter();
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -48,11 +58,16 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             private String curNewText;
-            private Runnable mRunnable = () -> mPresenter.search(curNewText);
+            private Runnable mRunnable = () -> {
+                mPresenter.search(curNewText);
+            };
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mPresenter.search(query);
+                if (!query.equals(curNewText)) {
+                    curNewText = query;
+                    mPresenter.search(curNewText);
+                }
                 return true;
             }
 
@@ -67,5 +82,12 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void showResults(Collection<SearchResult> results) {
+        List<SearchResult> list = new ArrayList<>();
+        list.addAll(results);
+        mAdapter.setData(list);
     }
 }
