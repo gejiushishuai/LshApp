@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
@@ -24,7 +25,7 @@
             style="@style/Text_title"
             android:layout_alignTop="@id/iv_person_detail_avatar"
             android:layout_toRightOf="@id/iv_person_detail_avatar"
-            android:text="名字"/>
+            tools:text="名字"/>
 
         <ImageView
             android:id="@+id/iv_person_detail_sex"
@@ -42,8 +43,8 @@
             android:layout_alignLeft="@id/tv_person_detail_name"
             android:layout_below="@id/tv_person_detail_name"
             android:layout_marginTop="2dp"
-            android:text="我就是我 不一样的烟火"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            tools:text="我就是我 不一样的烟火"/>
     </RelativeLayout>
 
     <View
