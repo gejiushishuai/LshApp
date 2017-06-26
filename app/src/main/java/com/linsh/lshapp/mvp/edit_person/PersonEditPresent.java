@@ -2,6 +2,7 @@ package com.linsh.lshapp.mvp.edit_person;
 
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.RealmPresenterImpl;
+import com.linsh.lshapp.model.action.AsyncAction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.ImageUrl;
@@ -13,6 +14,7 @@ import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;
+import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
@@ -22,8 +24,10 @@ import com.linsh.lshutils.utils.LshRegexUtils;
 import java.io.File;
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Actions;
 import rx.schedulers.Schedulers;
@@ -35,6 +39,7 @@ import rx.schedulers.Schedulers;
 public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.View> implements PersonEditContract.Presenter {
 
     private RealmResults<Group> mGroups;
+    private String mPrimaryGroupName;
     private Person mPerson;
 
     @Override
@@ -43,6 +48,18 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
 
         String personId = getView().getPersonId();
         if (personId != null) {
+            // 获取该联系人所在组别
+            LshRxUtils.getAsyncObservable(new AsyncAction<String>() {
+                @Override
+                public void call(Realm realm, Subscriber<? super String> subscriber) {
+                    Group group = realm.where(Group.class).equalTo("persons.id", personId).findFirst();
+                    subscriber.onNext(group.getName());
+                }
+            }).subscribe(group -> {
+                mPrimaryGroupName = group;
+                getView().setGroup(group);
+            });
+
             mPerson = ShiyiDbHelper.getPerson(getRealm(), personId);
             mPerson.addChangeListener(element -> {
                 if (mPerson.isValid()) {
@@ -144,8 +161,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
             if (avatarUrl != null) {
                 person.setAvatar(avatarUrl, avatarThumbUrl);
             }
-            String primaryGroup = getView().getPrimaryGroup();
-            if (group.equals(primaryGroup)) {
+            if (group.equals(mPrimaryGroupName)) {
                 observable = ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
             } else {
                 observable = ShiyiDbHelper.editPerson(getRealm(), group, person, imageUrl);

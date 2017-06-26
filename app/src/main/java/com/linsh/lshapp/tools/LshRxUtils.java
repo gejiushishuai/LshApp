@@ -46,7 +46,7 @@ public class LshRxUtils {
         }).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static <T> Observable<T> getAsyncObservable(final Realm realm, final AsyncAction<T> action1) {
+    public static <T> Observable<T> getAsyncObservable(final AsyncAction<T> action1) {
         return Observable.unsafeCreate(new Observable.OnSubscribe<T>() {
             @Override
             public void call(final Subscriber<? super T> subscriber) {

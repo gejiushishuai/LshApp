@@ -9,8 +9,11 @@ import android.view.Menu;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.result.SearchResult;
+import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
+import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshActivityUtils;
 
 import java.util.List;
 
@@ -37,6 +40,15 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new SearchAdapter();
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(new LshRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                SearchResult searchResult = mAdapter.getData().get(position);
+                LshActivityUtils.newIntent(PersonDetailActivity.class)
+                        .putExtra(searchResult.personId)
+                        .startActivity(getActivity());
+            }
+        });
     }
 
     @Override

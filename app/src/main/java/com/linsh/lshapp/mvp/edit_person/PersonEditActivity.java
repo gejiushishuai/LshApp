@@ -281,12 +281,6 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         setName(person.getName());
         setDesc(person.getDescribe());
         setSex(person.getGender());
-        setGroup(getPrimaryGroup());
-    }
-
-    @Override
-    public String getPrimaryGroup() {
-        return LshActivityUtils.getStringExtra(getActivity(), 1);
     }
 
     @Override

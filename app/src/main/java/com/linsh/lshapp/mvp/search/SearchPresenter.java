@@ -41,7 +41,7 @@ public class SearchPresenter extends RealmPresenterImpl<SearchContract.View> imp
 
     @Override
     public void search(String query) {
-        Observable<List<SearchResult>> observable = LshRxUtils.getAsyncObservable(getRealm(), (realm, subscriber)
+        Observable<List<SearchResult>> observable = LshRxUtils.getAsyncObservable((realm, subscriber)
                 -> subscriber.onNext(getSearchResults(realm, query)));
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -56,7 +56,7 @@ public class SearchPresenter extends RealmPresenterImpl<SearchContract.View> imp
         RealmResults<Person> personsName = realm.where(Person.class).contains("name", query).findAll();
         for (Person person : personsName) {
             CharSequence name = getSpannableString(person.getName(), query, 0);
-            SearchResult value = new SearchResult(name);
+            SearchResult value = new SearchResult(person.getId(), name);
             persons.put(person, value);
         }
 
@@ -67,7 +67,7 @@ public class SearchPresenter extends RealmPresenterImpl<SearchContract.View> imp
                 SearchResult result = persons.get(person);
                 result.personDesc = describe;
             } else {
-                persons.put(person, new SearchResult(person.getName(), describe));
+                persons.put(person, new SearchResult(person.getId(), person.getName(), describe));
             }
         }
 
@@ -97,7 +97,7 @@ public class SearchPresenter extends RealmPresenterImpl<SearchContract.View> imp
                     if (results.containsKey(person)) {
                         result = results.get(person);
                     } else {
-                        result = new SearchResult(person.getName());
+                        result = new SearchResult(person.getId(), person.getName());
                         results.put(person, result);
                     }
                     if (result.typeDetail == null) {

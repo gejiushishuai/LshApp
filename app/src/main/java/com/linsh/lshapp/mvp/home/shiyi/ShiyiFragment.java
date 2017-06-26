@@ -68,7 +68,6 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
             public void onSecondLevelItemClick(Person SecondLevelData, int firstLevelPosition, int secondLevelPosition) {
                 LshActivityUtils.newIntent(PersonDetailActivity.class)
                         .putExtra(SecondLevelData.getId())
-                        .putExtra(mShiyiAdapter.getData().get(firstLevelPosition).getName(), 1)
                         .startActivityForResult(getActivity(), 101);
             }
         });

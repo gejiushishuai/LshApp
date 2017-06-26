@@ -183,7 +183,6 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     public void onInfoLayoutClick(View view) {
         LshActivityUtils.newIntent(PersonEditActivity.class)
                 .putExtra(mPresenter.getPerson().getId())
-                .putExtra(LshActivityUtils.getStringExtra(getActivity(), 1), 1)
                 .startActivityForResult(getActivity(), 101);
     }
 
