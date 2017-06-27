@@ -5,31 +5,23 @@ import com.google.gson.reflect.TypeToken;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.action.HttpThrowableAction;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Shiyi;
 import com.linsh.lshapp.model.bean.db.Type;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
-import com.linsh.lshapp.model.bean.http.UpdateInfo;
-import com.linsh.lshapp.service.InstallApkReceiver;
 import com.linsh.lshapp.task.network.UrlConnector;
-import com.linsh.lshapp.tools.HttpErrorCatcher;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.RealmTool;
 import com.linsh.lshapp.tools.SharedPreferenceTools;
-import com.linsh.lshutils.tools.LshDownloadManager;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
+import com.linsh.lshapp.tools.VersionChecker;
 import com.linsh.lshutils.utils.Basic.LshFileUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.utils.LshAppUtils;
-import com.tencent.tinker.lib.tinker.TinkerInstaller;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -146,45 +138,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
 
     @Override
     public void checkUpdate() {
-        Subscription checkUpdateSub = UrlConnector.checkUpdate()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(httpInfo -> {
-                    if (httpInfo.code == 0 && httpInfo.data != null && httpInfo.data.apk != null) {
-                        UpdateInfo.ApkBean apk = httpInfo.data.apk;
-                        if (apk.version != null) {
-                            // 判断如果有新版本的 APK, 则安装 APK
-                            if (apk.version.compareTo(LshAppUtils.getVersionName()) > 0) {
-                                getView().showTextDialog("存在新版本, 是否下载新版本?", "下载", dialog -> {
-                                    dialog.dismiss();
-                                    getView().showToast("正在下载新版本...");
-
-                                    LshDownloadManager manager = new LshDownloadManager("download_new_version");
-                                    long id = UrlConnector.downloadApk(manager, apk.url);
-                                    manager.registerCompleteReceiver(new InstallApkReceiver(id));
-
-                                }, null, null);
-                            } else {
-                                // 如果没有新版本 APK, 则判断是否需要升级补丁
-                                Map<String, UpdateInfo.ApkBean> patches = httpInfo.data.patchs;
-                                UpdateInfo.ApkBean patch = patches.get(LshAppUtils.getVersionName());
-                                if (patch != null && patch.version.compareTo(LshAppUtils.getVersionName()) > 0) {
-                                    getView().showToast("正在进行补丁升级...");
-                                    UrlConnector.downloadPatch(patch.url)
-                                            .subscribe(file -> {
-                                                TinkerInstaller.onReceiveUpgradePatch(LshApplicationUtils.getContext(), file.getAbsolutePath());
-                                            }, new HttpThrowableAction());
-                                } else {
-                                    getView().showToast("暂无更新");
-                                }
-                            }
-                        }
-                    } else {
-                        getView().showToast("暂无更新");
-                    }
-                }, e -> {
-                    String error = HttpErrorCatcher.dispatchError(e);
-                    getView().showToast(error);
-                });
+        Subscription checkUpdateSub = VersionChecker.checkUpdate(getView());
         addSubscription(checkUpdateSub);
     }
 

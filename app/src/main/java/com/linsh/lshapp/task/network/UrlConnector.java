@@ -15,7 +15,6 @@ import com.linsh.lshapp.task.network.api.DirService;
 import com.linsh.lshapp.task.network.api.FileService;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshutils.module.unit.FileSize;
-import com.linsh.lshutils.tools.LshDownloadManager;
 import com.linsh.lshutils.utils.Basic.LshFileUtils;
 import com.linsh.lshutils.utils.LshTimeUtils;
 
@@ -115,14 +114,7 @@ public class UrlConnector {
                 .flatMap(new FileTransfer(destFile));
     }
 
-    public static long downloadApk(LshDownloadManager manager, String url) {
-        String fileName = getFileNameFromUrl(url);
-        return manager.buildRequest(url, fileName)
-                .addRequestHeader("Authorization", QcloudSignCreater.getDownLoadSign("file/apk/" + fileName))
-                .download();
-    }
-
-    private static String getFileNameFromUrl(String url) {
+    public static String getFileNameFromUrl(String url) {
         return url.replaceFirst("https?://.+/", "");
     }
 
