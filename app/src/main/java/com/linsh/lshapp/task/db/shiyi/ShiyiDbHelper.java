@@ -33,28 +33,6 @@ import rx.Subscriber;
 
 public class ShiyiDbHelper {
 
-    /**
-     * 创建拾意数据表
-     */
-    public static void createShiyi(final Realm realm) {
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Shiyi shiyi = realm.createObject(Shiyi.class);
-                shiyi.setGroups(new RealmList<Group>());
-            }
-        });
-    }
-
-    public static void createPersonDetail(final Realm realm, final String personId) {
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealm(new PersonDetail(personId));
-            }
-        });
-    }
-
     public static RealmResults<Group> getGroups(Realm realm) {
         return realm.where(Group.class).findAllAsync();
     }
@@ -88,6 +66,10 @@ public class ShiyiDbHelper {
             protected void execute(Realm realm, Subscriber<? super Void> subscriber) {
                 // 获取shiyi表格
                 Shiyi shiyi = realm.where(Shiyi.class).findFirst();
+                if (shiyi == null) {
+                    shiyi = realm.createObject(Shiyi.class);
+                    shiyi.setGroups(new RealmList<Group>());
+                }
                 RealmList<Group> groups = shiyi.getGroups();
                 // 判断是否有该分组
                 Group sameNameGroup = groups.where().equalTo("name", groupName).findFirst();
