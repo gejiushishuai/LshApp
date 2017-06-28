@@ -12,6 +12,8 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseViewActivity;
 import com.linsh.lshapp.mvp.home.shiyi.ShiyiFragment;
 import com.linsh.lshapp.tools.MainFragmentHelper;
+import com.linsh.lshutils.utils.LshRecourseUtils;
+import com.linsh.lshutils.utils.LshSystemUtils;
 
 public class MainActivity extends BaseViewActivity<MainContract.MainPresenter> implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -25,6 +27,7 @@ public class MainActivity extends BaseViewActivity<MainContract.MainPresenter> i
 
     @Override
     protected void initView() {
+        LshSystemUtils.setTranslucentStatusBarWithInsertion(this, LshRecourseUtils.getColor(R.color.color_theme_dark_blue_pressed));
         // 初始化ToolBar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
