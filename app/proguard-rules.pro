@@ -87,6 +87,9 @@
     rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
 
+-keep class com.github.tamir7.contacts.** { *;}
+-keep class com.github.chrisbanes.photoview.** { *;}
+
 -keep class com.google.** { *;}
 -keep class org.apache.** { *;}
 -keep class com.squareup.** {*;}
