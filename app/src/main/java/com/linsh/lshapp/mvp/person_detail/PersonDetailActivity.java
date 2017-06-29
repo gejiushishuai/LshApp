@@ -24,7 +24,6 @@ import com.linsh.lshapp.mvp.type_detail.TypeDetailActivity;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.Rx.Action;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshListUtils;
 import com.linsh.lshutils.utils.LshScreenUtils;
@@ -172,8 +171,8 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         Person person = mPresenter.getPerson();
         if (person != null && person.isValid()) {
             String avatar = person.getAvatar();
-            String signedUrl = ImageTools.getSignedUrl(avatar);
-            if (!LshStringUtils.isEmpty(avatar)) {
+            if (ImageTools.isImageUrl(avatar)) {
+                String signedUrl = ImageTools.getSignedUrl(avatar);
                 Intent intent = new Intent(getActivity(), PhotoViewActivity.class);
                 intent.putExtra(PhotoViewActivity.EXTRA_URL, signedUrl);
                 startActivity(intent);

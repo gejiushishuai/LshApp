@@ -10,6 +10,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.lib.qcloud.QcloudSignCreater;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshRegexUtils;
 
 import java.io.File;
 
@@ -94,5 +95,9 @@ public class ImageTools {
 
     public static String getSignedUrl(String url) {
         return url + "?sign=" + QcloudSignCreater.getDownLoadSign(ImageTools.getCosPathFromUrl(url));
+    }
+
+    public static boolean isImageUrl(String url) {
+        return LshStringUtils.notEmpty(url) && LshRegexUtils.isURL(url);
     }
 }
