@@ -16,11 +16,12 @@ import rx.schedulers.Schedulers;
 
 public class LshRxUtils {
 
-    public static Observable<Void> getDoNothingObservable() {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
+    public static <T> Observable<T> getDoNothingObservable() {
+        return Observable.create(new Observable.OnSubscribe<T>() {
             @Override
-            public void call(Subscriber<? super Void> subscriber) {
+            public void call(Subscriber<? super T> subscriber) {
                 subscriber.onNext(null);
+                subscriber.onCompleted();
             }
         });
     }

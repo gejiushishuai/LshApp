@@ -1,5 +1,10 @@
 package com.linsh.lshapp.mvp.import_contacts;
 
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+
 import com.github.tamir7.contacts.Address;
 import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Contacts;
@@ -7,16 +12,32 @@ import com.github.tamir7.contacts.Event;
 import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
+import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Type;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
+import com.linsh.lshapp.model.bean.http.HttpInfo;
+import com.linsh.lshapp.model.bean.http.UploadInfo;
+import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.model.throwabes.PersonRepeatThrowable;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.network.UrlConnector;
+import com.linsh.lshapp.tools.HttpErrorCatcher;
+import com.linsh.lshapp.tools.LshFileFactory;
+import com.linsh.lshapp.tools.LshIdTools;
+import com.linsh.lshapp.tools.LshRxUtils;
+import com.linsh.lshapp.tools.NameTool;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
+import com.linsh.lshutils.utils.Basic.LshLogUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshBitmapUtils;
+import com.linsh.lshutils.view.LshColorDialog;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -25,6 +46,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Actions;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -61,33 +83,140 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
     @Override
     public void addContact(Contact contact) {
         getView().showLoadingDialog();
+        LshLogUtils.i("添加联系人");
 
         Person person = getPerson(contact);
         PersonDetail personDetail = getPersonDetail(contact, person.getId());
         Subscription addPersonAddDetailSub = ShiyiDbHelper.addPerson(getRealm(), ShiyiModelHelper.UNNAME_GROUP_NAME, person, personDetail)
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(Actions.empty(), throwable -> {
                     getView().dismissLoadingDialog();
                     if (throwable instanceof PersonRepeatThrowable) {
+                        LshLogUtils.i("已经存在该联系人");
                         getView().showTextDialog("已经存在该联系人, 如果添加将会覆盖重复的属性", "添加", dialog -> {
                             dialog.dismiss();
-                            ShiyiDbHelper.coverPersonAddDetail(getRealm(), person, personDetail)
+                            getView().showLoadingDialog();
+                            addSubscription(ShiyiDbHelper.coverPersonAddDetail(getRealm(), person, personDetail)
                                     .subscribe(Actions.empty(), throwable2 -> {
                                         getView().dismissLoadingDialog();
                                         DefaultThrowableAction.showThrowableMsg(throwable2);
                                     }, () -> {
                                         getView().dismissLoadingDialog();
-                                        getView().removeCurrentItem();
-                                    });
-
+                                        checkUploadAvatar(person, contact);
+                                    }));
                         }, null, null);
                     } else {
                         DefaultThrowableAction.showThrowableMsg(throwable);
                     }
                 }, () -> {
                     getView().dismissLoadingDialog();
-                    getView().removeCurrentItem();
+                    checkUploadAvatar(person, contact);
                 });
         addSubscription(addPersonAddDetailSub);
+    }
+
+    private void checkUploadAvatar(Person person, Contact contact) {
+        if (LshStringUtils.notEmpty(contact.getPhotoUri())) {
+            LshLogUtils.i("通讯录中有该联系人的头像");
+            getView().showTextDialog("是否继续上传该联系人的头像?", "上传", new LshColorDialog.OnPositiveListener() {
+                @Override
+                public void onClick(LshColorDialog dialog) {
+                    LshLogUtils.i("上传头像");
+                    dialog.dismiss();
+                    getView().showLoadingDialog();
+                    addSubscription(uploadAvatar(person, contact)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .flatMap(new Func1<ImageUrl, Observable<Void>>() {
+                                @Override
+                                public Observable<Void> call(ImageUrl imageUrl) {
+                                    if (imageUrl != null) {
+                                        LshLogUtils.i("上传头像成功, 保存联系人");
+                                        return ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
+                                    }
+                                    LshLogUtils.i("上传头像失败");
+                                    return LshRxUtils.getDoNothingObservable();
+                                }
+                            })
+                            .subscribe(Actions.empty(), new DismissLoadingThrowableAction(getView()), () -> {
+                                getView().dismissLoadingDialog();
+                                getView().removeCurrentItem();
+                            }));
+                }
+            }, null, null);
+        } else {
+            getView().removeCurrentItem();
+        }
+    }
+
+    public Observable<ImageUrl> uploadAvatar(Person person, Contact contact) {
+
+        return Observable.unsafeCreate(new Observable.OnSubscribe<ImageUrl>() {
+            @Override
+            public void call(Subscriber<? super ImageUrl> subscriber) {
+                // 判断是否有联系人头像
+                String photoUri = contact.getPhotoUri();
+                if (LshStringUtils.notEmpty(photoUri)) {
+                    try {
+                        Uri uri = Uri.parse(contact.getPhotoUri());
+                        ContentResolver resolver = LshApplicationUtils.getContext().getContentResolver();
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, uri);
+
+                        String avatarName = NameTool.getAvatarName(person.getName());
+                        String thumbName = NameTool.getAvatarThumbName(avatarName);
+                        File avatarFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
+                        File thumbFile = LshFileFactory.getUploadThumbFile(LshIdTools.getTimeId());
+
+                        if (bitmap.getByteCount() > 500 * 500) {
+                            // 生成原图和缩略图
+                            if (LshBitmapUtils.saveBitmap(bitmap, avatarFile, true) && avatarFile.exists()) {
+                                LshBitmapUtils.compressBitmap(avatarFile, thumbFile, 256, 256, 50);
+                            }
+                        } else if (bitmap.getByteCount() > 256 * 256) {
+                            // 生成缩略图
+                            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
+                            bitmap.recycle();
+                            LshBitmapUtils.saveBitmap(scaledBitmap, thumbFile, 50, true);
+                        } else {
+                            // 直接用作缩略图
+                            LshBitmapUtils.saveBitmap(bitmap, thumbFile, 50, true);
+                        }
+
+                        ImageUrl imageUrl = new ImageUrl();
+                        Observable<HttpInfo<UploadInfo>> observable = null;
+                        if (avatarFile.exists()) {
+                            observable = UrlConnector.uploadAvatar(avatarName, avatarFile);
+                        }
+                        if (thumbFile.exists()) {
+                            if (observable == null) {
+                                observable = UrlConnector.uploadThumb(thumbName, thumbFile);
+                            } else {
+                                observable = observable.flatMap(new Func1<HttpInfo<UploadInfo>, Observable<HttpInfo<UploadInfo>>>() {
+                                    @Override
+                                    public Observable<HttpInfo<UploadInfo>> call(HttpInfo<UploadInfo> uploadInfoHttpInfo) {
+                                        imageUrl.setUrl(uploadInfoHttpInfo.data.source_url);
+                                        return UrlConnector.uploadThumb(thumbName, thumbFile);
+                                    }
+                                });
+                            }
+                        }
+
+                        if (observable != null) {
+                            observable.subscribe(uploadInfoHttpInfo -> {
+                                imageUrl.setThumbUrl(uploadInfoHttpInfo.data.source_url);
+                                person.setAvatar(imageUrl.getUrl(), imageUrl.getThumbUrl());
+                                subscriber.onNext(imageUrl);
+                            }, throwable -> {
+                                subscriber.onError(new CustomThrowable(HttpErrorCatcher.dispatchError(throwable)));
+                            }, subscriber::onCompleted);
+                        } else {
+                            subscriber.onNext(null);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).observeOn(Schedulers.io());
     }
 
     public Person getPerson(Contact contact) {

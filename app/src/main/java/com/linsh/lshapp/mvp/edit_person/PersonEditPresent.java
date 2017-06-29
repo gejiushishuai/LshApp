@@ -15,7 +15,7 @@ import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;
 import com.linsh.lshapp.tools.LshRxUtils;
-import com.linsh.lshapp.tools.ShiyiModelHelper;
+import com.linsh.lshapp.tools.NameTool;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshImageUtils;
@@ -97,8 +97,8 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
 
         Observable<Void> observable;
         if (avatarFile != null) {
-            String avatarName = "avatar_" + ShiyiModelHelper.getPersonId(name);
-            String thumbName = "thumb_" + avatarName;
+            String avatarName = NameTool.getAvatarName(name);
+            String thumbName = NameTool.getAvatarThumbName(avatarName);
             File thumbFile = LshFileFactory.getUploadThumbFile(LshIdTools.getTimeId());
             final String[] thumbUrl = {null};
 

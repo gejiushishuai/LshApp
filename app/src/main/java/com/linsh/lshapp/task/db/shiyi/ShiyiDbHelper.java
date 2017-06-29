@@ -284,7 +284,7 @@ public class ShiyiDbHelper {
         return editPerson(realm, null, person, null);
     }
 
-    public static Observable<Void> editPerson(Realm realm, Person person,  ImageUrl avatar) {
+    public static Observable<Void> editPerson(Realm realm, Person person, ImageUrl avatar) {
         return editPerson(realm, null, person, avatar);
     }
 
@@ -441,6 +441,7 @@ public class ShiyiDbHelper {
                 // 获取 Person
                 Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
                 if (realmPerson != null) {
+                    person.setId(realmPerson.getId());
                     // 覆盖添加 Person 字段
                     if (LshStringUtils.isEmpty(person.getDescribe())) {
                         realmPerson.setDescribe(person.getDescribe());
