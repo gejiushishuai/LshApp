@@ -21,6 +21,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         addPreferencesFromResource(R.xml.preferences);
 
         findPreference("output_database").setOnPreferenceClickListener(this);
+        findPreference("output_word_repository").setOnPreferenceClickListener(this);
         findPreference("import_json").setOnPreferenceClickListener(this);
         findPreference("import_contacts").setOnPreferenceClickListener(this);
         findPreference("backup_database").setOnPreferenceClickListener(this);
@@ -34,6 +35,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         switch (preference.getKey()) {
             case "output_database":
                 ((SettingsActivity)getActivity()).outputDatabase();
+                break;
+            case "output_word_repository":
+                ((SettingsActivity)getActivity()).outputWordRepo();
                 break;
             case "import_json":
                 ((SettingsActivity)getActivity()).importGson();

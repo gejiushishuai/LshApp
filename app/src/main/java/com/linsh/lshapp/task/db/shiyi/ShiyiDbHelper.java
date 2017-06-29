@@ -1,5 +1,6 @@
 package com.linsh.lshapp.task.db.shiyi;
 
+import com.linsh.lshapp.model.action.AsyncAction;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.ImageUrl;
@@ -55,6 +56,16 @@ public class ShiyiDbHelper {
 
     public static PersonAlbum getPersonAlbum(Realm realm, String personId) {
         return realm.where(PersonAlbum.class).equalTo("id", personId).findFirstAsync();
+    }
+
+    public static Observable<List<Group>> getGroupsCopy(Realm realm) {
+        return LshRxUtils.getAsyncObservable(new AsyncAction<List<Group>>() {
+            @Override
+            public void call(Realm realm, Subscriber<? super List<Group>> subscriber) {
+                RealmResults<Group> groups = realm.where(Group.class).findAll();
+                subscriber.onNext(realm.copyFromRealm(groups));
+            }
+        });
     }
 
     /**

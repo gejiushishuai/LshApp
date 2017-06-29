@@ -47,6 +47,12 @@ public class LshFileFactory {
         return filesDir;
     }
 
+    private static File getOutputDir() {
+        File dir = new File(getAppDir(), "export");
+        makeDir(dir);
+        return dir;
+    }
+
     public static File getRealmFile() {
         File file = new File(LshApplicationUtils.getContext().getFilesDir(), "realm/shiyi.realm");
         if (file.exists()) {
@@ -99,5 +105,9 @@ public class LshFileFactory {
         File dir = new File(getFileAir(), "patch");
         makeDir(dir);
         return new File(dir, fileName);
+    }
+
+    public static File getOutputWordRepoFile() {
+        return new File(getOutputDir(), "联系人词库.txt");
     }
 }

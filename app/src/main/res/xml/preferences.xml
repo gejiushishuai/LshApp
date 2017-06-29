@@ -6,6 +6,10 @@
         android:title="@string/shiyi_settings_output_database"/>
 
     <Preference
+        android:key="output_word_repository"
+        android:title="导出联系人词库"/>
+
+    <Preference
         android:key="import_json"
         android:title="导入Json数据"/>
 

@@ -5,11 +5,14 @@ import com.google.gson.reflect.TypeToken;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
 import com.linsh.lshapp.model.bean.db.Shiyi;
 import com.linsh.lshapp.model.bean.db.Type;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.bean.db.TypeLabel;
+import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshRxUtils;
@@ -18,9 +21,11 @@ import com.linsh.lshapp.tools.SharedPreferenceTools;
 import com.linsh.lshapp.tools.VersionChecker;
 import com.linsh.lshutils.utils.Basic.LshFileUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
+import com.linsh.lshutils.utils.LshClickUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
@@ -32,6 +37,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -156,6 +162,44 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
                         LshToastUtils.showToast("已成功备份至云端");
                         SharedPreferenceTools.refreshLastBackupRealmTime();
                     }
+                }, new DefaultThrowableAction());
+    }
+
+    @Override
+    public void outputWordRepo() {
+        if (LshClickUtils.isFastDoubleClick()) {
+            return;
+        }
+        long realmModifiedTime = new File(getRealm().getPath()).lastModified();
+        File file = LshFileFactory.getOutputWordRepoFile();
+        if (file.exists() && realmModifiedTime < file.lastModified()) {
+            getView().showToast("数据库没有发生更改, 无须重复导出");
+            return;
+        }
+        ShiyiDbHelper.getGroupsCopy(getRealm())
+                .observeOn(Schedulers.io())
+                .map(new Func1<List<Group>, Boolean>() {
+                    @Override
+                    public Boolean call(List<Group> groups) {
+                        List<String> personNames = new ArrayList<>();
+                        for (Group group : groups) {
+                            for (Person person : group.getPersons()) {
+                                String name = person.getName();
+                                if (name.contains("-")) {
+                                    String[] splits = name.split("-");
+                                    Collections.addAll(personNames, splits);
+                                } else {
+                                    personNames.add(name);
+                                }
+                            }
+                        }
+                        LshFileUtils.writeFile(file.getAbsolutePath(), personNames);
+                        return true;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(groups -> {
+                    getView().showToast("导出成功");
                 }, new DefaultThrowableAction());
     }
 }

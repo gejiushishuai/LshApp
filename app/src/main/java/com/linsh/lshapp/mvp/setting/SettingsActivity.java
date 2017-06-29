@@ -42,6 +42,10 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
         mPresenter.outputDatabase();
     }
 
+    public void outputWordRepo() {
+        mPresenter.outputWordRepo();
+    }
+
     public void importGson() {
         showTextDialog("请确保将Json文本数据按照表格名称存放在SD卡\"" + LshConfig.appNameEn + "/import/json\"目录",
                 "是的", new LshColorDialog.OnPositiveListener() {
