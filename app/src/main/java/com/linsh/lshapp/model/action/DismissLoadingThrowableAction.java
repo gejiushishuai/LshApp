@@ -18,5 +18,6 @@ public class DismissLoadingThrowableAction extends DefaultThrowableAction {
     public void call(Throwable throwable) {
         super.call(throwable);
         mBaseView.dismissLoadingDialog();
+        DefaultThrowableAction.showThrowableMsg(throwable);
     }
 }
