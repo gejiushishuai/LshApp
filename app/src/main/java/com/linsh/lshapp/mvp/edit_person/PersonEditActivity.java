@@ -221,7 +221,9 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         if (mConfirmItem == null) {
             mConfirmItem = getToolbar().getMenu().findItem(R.id.menu_shiyi_add_person_confirm);
         }
-        if (!mConfirmItem.isEnabled() && !isEmpty(getName()) && !isEmpty(getGroup())) {
+        if (mConfirmItem == null) {
+            showToast("Maybe there is something wrong with confirm menu item, please note!");
+        } else if (!mConfirmItem.isEnabled() && !isEmpty(getName()) && !isEmpty(getGroup())) {
             mConfirmItem.setEnabled(true);
         }
     }
