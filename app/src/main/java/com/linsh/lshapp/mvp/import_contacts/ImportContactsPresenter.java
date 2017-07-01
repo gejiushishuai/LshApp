@@ -231,6 +231,7 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
         PersonDetail personDetail = new PersonDetail(personId);
         RealmList<Type> types = personDetail.getTypes();
 
+        // 添加电话
         List<PhoneNumber> phoneNumbers = contact.getPhoneNumbers();
         if (phoneNumbers.size() > 0) {
             Type type = new Type(personId, "电话", types.size() + 1);
@@ -239,14 +240,16 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                 type.getTypeDetails().add(new TypeDetail(type.getId(), phoneNumbers.size() + 1, phoneNumber.getNormalizedNumber(), null));
             }
         }
+        // 添加地址
         List<Address> addresses = contact.getAddresses();
         if (addresses.size() > 0) {
-            Type type = new Type(personId, "地址", types.size() + 1);
+            Type type = new Type(personId, "住址", types.size() + 1);
             types.add(type);
             for (Address address : addresses) {
                 type.getTypeDetails().add(new TypeDetail(type.getId(), addresses.size() + 1, address.getFormattedAddress(), null));
             }
         }
+        // 添加生日
         List<Event> events = contact.getEvents();
         if (events != null && events.size() > 0) {
             Type type = new Type(personId, "生日", types.size() + 1);
@@ -277,6 +280,7 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
             }
             types.add(type);
         }
+        // 添加备注
         String note = contact.getNote();
         if (!LshStringUtils.isEmpty(note)) {
             Type type = new Type(personId, "备注", types.size() + 1);
