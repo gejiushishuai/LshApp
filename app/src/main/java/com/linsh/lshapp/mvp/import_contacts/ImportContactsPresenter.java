@@ -34,10 +34,14 @@ import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshBitmapUtils;
+import com.linsh.lshutils.utils.LshDateUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -243,11 +247,35 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                 type.getTypeDetails().add(new TypeDetail(type.getId(), addresses.size() + 1, address.getFormattedAddress(), null));
             }
         }
-        Event birthday = contact.getBirthday();
-        if (birthday != null) {
+        List<Event> events = contact.getEvents();
+        if (events != null && events.size() > 0) {
             Type type = new Type(personId, "生日", types.size() + 1);
+            for (Event event : events) {
+                switch (event.getType()) {
+                    case BIRTHDAY:
+                        type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, event.getStartDate(), null));
+                        break;
+                    case UNKNOWN:
+                        String birthday = null;
+                        try {
+                            String startDate = event.getStartDate();
+                            if (startDate.matches("\\d{2}-\\d{2}")) {
+                                Date date = new SimpleDateFormat("MM-dd").parse(startDate);
+                                birthday = LshDateUtils.getLunarDate(date, false);
+                            } else if (startDate.matches("\\d{4}-\\d{1,2}-\\d{1,2}")) {
+                                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+                                birthday = LshDateUtils.getLunarDate(date, false);
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        if (birthday != null) {
+                            type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, birthday, null));
+                        }
+                        break;
+                }
+            }
             types.add(type);
-            type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, birthday.getStartDate(), null));
         }
         String note = contact.getNote();
         if (!LshStringUtils.isEmpty(note)) {
