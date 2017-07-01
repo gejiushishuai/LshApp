@@ -245,11 +245,15 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
         }
         Event birthday = contact.getBirthday();
         if (birthday != null) {
-            types.add(new Type(personId, "生日", types.size() + 1));
+            Type type = new Type(personId, "生日", types.size() + 1);
+            types.add(type);
+            type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, birthday.getStartDate(), null));
         }
         String note = contact.getNote();
         if (!LshStringUtils.isEmpty(note)) {
-            types.add(new Type(personId, "备注", types.size() + 1));
+            Type type = new Type(personId, "备注", types.size() + 1);
+            types.add(type);
+            type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, note, null));
         }
         return personDetail;
     }
