@@ -67,7 +67,7 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
             @Override
             public void call(Subscriber<? super List<Contact>> subscriber) {
                 Contacts.initialize(LshApplicationUtils.getContext());
-                subscriber.onNext(Contacts.getQuery().hasPhoneNumber().find());
+                subscriber.onNext(Contacts.getQuery().find());
             }
         });
         observable.subscribeOn(Schedulers.io())

@@ -40,7 +40,11 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
                 PhoneNumber::getNormalizedNumber), " & ");
 
         holder.tvName.setText(name);
-        holder.tvNumber.setText("电话: " + number);
+        if (LshStringUtils.notEmpty(number)) {
+            holder.tvNumber.setText("电话: " + number);
+        } else {
+            holder.tvNumber.setText("");
+        }
         holder.rlDetailLayout.setVisibility(View.GONE);
         holder.itemView.setOnClickListener(this);
         holder.tvAdd.setOnClickListener(this);
