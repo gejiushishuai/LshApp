@@ -259,9 +259,11 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
             for (Event event : events) {
                 switch (event.getType()) {
                     case BIRTHDAY:
+                        // 生日
                         type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, event.getStartDate(), null));
                         break;
                     case UNKNOWN:
+                        // 农历生日, 目前魅族可以, 小米不行
                         String birthday = null;
                         try {
                             String startDate = event.getStartDate();
