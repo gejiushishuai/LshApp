@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -237,10 +238,15 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
         // 添加电话
         List<PhoneNumber> phoneNumbers = contact.getPhoneNumbers();
         if (phoneNumbers.size() > 0) {
+            List<String> list = new ArrayList<>();
             Type type = new Type(personId, "电话", types.size() + 1);
             types.add(type);
             for (PhoneNumber phoneNumber : phoneNumbers) {
-                type.getTypeDetails().add(new TypeDetail(type.getId(), phoneNumbers.size() + 1, phoneNumber.getNormalizedNumber(), null));
+                String number = phoneNumber.getNormalizedNumber();
+                if (!list.contains(number)) {
+                    type.getTypeDetails().add(new TypeDetail(type.getId(), phoneNumbers.size() + 1, number, null));
+                    list.add(number);
+                }
             }
         }
         // 添加地址
