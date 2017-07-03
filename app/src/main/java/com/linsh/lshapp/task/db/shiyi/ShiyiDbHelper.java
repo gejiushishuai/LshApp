@@ -453,6 +453,7 @@ public class ShiyiDbHelper {
                 Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
                 if (realmPerson != null) {
                     person.setId(realmPerson.getId());
+                    personDetail.setId(realmPerson.getId());
                     // 覆盖添加 Person 字段
                     if (LshStringUtils.isEmpty(person.getDescribe())) {
                         realmPerson.setDescribe(person.getDescribe());
