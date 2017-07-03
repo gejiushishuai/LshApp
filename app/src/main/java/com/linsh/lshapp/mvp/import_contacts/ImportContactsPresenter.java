@@ -142,7 +142,10 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                                 getView().removeCurrentItem();
                             }));
                 }
-            }, null, null);
+            }, "不上传", dialog -> {
+                dialog.dismiss();
+                getView().removeCurrentItem();
+            });
         } else {
             getView().removeCurrentItem();
         }
