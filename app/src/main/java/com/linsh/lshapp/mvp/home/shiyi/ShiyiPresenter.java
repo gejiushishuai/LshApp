@@ -13,7 +13,6 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import rx.Subscription;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
 
@@ -29,7 +28,7 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
     protected void attachView() {
         mGroups = ShiyiDbHelper.getGroups(getRealm());
         mGroups.addChangeListener(element -> {
-            getView().setData(mGroups);
+            getView().setData(getRealm().copyFromRealm(mGroups));
         });
     }
 
@@ -57,13 +56,7 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
     @Override
     public void addGroup(String groupName) {
         Subscription subscription = ShiyiDbHelper.addGroup(getRealm(), groupName)
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(),
-                        new Action0() {
-                            @Override
-                            public void call() {
-                                getView().setData(mGroups);
-                            }
-                        });
+                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), Actions.empty());
         addSubscription(subscription);
     }
 
@@ -86,12 +79,7 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
                             getView().showToast(throwable.getMessage());
                         }
                     }
-                }, new Action0() {
-                    @Override
-                    public void call() {
-                        getView().setData(mGroups);
-                    }
-                });
+                }, Actions.empty());
         addSubscription(subscription);
     }
 
@@ -106,12 +94,7 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
                     public void onClick(LshColorDialog dialog) {
                         dialog.dismiss();
                         ShiyiDbHelper.moveToUnnameGroup(getRealm(), groupId)
-                                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
-                                    @Override
-                                    public void call() {
-                                        getView().setData(mGroups);
-                                    }
-                                });
+                                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
                     }
                 }, null, null);
     }
@@ -122,13 +105,7 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
 
         if (!group.getName().equals(groupName)) {
             Subscription subscription = ShiyiDbHelper.renameGroup(getRealm(), group.getId(), groupName)
-                    .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(),
-                            new Action0() {
-                                @Override
-                                public void call() {
-                                    getView().setData(mGroups);
-                                }
-                            });
+                    .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), Actions.empty());
             addSubscription(subscription);
         }
     }
