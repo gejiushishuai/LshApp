@@ -178,7 +178,9 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
             if (oldGroupPosition >= 0 && newGroupPosition >= 0) {
                 Group oldGroup = mOldData.get(oldGroupPosition);
                 Group newGroup = mNewData.get(newGroupPosition);
-                return oldGroup.getName().equals(newGroup.getName()) && oldGroup.getSort() == newGroup.getSort();
+                return oldGroup.getName().equals(newGroup.getName())
+                        && oldGroup.getSort() == newGroup.getSort()
+                        && oldGroup.getPersons().size() == newGroup.getPersons().size();
             } else if (oldPersonPosition >= 0 && newPersonPosition >= 0) {
                 Person oldPerson = mOldData.get(oldExpandedPosition).getPersons().get(oldPersonPosition);
                 Person newPerson = mNewData.get(newExpandedPosition).getPersons().get(newPersonPosition);
