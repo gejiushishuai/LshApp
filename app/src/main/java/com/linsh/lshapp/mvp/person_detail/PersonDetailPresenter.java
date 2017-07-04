@@ -118,7 +118,7 @@ public class PersonDetailPresenter extends RealmPresenterImpl<PersonDetailContra
 
     @Override
     public void deletePerson() {
-        Subscription subscription = ShiyiDbHelper.deletePerson(getRealm(), mPersonDetail.getId())
+        Subscription subscription = ShiyiDbHelper.deletePerson(getRealm(), mPerson.getId())
                 .subscribe(Actions.empty(), new DefaultThrowableAction(), () -> getView().finishActivity());
         addSubscription(subscription);
     }
