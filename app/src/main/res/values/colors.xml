@@ -7,8 +7,8 @@
     <color name="color_theme_normal_blue">#00dce6</color> <!--用于按钮\可点击\选中\次提示效果-->
     <color name="color_theme_light_blue">#d8eff2</color> <!--用于标签\标题栏等-->
     <color name="color_theme_yellow">#ffc939</color> <!--用于页面重要提示\按钮\标识等-->
-    <color name="color_theme_bg">#f4f4f4</color> <!--用于页面内容区背景色-->
     <color name="color_theme_line">#dfdfdf</color> <!--用于线\头像描边-->
+    <color name="color_theme_window_bg">#F9F9F9</color> <!--用于线\头像描边-->
     <!--其他颜色-->
     <color name="color_disable">#c7c7c7</color> <!--用于线\头像描边-->
     <color name="color_text_disabled">#999</color>

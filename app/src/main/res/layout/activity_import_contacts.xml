@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.RecyclerView
-    android:id="@+id/rcv_import_contact"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rcv_import_contact"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_theme_window_bg"
     tools:context="com.linsh.lshapp.mvp.import_contacts.ImportContactsActivity">
 
 </android.support.v7.widget.RecyclerView>
