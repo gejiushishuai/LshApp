@@ -18,11 +18,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Senh Linsh on 17/5/5.
@@ -41,13 +42,14 @@ public class SearchPresenter extends RealmPresenterImpl<SearchContract.View> imp
 
     @Override
     public void search(String query) {
-        Observable<List<SearchResult>> observable = LshRxUtils.getAsyncObservable((realm, subscriber)
+        Flowable<List<SearchResult>> observable = LshRxUtils.getAsyncFlowable((realm, subscriber)
                 -> subscriber.onNext(getSearchResults(realm, query)));
-        observable.subscribeOn(Schedulers.io())
+        Disposable disposable = observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(searchResults -> {
                     getView().showResults(searchResults);
                 });
+        addDisposable(disposable);
     }
 
     private List<SearchResult> getSearchResults(Realm realm, String query) {

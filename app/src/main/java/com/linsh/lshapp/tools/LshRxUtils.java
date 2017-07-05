@@ -1,14 +1,16 @@
 package com.linsh.lshapp.tools;
 
 
-import com.linsh.lshapp.model.action.AsyncAction;
+import com.linsh.lshapp.model.action.AsyncConsumer;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Senh Linsh on 17/4/25.
@@ -16,52 +18,55 @@ import rx.schedulers.Schedulers;
 
 public class LshRxUtils {
 
-    public static <T> Observable<T> getDoNothingObservable() {
-        return Observable.create(new Observable.OnSubscribe<T>() {
-            @Override
-            public void call(Subscriber<? super T> subscriber) {
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        });
+    public static <T> Flowable<T> create(FlowableOnSubscribe<T> source) {
+        return Flowable.create(source, BackpressureStrategy.ERROR);
     }
 
-    public static <T> Observable<T> getAsyncTransactionObservable(final Realm realm, final AsyncTransaction<T> transaction) {
-        return Observable.create(new Observable.OnSubscribe<T>() {
+    public static <T> Flowable<T> getDoNothingFlowable() {
+        return Flowable.create(new FlowableOnSubscribe<T>() {
             @Override
-            public void call(final Subscriber<? super T> subscriber) {
-                transaction.setSubscriber(subscriber);
+            public void subscribe(FlowableEmitter<T> e) throws Exception {
+                e.onComplete();
+            }
+        }, BackpressureStrategy.ERROR);
+    }
+
+    public static <T> Flowable<T> getAsyncTransactionFlowable(final Realm realm, final AsyncTransaction<T> transaction) {
+        return Flowable.create(new FlowableOnSubscribe<T>() {
+            @Override
+            public void subscribe(FlowableEmitter<T> e) throws Exception {
+                transaction.setSubscriber(e);
                 realm.executeTransactionAsync(transaction,
                         new Realm.Transaction.OnSuccess() {
                             @Override
                             public void onSuccess() {
-                                subscriber.onCompleted();
+                                e.onComplete();
                             }
                         }, new Realm.Transaction.OnError() {
                             @Override
                             public void onError(Throwable error) {
-                                subscriber.onError(error);
+                                e.onError(error);
                             }
                         });
             }
-        }).observeOn(AndroidSchedulers.mainThread());
+        }, BackpressureStrategy.ERROR).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static <T> Observable<T> getAsyncObservable(final AsyncAction<T> action1) {
-        return Observable.unsafeCreate(new Observable.OnSubscribe<T>() {
+    public static <T> Flowable<T> getAsyncFlowable(final AsyncConsumer<T> action1) {
+        return Flowable.create(new FlowableOnSubscribe<T>() {
             @Override
-            public void call(final Subscriber<? super T> subscriber) {
+            public void subscribe(FlowableEmitter<T> emitter) throws Exception {
                 Realm bgRealm = Realm.getDefaultInstance();
                 try {
-                    action1.call(bgRealm, subscriber);
+                    action1.call(bgRealm, emitter);
                 } catch (final Throwable e) {
                     e.printStackTrace();
-                    subscriber.onError(e);
+                    emitter.onError(e);
                 } finally {
                     bgRealm.close();
                 }
-                subscriber.onCompleted();
+                emitter.onComplete();
             }
-        }).subscribeOn(Schedulers.io());
+        }, BackpressureStrategy.ERROR).subscribeOn(Schedulers.io());
     }
 }

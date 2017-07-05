@@ -1,7 +1,7 @@
 package com.linsh.lshapp.model.action;
 
+import io.reactivex.FlowableEmitter;
 import io.realm.Realm;
-import rx.Subscriber;
 
 /**
  * Created by Senh Linsh on 17/5/5.
@@ -9,17 +9,17 @@ import rx.Subscriber;
 
 public abstract class AsyncTransaction<T> implements Realm.Transaction {
 
-    private Subscriber<? super T> mSubscriber;
+    private FlowableEmitter<? super T> mEmitter;
 
     @Override
     public void execute(Realm realm) {
-        execute(realm, mSubscriber);
-        mSubscriber.onCompleted();
+        execute(realm, mEmitter);
+        mEmitter.onComplete();
     }
 
-    protected abstract void execute(Realm realm, Subscriber<? super T> subscriber);
+    protected abstract void execute(Realm realm, FlowableEmitter<? super T> emitter);
 
-    public void setSubscriber(Subscriber<? super T> subscriber) {
-        mSubscriber = subscriber;
+    public void setSubscriber(FlowableEmitter<? super T> emitter) {
+        mEmitter = emitter;
     }
 }

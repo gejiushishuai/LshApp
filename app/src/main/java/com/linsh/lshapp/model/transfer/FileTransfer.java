@@ -7,16 +7,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 
 /**
  * Created by Senh Linsh on 17/5/19.
  */
 
-public class FileTransfer implements Func1<ResponseBody, Observable<File>> {
+public class FileTransfer implements Function<ResponseBody, Flowable<File>> {
 
     private File destFile;
 
@@ -29,18 +30,18 @@ public class FileTransfer implements Func1<ResponseBody, Observable<File>> {
     }
 
     @Override
-    public Observable<File> call(ResponseBody responseBody) {
-        return Observable.create(subscriber -> {
+    public Flowable<File> apply(ResponseBody responseBody) throws Exception {
+        return Flowable.create(emitter -> {
             try {
-                saveFile(responseBody, subscriber);
-                subscriber.onCompleted();
+                saveFile(responseBody, emitter);
+                emitter.onComplete();
             } catch (IOException e) {
-                subscriber.onError(e);
+                emitter.onError(e);
             }
-        });
+        }, BackpressureStrategy.ERROR);
     }
 
-    private void saveFile(ResponseBody response, Subscriber<? super File> subscriber) throws IOException {
+    private void saveFile(ResponseBody response, FlowableEmitter<? super File> emitter) throws IOException {
         InputStream is = null;
         byte[] buf = new byte[2048];
         int len = 0;
@@ -58,7 +59,7 @@ public class FileTransfer implements Func1<ResponseBody, Observable<File>> {
                 fos.write(buf, 0, len);
             }
             fos.flush();
-            subscriber.onNext(destFile);
+            emitter.onNext(destFile);
         } finally {
             LshIOUtils.close(response, is, fos);
         }

@@ -3,7 +3,7 @@ package com.linsh.lshapp.tools;
 import android.content.Intent;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.action.HttpThrowableAction;
+import com.linsh.lshapp.model.action.HttpThrowableConsumer;
 import com.linsh.lshapp.model.bean.http.UpdateInfo;
 import com.linsh.lshapp.service.UpdateService;
 import com.linsh.lshapp.task.network.UrlConnector;
@@ -13,8 +13,8 @@ import com.tencent.tinker.lib.tinker.TinkerInstaller;
 
 import java.util.Map;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Senh Linsh on 17/6/12.
@@ -22,7 +22,7 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class VersionChecker {
 
-    public static Subscription checkUpdate(BaseContract.BaseView view) {
+    public static Disposable checkUpdate(BaseContract.BaseView view) {
         return UrlConnector.checkUpdate()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(httpInfo -> {
@@ -48,7 +48,7 @@ public class VersionChecker {
                                     UrlConnector.downloadPatch(patch.url)
                                             .subscribe(file -> {
                                                 TinkerInstaller.onReceiveUpgradePatch(LshApplicationUtils.getContext(), file.getAbsolutePath());
-                                            }, new HttpThrowableAction());
+                                            }, new HttpThrowableConsumer());
                                 } else {
                                     view.showToast("暂无更新");
                                 }

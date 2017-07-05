@@ -1,8 +1,9 @@
 package com.linsh.lshapp.mvp.home.shiyi;
 
 import com.linsh.lshapp.base.RealmPresenterImpl;
-import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.action.NothingAction;
+import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
+import com.linsh.lshapp.model.action.EmptyConsumer;
+import com.linsh.lshapp.model.action.NothingConsumer;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
@@ -11,10 +12,8 @@ import com.linsh.lshutils.view.LshColorDialog;
 
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
 import io.realm.RealmResults;
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Actions;
 
 /**
  * Created by Senh Linsh on 17/4/24.
@@ -55,32 +54,29 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
 
     @Override
     public void addGroup(String groupName) {
-        Subscription subscription = ShiyiDbHelper.addGroup(getRealm(), groupName)
-                .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), Actions.empty());
-        addSubscription(subscription);
+        Disposable disposable = ShiyiDbHelper.addGroup(getRealm(), groupName)
+                .subscribe(new NothingConsumer<>(), new DefaultThrowableConsumer());
+        addDisposable(disposable);
     }
 
     @Override
     public void deleteGroup(int position) {
         final Group group = mGroups.get(position);
 
-        Subscription subscription = ShiyiDbHelper.deleteGroup(getRealm(), group.getId())
-                .subscribe(new NothingAction<Void>(), new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        if (throwable instanceof DeleteUnnameGroupThrowable) {
-                            // 删除未分组分组
-                            deleteUnnameGroup();
-                        } else if (throwable instanceof DeleteUnemptyGroupThrowable) {
-                            // 删除非空分组
-                            deleteUnemptyGroup(group.getId());
-                        } else {
-                            throwable.printStackTrace();
-                            getView().showToast(throwable.getMessage());
-                        }
+        Disposable disposable = ShiyiDbHelper.deleteGroup(getRealm(), group.getId())
+                .subscribe(new NothingConsumer<Void>(), throwable -> {
+                    if (throwable instanceof DeleteUnnameGroupThrowable) {
+                        // 删除未分组分组
+                        deleteUnnameGroup();
+                    } else if (throwable instanceof DeleteUnemptyGroupThrowable) {
+                        // 删除非空分组
+                        deleteUnemptyGroup(group.getId());
+                    } else {
+                        throwable.printStackTrace();
+                        getView().showToast(throwable.getMessage());
                     }
-                }, Actions.empty());
-        addSubscription(subscription);
+                });
+        addDisposable(disposable);
     }
 
     private void deleteUnnameGroup() {
@@ -93,8 +89,9 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
                     @Override
                     public void onClick(LshColorDialog dialog) {
                         dialog.dismiss();
-                        ShiyiDbHelper.moveToUnnameGroup(getRealm(), groupId)
-                                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
+                        Disposable disposable = ShiyiDbHelper.moveToUnnameGroup(getRealm(), groupId)
+                                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer());
+                        addDisposable(disposable);
                     }
                 }, null, null);
     }
@@ -104,9 +101,9 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
         Group group = mGroups.get(position);
 
         if (!group.getName().equals(groupName)) {
-            Subscription subscription = ShiyiDbHelper.renameGroup(getRealm(), group.getId(), groupName)
-                    .subscribe(new NothingAction<Void>(), new DefaultThrowableAction(), Actions.empty());
-            addSubscription(subscription);
+            Disposable disposable = ShiyiDbHelper.renameGroup(getRealm(), group.getId(), groupName)
+                    .subscribe(new NothingConsumer<Void>(), new DefaultThrowableConsumer());
+            addDisposable(disposable);
         }
     }
 }

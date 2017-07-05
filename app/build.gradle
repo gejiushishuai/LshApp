@@ -79,13 +79,11 @@ dependencies {
     // 汉字转拼音
     compile 'com.belerweb:pinyin4j:2.5.1'
     // Rxjava
-    compile 'io.reactivex:rxjava:1.2.9'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.jakewharton.rxbinding:rxbinding:1.0.1'
-    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:1.0.1'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     // Dagger
     compile 'com.google.dagger:dagger:2.10'

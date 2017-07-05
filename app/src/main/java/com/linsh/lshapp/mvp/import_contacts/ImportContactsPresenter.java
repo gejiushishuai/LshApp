@@ -11,8 +11,9 @@ import com.github.tamir7.contacts.Contacts;
 import com.github.tamir7.contacts.Event;
 import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.base.RealmPresenterImpl;
-import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
+import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
+import com.linsh.lshapp.model.action.DismissLoadingThrowableConsumer;
+import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
@@ -45,14 +46,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Actions;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Senh Linsh on 17/5/2.
@@ -63,14 +62,11 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
     @Override
     protected void attachView() {
         getView().showLoadingDialog();
-        Observable<List<Contact>> observable = Observable.unsafeCreate(new Observable.OnSubscribe<List<Contact>>() {
-            @Override
-            public void call(Subscriber<? super List<Contact>> subscriber) {
-                Contacts.initialize(LshApplicationUtils.getContext());
-                subscriber.onNext(Contacts.getQuery().find());
-            }
+        Flowable<List<Contact>> flowable = LshRxUtils.create(emitter -> {
+            Contacts.initialize(LshApplicationUtils.getContext());
+            emitter.onNext(Contacts.getQuery().find());
         });
-        observable.subscribeOn(Schedulers.io())
+        Disposable disposable = flowable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(contacts -> {
                     getView().dismissLoadingDialog();
@@ -81,8 +77,9 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                     }
                 }, throwable -> {
                     getView().dismissLoadingDialog();
-                    DefaultThrowableAction.showThrowableMsg(throwable);
+                    DefaultThrowableConsumer.showThrowableMsg(throwable);
                 });
+        addDisposable(disposable);
     }
 
     @Override
@@ -92,32 +89,32 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
 
         Person person = getPerson(contact);
         PersonDetail personDetail = getPersonDetail(contact, person.getId());
-        Subscription addPersonAddDetailSub = ShiyiDbHelper.addPerson(getRealm(), ShiyiModelHelper.UNNAME_GROUP_NAME, person, personDetail)
+        Disposable addPersonAddDetailDisp = ShiyiDbHelper.addPerson(getRealm(), ShiyiModelHelper.UNNAME_GROUP_NAME, person, personDetail)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(Actions.empty(), throwable -> {
+                .subscribe(new EmptyConsumer<>(), throwable -> {
                     getView().dismissLoadingDialog();
                     if (throwable instanceof PersonRepeatThrowable) {
                         LshLogUtils.i("已经存在该联系人");
                         getView().showTextDialog("已经存在该联系人, 如果添加将会覆盖重复的属性", "添加", dialog -> {
                             dialog.dismiss();
                             getView().showLoadingDialog();
-                            addSubscription(ShiyiDbHelper.coverPersonAddDetail(getRealm(), person, personDetail)
-                                    .subscribe(Actions.empty(), throwable2 -> {
+                            addDisposable(ShiyiDbHelper.coverPersonAddDetail(getRealm(), person, personDetail)
+                                    .subscribe(new EmptyConsumer<>(), throwable2 -> {
                                         getView().dismissLoadingDialog();
-                                        DefaultThrowableAction.showThrowableMsg(throwable2);
+                                        DefaultThrowableConsumer.showThrowableMsg(throwable2);
                                     }, () -> {
                                         getView().dismissLoadingDialog();
                                         checkUploadAvatar(person, contact);
                                     }));
                         }, null, null);
                     } else {
-                        DefaultThrowableAction.showThrowableMsg(throwable);
+                        DefaultThrowableConsumer.showThrowableMsg(throwable);
                     }
                 }, () -> {
                     getView().dismissLoadingDialog();
                     checkUploadAvatar(person, contact);
                 });
-        addSubscription(addPersonAddDetailSub);
+        addDisposable(addPersonAddDetailDisp);
     }
 
     private void checkUploadAvatar(Person person, Contact contact) {
@@ -129,20 +126,17 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                     LshLogUtils.i("上传头像");
                     dialog.dismiss();
                     getView().showLoadingDialog();
-                    addSubscription(uploadAvatar(person, contact)
+                    addDisposable(uploadAvatar(person, contact)
                             .observeOn(AndroidSchedulers.mainThread())
-                            .flatMap(new Func1<ImageUrl, Observable<Void>>() {
-                                @Override
-                                public Observable<Void> call(ImageUrl imageUrl) {
-                                    if (imageUrl != null) {
-                                        LshLogUtils.i("上传头像成功, 保存联系人");
-                                        return ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
-                                    }
-                                    LshLogUtils.i("上传头像失败");
-                                    return LshRxUtils.getDoNothingObservable();
+                            .flatMap(imageUrl -> {
+                                if (imageUrl.getUrl() != null) {
+                                    LshLogUtils.i("上传头像成功, 保存联系人");
+                                    return ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
                                 }
+                                LshLogUtils.i("上传头像失败");
+                                return LshRxUtils.getDoNothingFlowable();
                             })
-                            .subscribe(Actions.empty(), new DismissLoadingThrowableAction(getView()), () -> {
+                            .subscribe(new EmptyConsumer<>(), new DismissLoadingThrowableConsumer(getView()), () -> {
                                 getView().dismissLoadingDialog();
                                 getView().removeCurrentItem();
                             }));
@@ -156,72 +150,66 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
         }
     }
 
-    public Observable<ImageUrl> uploadAvatar(Person person, Contact contact) {
+    public Flowable<ImageUrl> uploadAvatar(Person person, Contact contact) {
 
-        return Observable.unsafeCreate(new Observable.OnSubscribe<ImageUrl>() {
-            @Override
-            public void call(Subscriber<? super ImageUrl> subscriber) {
-                // 判断是否有联系人头像
-                String photoUri = contact.getPhotoUri();
-                if (LshStringUtils.notEmpty(photoUri)) {
-                    try {
-                        Uri uri = Uri.parse(contact.getPhotoUri());
-                        ContentResolver resolver = LshApplicationUtils.getContext().getContentResolver();
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, uri);
+        return LshRxUtils.create((FlowableOnSubscribe<ImageUrl>) emitter -> {
+            // 判断是否有联系人头像
+            String photoUri = contact.getPhotoUri();
+            if (LshStringUtils.notEmpty(photoUri)) {
+                try {
+                    Uri uri = Uri.parse(contact.getPhotoUri());
+                    ContentResolver resolver = LshApplicationUtils.getContext().getContentResolver();
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, uri);
 
-                        String avatarName = NameTool.getAvatarName(person.getName());
-                        String thumbName = NameTool.getAvatarThumbName(avatarName);
-                        File avatarFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
-                        File thumbFile = LshFileFactory.getUploadThumbFile(LshIdTools.getTimeId());
+                    String avatarName = NameTool.getAvatarName(person.getName());
+                    String thumbName = NameTool.getAvatarThumbName(avatarName);
+                    File avatarFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
+                    File thumbFile = LshFileFactory.getUploadThumbFile(LshIdTools.getTimeId());
 
-                        if (bitmap.getByteCount() > 500 * 500) {
-                            // 生成原图和缩略图
-                            if (LshBitmapUtils.saveBitmap(bitmap, avatarFile, true) && avatarFile.exists()) {
-                                LshBitmapUtils.compressBitmap(avatarFile, thumbFile, 256, 256, 50);
-                            }
-                        } else if (bitmap.getByteCount() > 256 * 256) {
-                            // 生成缩略图
-                            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
-                            bitmap.recycle();
-                            LshBitmapUtils.saveBitmap(scaledBitmap, thumbFile, 50, true);
-                        } else {
-                            // 直接用作缩略图
-                            LshBitmapUtils.saveBitmap(bitmap, thumbFile, 50, true);
+                    if (bitmap.getByteCount() > 500 * 500) {
+                        // 生成原图和缩略图
+                        if (LshBitmapUtils.saveBitmap(bitmap, avatarFile, true) && avatarFile.exists()) {
+                            LshBitmapUtils.compressBitmap(avatarFile, thumbFile, 256, 256, 50);
                         }
-
-                        ImageUrl imageUrl = new ImageUrl();
-                        Observable<HttpInfo<UploadInfo>> observable = null;
-                        if (avatarFile.exists()) {
-                            observable = UrlConnector.uploadAvatar(avatarName, avatarFile);
-                        }
-                        if (thumbFile.exists()) {
-                            if (observable == null) {
-                                observable = UrlConnector.uploadThumb(thumbName, thumbFile);
-                            } else {
-                                observable = observable.flatMap(new Func1<HttpInfo<UploadInfo>, Observable<HttpInfo<UploadInfo>>>() {
-                                    @Override
-                                    public Observable<HttpInfo<UploadInfo>> call(HttpInfo<UploadInfo> uploadInfoHttpInfo) {
-                                        imageUrl.setUrl(uploadInfoHttpInfo.data.source_url);
-                                        return UrlConnector.uploadThumb(thumbName, thumbFile);
-                                    }
-                                });
-                            }
-                        }
-
-                        if (observable != null) {
-                            observable.subscribe(uploadInfoHttpInfo -> {
-                                imageUrl.setThumbUrl(uploadInfoHttpInfo.data.source_url);
-                                person.setAvatar(imageUrl.getUrl(), imageUrl.getThumbUrl());
-                                subscriber.onNext(imageUrl);
-                            }, throwable -> {
-                                subscriber.onError(new CustomThrowable(HttpErrorCatcher.dispatchError(throwable)));
-                            }, subscriber::onCompleted);
-                        } else {
-                            subscriber.onNext(null);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } else if (bitmap.getByteCount() > 256 * 256) {
+                        // 生成缩略图
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
+                        bitmap.recycle();
+                        LshBitmapUtils.saveBitmap(scaledBitmap, thumbFile, 50, true);
+                    } else {
+                        // 直接用作缩略图
+                        LshBitmapUtils.saveBitmap(bitmap, thumbFile, 50, true);
                     }
+
+                    ImageUrl imageUrl = new ImageUrl();
+                    Flowable<HttpInfo<UploadInfo>> observable = null;
+                    if (avatarFile.exists()) {
+                        observable = UrlConnector.uploadAvatar(avatarName, avatarFile);
+                    }
+                    if (thumbFile.exists()) {
+                        if (observable == null) {
+                            observable = UrlConnector.uploadThumb(thumbName, thumbFile);
+                        } else {
+                            observable = observable.flatMap(uploadInfoHttpInfo -> {
+                                imageUrl.setUrl(uploadInfoHttpInfo.data.source_url);
+                                return UrlConnector.uploadThumb(thumbName, thumbFile);
+                            });
+                        }
+                    }
+
+                    if (observable != null) {
+                        observable.subscribe(uploadInfoHttpInfo -> {
+                            imageUrl.setThumbUrl(uploadInfoHttpInfo.data.source_url);
+                            person.setAvatar(imageUrl.getUrl(), imageUrl.getThumbUrl());
+                            emitter.onNext(imageUrl);
+                        }, throwable -> {
+                            emitter.onError(new CustomThrowable(HttpErrorCatcher.dispatchError(throwable)));
+                        }, emitter::onComplete);
+                    } else {
+                        emitter.onNext(new ImageUrl());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }).observeOn(Schedulers.io());

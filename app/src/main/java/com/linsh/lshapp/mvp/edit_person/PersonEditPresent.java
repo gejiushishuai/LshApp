@@ -1,15 +1,14 @@
 package com.linsh.lshapp.mvp.edit_person;
 
-import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.RealmPresenterImpl;
-import com.linsh.lshapp.model.action.AsyncAction;
-import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.action.AsyncConsumer;
+import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
+import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonAlbum;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
-import com.linsh.lshapp.model.event.PersonChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.LshFileFactory;
@@ -24,13 +23,14 @@ import com.linsh.lshutils.utils.LshRegexUtils;
 import java.io.File;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Actions;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Senh Linsh on 17/4/28.
@@ -49,9 +49,9 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
         String personId = getView().getPersonId();
         if (personId != null) {
             // 获取该联系人所在组别
-            LshRxUtils.getAsyncObservable(new AsyncAction<String>() {
+            Disposable disposable = LshRxUtils.getAsyncFlowable(new AsyncConsumer<String>() {
                 @Override
-                public void call(Realm realm, Subscriber<? super String> subscriber) {
+                public void call(Realm realm, FlowableEmitter<? super String> subscriber) {
                     Group group = realm.where(Group.class).equalTo("persons.id", personId).findFirst();
                     subscriber.onNext(group.getName());
                 }
@@ -59,6 +59,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                 mPrimaryGroupName = group;
                 getView().setGroup(group);
             });
+            addDisposable(disposable);
 
             mPerson = ShiyiDbHelper.getPerson(getRealm(), personId);
             mPerson.addChangeListener(element -> {
@@ -84,18 +85,19 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
 
     @Override
     public void addGroup(final String inputText) {
-        ShiyiDbHelper.addGroup(getRealm(), inputText)
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), () -> {
+        Disposable disposable = ShiyiDbHelper.addGroup(getRealm(), inputText)
+                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer(), () -> {
                     getView().setGroup(inputText);
                     getView().onPersonModified();
                 });
+        addDisposable(disposable);
     }
 
     @Override
     public void savePerson(String group, String name, String desc, String sex, File avatarFile) {
         getView().showLoadingDialog();
 
-        Observable<Void> observable;
+        Flowable<Void> flowable;
         if (avatarFile != null) {
             String avatarName = NameTool.getAvatarName(name);
             String thumbName = NameTool.getAvatarThumbName(avatarName);
@@ -103,17 +105,17 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
             final String[] thumbUrl = {null};
 
             // 生成缩略图
-            observable = Observable.unsafeCreate(subscriber -> {
+            flowable = Flowable.create(emitter -> {
                 LshLogUtils.i("生成缩略图");
                 // 宽高 256*256  最大尺寸 50Kb
                 boolean success = LshImageUtils.compressImage(avatarFile, thumbFile, 256, 256, 50);
                 if (success) {
-                    subscriber.onNext(null);
+                    emitter.onNext(true);
                 } else {
-                    subscriber.onError(new RuntimeException("生成缩略图失败!"));
+                    emitter.onError(new RuntimeException("生成缩略图失败!"));
                 }
-                subscriber.onCompleted();
-            }).subscribeOn(Schedulers.io())
+                emitter.onComplete();
+            }, BackpressureStrategy.ERROR).subscribeOn(Schedulers.io())
                     .flatMap(uploadInfoHttpInfo -> {
                         LshLogUtils.i("上传缩略图");
                         return UrlConnector.uploadThumb(thumbName, thumbFile);
@@ -131,20 +133,20 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                     });
 
         } else {
-            observable = getSavePersonObservable(group, name, desc, null, null, sex);
+            flowable = getSavePersonObservable(group, name, desc, null, null, sex);
         }
-        observable.observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Actions.empty(), throwable -> {
+        Disposable disposable = flowable.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EmptyConsumer<>(), throwable -> {
                     getView().dismissLoadingDialog();
                     getView().showToast("保存失败(" + throwable.getMessage() + ")");
                 }, () -> {
-                    RxBus.getDefault().post(new PersonChangedEvent());
                     getView().dismissLoadingDialog();
                     getView().finishActivity();
                 });
+        addDisposable(disposable);
     }
 
-    private Observable<Void> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex) {
+    private Flowable<Void> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex) {
         ImageUrl imageUrl = null;
         if (!LshStringUtils.isEmpty(avatarUrl) && LshRegexUtils.isURL(avatarUrl)) {
             imageUrl = new ImageUrl(avatarUrl, avatarThumbUrl);
@@ -153,7 +155,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
             Person person = new Person(name, desc, avatarUrl, avatarThumbUrl, sex);
             return ShiyiDbHelper.addPerson(getRealm(), group, person, new PersonDetail(person.getId()), new PersonAlbum(person.getId(), imageUrl));
         } else {
-            Observable<Void> observable;
+            Flowable<Void> flowable;
             Person person = getRealm().copyFromRealm(mPerson);
             person.setName(name);
             person.setDescribe(desc);
@@ -162,11 +164,11 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                 person.setAvatar(avatarUrl, avatarThumbUrl);
             }
             if (group.equals(mPrimaryGroupName)) {
-                observable = ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
+                flowable = ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
             } else {
-                observable = ShiyiDbHelper.editPerson(getRealm(), group, person, imageUrl);
+                flowable = ShiyiDbHelper.editPerson(getRealm(), group, person, imageUrl);
             }
-            return observable;
+            return flowable;
         }
     }
 }

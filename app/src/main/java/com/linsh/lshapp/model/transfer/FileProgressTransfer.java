@@ -1,5 +1,6 @@
 package com.linsh.lshapp.model.transfer;
 
+import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshutils.utils.Basic.LshIOUtils;
 
 import java.io.File;
@@ -7,16 +8,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 
 /**
  * Created by Senh Linsh on 17/5/19.
  */
 
-public class FileProgressTransfer implements Func1<ResponseBody, Observable<Float>> {
+public class FileProgressTransfer implements Function<ResponseBody, Flowable<Float>> {
 
     private File destFile;
 
@@ -29,18 +30,18 @@ public class FileProgressTransfer implements Func1<ResponseBody, Observable<Floa
     }
 
     @Override
-    public Observable<Float> call(ResponseBody responseBody) {
-        return Observable.create(subscriber -> {
+    public Flowable<Float> apply(ResponseBody responseBody) {
+        return LshRxUtils.create(emitter -> {
             try {
-                saveFile(responseBody, subscriber);
-                subscriber.onCompleted();
+                saveFile(responseBody, emitter);
+                emitter.onComplete();
             } catch (IOException e) {
-                subscriber.onError(e);
+                emitter.onError(e);
             }
         });
     }
 
-    private void saveFile(ResponseBody response, Subscriber<? super Float> subscriber) throws IOException {
+    private void saveFile(ResponseBody response, FlowableEmitter<Float> emitter) throws IOException {
         InputStream is = null;
         byte[] buf = new byte[2048];
         int len = 0;
@@ -61,7 +62,7 @@ public class FileProgressTransfer implements Func1<ResponseBody, Observable<Floa
                 sum += len;
                 fos.write(buf, 0, len);
                 final long finalSum = sum;
-                subscriber.onNext(finalSum * 1.0f / total);
+                emitter.onNext(finalSum * 1.0f / total);
             }
             fos.flush();
         } finally {

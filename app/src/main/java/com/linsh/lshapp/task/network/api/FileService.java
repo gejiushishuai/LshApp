@@ -6,6 +6,7 @@ import com.linsh.lshapp.model.bean.http.HttpInfo;
 import com.linsh.lshapp.model.bean.http.NoDataInfo;
 import com.linsh.lshapp.model.bean.http.UploadInfo;
 
+import io.reactivex.Flowable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
@@ -15,7 +16,6 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import rx.Observable;
 
 /**
  * Created by Senh Linsh on 17/5/18.
@@ -29,13 +29,13 @@ public interface FileService {
      */
     @Multipart
     @POST(QCloudConfig.URL_PREFIX + "/{dirName}/{fileName}?op=upload")
-    Observable<HttpInfo<UploadInfo>> upload(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName,
-                                            @Query("op") String op, @Query("insertOnly") int insertOnly, @Part("filecontent") RequestBody file);
+    Flowable<HttpInfo<UploadInfo>> upload(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName,
+                                          @Query("op") String op, @Query("insertOnly") int insertOnly, @Part("filecontent") RequestBody file);
 
     @POST(QCloudConfig.URL_PREFIX + "/{dirName}/{fileName}")
-    Observable<NoDataInfo> delete(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName,
+    Flowable<NoDataInfo> delete(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName,
                                   @Query("op") String op);
 
     @GET("{dirName}/{fileName}")
-    Observable<ResponseBody> download(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName);
+    Flowable<ResponseBody> download(@Header("Authorization") String auth, @Path("dirName") String dirName, @Path("fileName") String fileName);
 }

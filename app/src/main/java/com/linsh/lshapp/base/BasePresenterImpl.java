@@ -1,7 +1,8 @@
 package com.linsh.lshapp.base;
 
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Senh Linsh on 17/4/24.
@@ -10,23 +11,23 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class BasePresenterImpl<T extends BaseContract.BaseView> implements BaseContract.BasePresenter<T> {
 
     private T mView;
-    private CompositeSubscription mCompositeDisposable;
-    private CompositeSubscription RxBusSubscriptions;
+    private CompositeDisposable mCompositeDisposable;
+    private CompositeDisposable RxBusSubscriptions;
 
     @Override
     public void attachView(T view) {
         mView = view;
-        mCompositeDisposable = new CompositeSubscription();
-        RxBusSubscriptions = new CompositeSubscription();
+        mCompositeDisposable = new CompositeDisposable();
+        RxBusSubscriptions = new CompositeDisposable();
 
         attachView();
     }
 
     @Override
     public void detachView() {
-        mCompositeDisposable.unsubscribe();
+        mCompositeDisposable.dispose();
         RxBusSubscriptions.clear();
-        RxBusSubscriptions.unsubscribe();
+        RxBusSubscriptions.dispose();
     }
 
     protected abstract void attachView();
@@ -44,26 +45,26 @@ public abstract class BasePresenterImpl<T extends BaseContract.BaseView> impleme
         return mView;
     }
 
-    protected CompositeSubscription getSubscription() {
+    protected CompositeDisposable getSubscription() {
         return mCompositeDisposable;
     }
 
-    protected void addSubscription(Subscription disposable) {
+    protected void addDisposable(Disposable disposable) {
         mCompositeDisposable.add(disposable);
     }
 
-    protected void addSubscription(Subscription... disposables) {
-        for (Subscription disposable : disposables) {
+    protected void addDisposable(Disposable... disposables) {
+        for (Disposable disposable : disposables) {
             mCompositeDisposable.add(disposable);
         }
     }
 
-    protected void addRxBusSub(Subscription disposable) {
+    protected void addRxBusSub(Disposable disposable) {
         RxBusSubscriptions.add(disposable);
     }
 
-    protected void addRxBusSub(Subscription... disposables) {
-        for (Subscription disposable : disposables) {
+    protected void addRxBusSub(Disposable... disposables) {
+        for (Disposable disposable : disposables) {
             RxBusSubscriptions.add(disposable);
         }
     }

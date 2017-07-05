@@ -1,8 +1,9 @@
 package com.linsh.lshapp.mvp.person_detail;
 
 import com.linsh.lshapp.base.RealmPresenterImpl;
-import com.linsh.lshapp.model.action.DefaultThrowableAction;
-import com.linsh.lshapp.model.action.DismissLoadingThrowableAction;
+import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
+import com.linsh.lshapp.model.action.DismissLoadingThrowableConsumer;
+import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonAlbum;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
@@ -12,10 +13,8 @@ import com.linsh.lshutils.utils.Basic.LshLogUtils;
 
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
 import io.realm.RealmResults;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Actions;
 
 /**
  * Created by Senh Linsh on 17/4/28.
@@ -78,49 +77,44 @@ public class PersonDetailPresenter extends RealmPresenterImpl<PersonDetailContra
 
     @Override
     public void addTypeLabel(final String labelName) {
-        Subscription subscription = ShiyiDbHelper.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
-                    @Override
-                    public void call() {
-                        addType(labelName);
-                    }
-                });
-        addSubscription(subscription);
+        Disposable disposable = ShiyiDbHelper.addTypeLabel(getRealm(), labelName, mTypeLabels.size())
+                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer(), () -> addType(labelName));
+        addDisposable(disposable);
     }
 
     @Override
     public void addType(String typeName) {
-        Subscription subscription = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName)
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
-        addSubscription(subscription);
+        Disposable disposable = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName)
+                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer());
+        addDisposable(disposable);
     }
 
     @Override
     public void addType(String typeName, int sort) {
-        Subscription subscription = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
-                .subscribe(Actions.empty(), new DismissLoadingThrowableAction(getView()), Actions.empty());
-        addSubscription(subscription);
+        Disposable disposable = ShiyiDbHelper.addType(getRealm(), mPersonDetail.getId(), typeName, sort)
+                .subscribe(new EmptyConsumer<>(), new DismissLoadingThrowableConsumer(getView()));
+        addDisposable(disposable);
     }
 
     @Override
     public void deleteType(String typeId) {
-        Subscription subscription = ShiyiDbHelper.deleteType(getRealm(), typeId)
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
-        addSubscription(subscription);
+        Disposable disposable = ShiyiDbHelper.deleteType(getRealm(), typeId)
+                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer());
+        addDisposable(disposable);
     }
 
     @Override
     public void deleteTypeDetail(String typeDetailId) {
-        Subscription subscription = ShiyiDbHelper.deleteTypeDetail(getRealm(), typeDetailId)
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), Actions.empty());
-        addSubscription(subscription);
+        Disposable disposable = ShiyiDbHelper.deleteTypeDetail(getRealm(), typeDetailId)
+                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer());
+        addDisposable(disposable);
     }
 
     @Override
     public void deletePerson() {
-        Subscription subscription = ShiyiDbHelper.deletePerson(getRealm(), mPerson.getId())
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), () -> getView().finishActivity());
-        addSubscription(subscription);
+        Disposable disposable = ShiyiDbHelper.deletePerson(getRealm(), mPerson.getId())
+                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer(), () -> getView().finishActivity());
+        addDisposable(disposable);
     }
 
     @Override

@@ -2,17 +2,19 @@ package com.linsh.lshapp.model.transfer;
 
 import android.graphics.BitmapFactory;
 
+import com.linsh.lshapp.tools.LshRxUtils;
+
 import java.io.File;
 
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
-import rx.Observable;
-import rx.functions.Func1;
 
 /**
  * Created by Senh Linsh on 17/5/19.
  */
 
-public class BitmapTransfer implements Func1<ResponseBody, Observable<File>> {
+public class BitmapTransfer implements Function<ResponseBody, Flowable<File>> {
 
     private File destFile;
 
@@ -25,8 +27,8 @@ public class BitmapTransfer implements Func1<ResponseBody, Observable<File>> {
     }
 
     @Override
-    public Observable<File> call(ResponseBody responseBody) {
-        return Observable.create(subscriber -> {
+    public Flowable<File> apply(ResponseBody responseBody) {
+        return LshRxUtils.create(emitter -> {
             BitmapFactory.decodeStream(responseBody.byteStream());
         });
     }

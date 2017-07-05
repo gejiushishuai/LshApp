@@ -4,16 +4,17 @@ import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.tools.HttpErrorCatcher;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
 
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
+
 
 /**
  * Created by Senh Linsh on 17/4/28.
  */
 
-public class DefaultThrowableAction implements Action1<Throwable> {
+public class DefaultThrowableConsumer implements Consumer<Throwable> {
 
     @Override
-    public void call(Throwable throwable) {
+    public void accept(Throwable throwable) {
         showThrowableMsg(throwable);
     }
 

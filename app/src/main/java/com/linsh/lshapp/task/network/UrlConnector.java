@@ -20,13 +20,15 @@ import com.linsh.lshutils.utils.LshTimeUtils;
 
 import java.io.File;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Senh Linsh on 17/6/2.
@@ -34,7 +36,7 @@ import rx.schedulers.Schedulers;
 
 public class UrlConnector {
 
-    private static Observable<HttpInfo<UploadInfo>> uploadFile(String dirName, String fileName, File file) {
+    private static Flowable<HttpInfo<UploadInfo>> uploadFile(String dirName, String fileName, File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
         if (LshFileUtils.getFileSize(file, FileSize.MB) < 20) {
@@ -44,44 +46,44 @@ public class UrlConnector {
                     .observeOn(AndroidSchedulers.mainThread());
         } else {
             // TODO: 17/6/2  分片上传
-            return Observable.unsafeCreate(new Observable.OnSubscribe<HttpInfo<UploadInfo>>() {
+            return Flowable.create(new FlowableOnSubscribe<HttpInfo<UploadInfo>>() {
                 @Override
-                public void call(Subscriber<? super HttpInfo<UploadInfo>> subscriber) {
-                    subscriber.onError(new CustomThrowable("暂不支持上传 20M 以上文件"));
+                public void subscribe(FlowableEmitter<HttpInfo<UploadInfo>> emitter) throws Exception {
+                    emitter.onError(new CustomThrowable("暂不支持上传 20M 以上文件"));
                 }
-            });
+            }, BackpressureStrategy.ERROR);
         }
     }
 
-    private static Observable<ResponseBody> downloadFile(String dirName, String fileName) {
+    private static Flowable<ResponseBody> downloadFile(String dirName, String fileName) {
         return RetrofitHelper.createApi(FileService.class, QCloudConfig.HOST_DOWNLOAD)
                 .download(QcloudSignCreater.getPeriodSign(dirName + "/" + fileName), dirName, fileName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private static Observable<NoDataInfo> deleteFile(String dirName, String fileName) {
+    private static Flowable<NoDataInfo> deleteFile(String dirName, String fileName) {
         return RetrofitHelper.createApi(FileService.class, QCloudConfig.HOST_DOWNLOAD)
                 .delete(QcloudSignCreater.getOnceSign(dirName + "/" + fileName), dirName, fileName, "delete")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private static Observable<HttpInfo<CreateDirInfo>> createDir(String dirName) {
+    private static Flowable<HttpInfo<CreateDirInfo>> createDir(String dirName) {
         return RetrofitHelper.createApi(DirService.class, QCloudConfig.HOST_DOWNLOAD)
                 .create(QcloudSignCreater.getPeriodSign(dirName), dirName, "create")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private static Observable<NoDataInfo> deleteDir(String dirName) {
+    private static Flowable<NoDataInfo> deleteDir(String dirName) {
         return RetrofitHelper.createApi(DirService.class, QCloudConfig.HOST_DOWNLOAD)
                 .delete(QcloudSignCreater.getOnceSign(dirName), dirName, "delete")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<HttpInfo<UploadInfo>> uploadRealmData() {
+    public static Flowable<HttpInfo<UploadInfo>> uploadRealmData() {
         File file = LshFileFactory.getRealmFile();
         String time = LshTimeUtils.getTimeString(System.currentTimeMillis(), "yyyyMMdd_HHmmss");
         String fileName = "shiyi_" + time + (BuildConfig.DEBUG ? "_debug" : "") + ".realm";
@@ -90,26 +92,26 @@ public class UrlConnector {
         return uploadFile(dirName, fileName, file);
     }
 
-    public static Observable<HttpInfo<UploadInfo>> uploadAvatar(String fileName, File file) {
+    public static Flowable<HttpInfo<UploadInfo>> uploadAvatar(String fileName, File file) {
         RequestBody.create(MediaType.parse("multipart/form-data"), file);
         String dirName = BuildConfig.DEBUG ? "avatar/debug" : "avatar";
         return uploadFile(dirName, fileName, file);
     }
 
-    public static Observable<HttpInfo<UploadInfo>> uploadThumb(String thumbName, File file) {
+    public static Flowable<HttpInfo<UploadInfo>> uploadThumb(String thumbName, File file) {
         RequestBody.create(MediaType.parse("multipart/form-data"), file);
         String dirName = BuildConfig.DEBUG ? "thumb/debug" : "thumb";
         return uploadFile(dirName, thumbName, file);
     }
 
-    public static Observable<HttpInfo<UpdateInfo>> checkUpdate() {
+    public static Flowable<HttpInfo<UpdateInfo>> checkUpdate() {
         return RetrofitHelper.createApi(CommonApi.class, QCloudConfig.HOST_DOWNLOAD)
                 .update(QcloudSignCreater.getDownLoadSign("json/update.json"), "json", "update.json")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<File> downloadApk(String url, File destFile) {
+    public static Flowable<File> downloadApk(String url, File destFile) {
         return downloadFile("file/apk", getFileNameFromUrl(url))
                 .flatMap(new FileTransfer(destFile));
     }
@@ -118,7 +120,7 @@ public class UrlConnector {
         return url.replaceFirst("https?://.+/", "");
     }
 
-    public static Observable<File> downloadPatch(String url) {
+    public static Flowable<File> downloadPatch(String url) {
         String fileName = getFileNameFromUrl(url);
         return downloadFile("file/patch", fileName)
                 .flatMap(new FileTransfer(LshFileFactory.getPatchFile(fileName)))

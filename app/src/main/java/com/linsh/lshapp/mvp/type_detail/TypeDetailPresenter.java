@@ -1,15 +1,12 @@
 package com.linsh.lshapp.mvp.type_detail;
 
-import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.RealmPresenterImpl;
-import com.linsh.lshapp.model.action.DefaultThrowableAction;
+import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
+import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
-import com.linsh.lshapp.model.event.PersonDetailChangedEvent;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Actions;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Senh Linsh on 17/5/5.
@@ -39,15 +36,11 @@ public class TypeDetailPresenter extends RealmPresenterImpl<TypeDetailContract.V
     @Override
     public void saveTypeDetail(String info, String desc) {
         if (!info.equals(mTypeDetail.getDetail()) || !desc.equals(mTypeDetail.getDescribe())) {
-            Subscription subscription = ShiyiDbHelper.editTypeDetail(getRealm(), mTypeDetail.getId(), info, desc)
-                    .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
-                        @Override
-                        public void call() {
-                            RxBus.getDefault().post(new PersonDetailChangedEvent());
-                            getView().finishActivity();
-                        }
+            Disposable disposable = ShiyiDbHelper.editTypeDetail(getRealm(), mTypeDetail.getId(), info, desc)
+                    .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer(), () -> {
+                        getView().finishActivity();
                     });
-            addSubscription(subscription);
+            addDisposable(disposable);
         } else {
             getView().finishActivity();
         }
@@ -55,15 +48,11 @@ public class TypeDetailPresenter extends RealmPresenterImpl<TypeDetailContract.V
 
     @Override
     public void deleteTypeDetail() {
-        Subscription subscription = ShiyiDbHelper.deleteTypeDetail(getRealm(), mTypeDetail.getId())
-                .subscribe(Actions.empty(), new DefaultThrowableAction(), new Action0() {
-                    @Override
-                    public void call() {
-                        RxBus.getDefault().post(new PersonDetailChangedEvent());
-                        getView().finishActivity();
-                    }
+        Disposable disposable = ShiyiDbHelper.deleteTypeDetail(getRealm(), mTypeDetail.getId())
+                .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer(), () -> {
+                    getView().finishActivity();
                 });
-        addSubscription(subscription);
+        addDisposable(disposable);
     }
 
     @Override
