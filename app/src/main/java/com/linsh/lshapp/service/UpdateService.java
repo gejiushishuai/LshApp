@@ -71,7 +71,7 @@ public class UpdateService extends Service {
         LshLogUtils.i("installApk");
         File file = LshDownloadManager.getFileIfDownloaded(mId);
         if (file != null && file.exists() && file.getName().endsWith(".apk")) {
-            LshAppUtils.installApk(LshActivityLifecycleUtils.getTopActivity(), file);
+            LshAppUtils.installApk(file);
         }
     }
 
