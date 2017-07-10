@@ -19,6 +19,6 @@ public class HttpThrowableConsumer implements Consumer<Throwable> {
 
     public static void showThrowableMsg(Throwable throwable) {
         throwable.printStackTrace();
-        LshToastUtils.showToast(HttpErrorCatcher.dispatchError(throwable));
+        LshToastUtils.show(HttpErrorCatcher.dispatchError(throwable));
     }
 }

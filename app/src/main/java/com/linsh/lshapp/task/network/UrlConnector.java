@@ -64,7 +64,7 @@ public class UrlConnector {
 
     private static Flowable<NoDataInfo> deleteFile(String dirName, String fileName) {
         return RetrofitHelper.createApi(FileService.class, QCloudConfig.HOST_DOWNLOAD)
-                .delete(QcloudSignCreater.getOnceSign(dirName + "/" + fileName), dirName, fileName, "delete")
+                .delete(QcloudSignCreater.getOnceSign(dirName + "/" + fileName), dirName, fileName, "deleteFile")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -78,7 +78,7 @@ public class UrlConnector {
 
     private static Flowable<NoDataInfo> deleteDir(String dirName) {
         return RetrofitHelper.createApi(DirService.class, QCloudConfig.HOST_DOWNLOAD)
-                .delete(QcloudSignCreater.getOnceSign(dirName), dirName, "delete")
+                .delete(QcloudSignCreater.getOnceSign(dirName), dirName, "deleteFile")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

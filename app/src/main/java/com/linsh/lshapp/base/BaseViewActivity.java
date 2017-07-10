@@ -164,7 +164,7 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
 
     @Override
     public void showToast(String content) {
-        LshToastUtils.showToast(content);
+        LshToastUtils.show(content);
     }
 
     @Override

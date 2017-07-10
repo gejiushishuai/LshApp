@@ -102,7 +102,7 @@ public class RetrofitHelper {
             // 无网络时，设置超时为1天
             int maxStale = 60 * 60 * 24;
             Request request = chain.request();
-            if (LshNetworkUtils.isNetworkAvailable()) {
+            if (LshNetworkUtils.isAvailable()) {
                 //有网络时只从网络获取
                 request = request.newBuilder()
                         .cacheControl(CacheControl.FORCE_NETWORK)
@@ -114,7 +114,7 @@ public class RetrofitHelper {
                         .build();
             }
             Response response = chain.proceed(request);
-            if (LshNetworkUtils.isNetworkAvailable()) {
+            if (LshNetworkUtils.isAvailable()) {
                 response = response.newBuilder()
                         .removeHeader("Pragma")
                         .header("Cache-Control", "public, max-age=" + maxAge)

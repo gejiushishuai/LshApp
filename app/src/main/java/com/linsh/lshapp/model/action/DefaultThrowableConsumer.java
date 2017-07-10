@@ -21,11 +21,11 @@ public class DefaultThrowableConsumer implements Consumer<Throwable> {
     public static void showThrowableMsg(Throwable throwable) {
         throwable.printStackTrace();
         if (HttpErrorCatcher.isHttpError(throwable)) {
-            LshToastUtils.showToast(HttpErrorCatcher.dispatchError(throwable));
+            LshToastUtils.show(HttpErrorCatcher.dispatchError(throwable));
         } else if (throwable instanceof CustomThrowable) {
-            LshToastUtils.showToast(throwable.getMessage());
+            LshToastUtils.show(throwable.getMessage());
         } else {
-            LshToastUtils.showToast(throwable.getMessage());
+            LshToastUtils.show(throwable.getMessage());
         }
     }
 }

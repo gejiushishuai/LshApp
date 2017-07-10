@@ -51,7 +51,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
     @Override
     public void outputDatabase() {
         final File destination = new File(LshFileFactory.getAppDir(), "shiyi.realm");
-        LshFileUtils.delete(destination);
+        LshFileUtils.deleteFile(destination);
 
         Disposable disposable = LshRxUtils
                 .getAsyncFlowable(new AsyncConsumer<Void>() {
@@ -134,7 +134,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
     @Override
     public void backupDatabase() {
         if (!RealmTool.checkBackupRealm()) {
-            LshToastUtils.showToast("数据库没有发生更改, 无须备份");
+            LshToastUtils.show("数据库没有发生更改, 无须备份");
             return;
         }
         UrlConnector.uploadRealmData()
@@ -142,7 +142,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(uploadInfoHttpInfo -> {
                     if (uploadInfoHttpInfo != null && uploadInfoHttpInfo.data != null) {
-                        LshToastUtils.showToast("已成功备份至云端");
+                        LshToastUtils.show("已成功备份至云端");
                         SharedPreferenceTools.refreshLastBackupRealmTime();
                     }
                 }, new DefaultThrowableConsumer());
@@ -174,7 +174,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
                             }
                         }
                     }
-                    LshFileUtils.writeFile(file.getAbsolutePath(), personNames);
+                    LshFileUtils.writeFile(file, personNames);
                     return true;
                 })
                 .observeOn(AndroidSchedulers.mainThread())

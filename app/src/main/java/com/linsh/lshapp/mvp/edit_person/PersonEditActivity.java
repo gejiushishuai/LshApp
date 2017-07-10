@@ -104,7 +104,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         if (isEmpty(inputText)) {
-                            LshToastUtils.showToast("姓名不能为空");
+                            LshToastUtils.show("姓名不能为空");
                             return;
                         }
                         if (!inputText.equals(lastName)) {
@@ -129,7 +129,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         if (isEmpty(inputText)) {
-                            LshToastUtils.showToast("描述不能为空");
+                            LshToastUtils.show("描述不能为空");
                             return;
                         }
                         if (!inputText.equals(lastDesc)) {

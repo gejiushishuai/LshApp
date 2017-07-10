@@ -115,7 +115,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         String newGroupName = inputText.trim();
-                        if (!LshStringUtils.isBlank(newGroupName)) {
+                        if (!LshStringUtils.isTrimEmpty(newGroupName)) {
                             dialog.dismiss();
                             mPresenter.addGroup(newGroupName);
                         }
@@ -134,7 +134,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         String newGroupName = inputText.trim();
-                        if (!LshStringUtils.isBlank(newGroupName)) {
+                        if (!LshStringUtils.isTrimEmpty(newGroupName)) {
                             dialog.dismiss();
                             mPresenter.renameGroup(position, newGroupName);
                         }
