@@ -432,6 +432,8 @@ public class ShiyiDbHelper {
                     realmGroup.getPersons().add(person);
                     realm.copyToRealmOrUpdate(personDetail);
                     realm.copyToRealmOrUpdate(personAlbum);
+                    // 对联系人进行排序并保存
+                    ShiyiDbUtils.sortToRealm(realm, realmGroup.getPersons(), "id");
                 } else {
                     emitter.onError(new CustomThrowable("没有创建该分组, 无法添加"));
                 }
