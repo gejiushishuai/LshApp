@@ -10,6 +10,7 @@ import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.PersonAlbum;
 import com.linsh.lshapp.mvp.photo_view.PhotoViewActivity;
 import com.linsh.lshapp.tools.ImageTools;
+import com.linsh.lshutils.module.Image;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.view.albumview.AlbumView;
 
@@ -24,7 +25,7 @@ public class AlbumActivity extends BaseToolbarActivity<AlbumContract.Presenter> 
     public static final String EXTRA_URL_ARRAY_LIST = "STRING_ARRAY_LIST_EXTRA";
 
     @BindView(R.id.pv_album)
-    AlbumView mPhotoView;
+    AlbumView mAlbumView;
 
     @Override
     protected String getToolbarTitle() {
@@ -38,13 +39,18 @@ public class AlbumActivity extends BaseToolbarActivity<AlbumContract.Presenter> 
 
     @Override
     protected void initView() {
-        mPhotoView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mAlbumView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Avatar avatar = (Avatar) mPhotoView.getPhotos().get(position);
-                String url = ImageTools.getSignedUrl(avatar.imageUrl.getUrl());
+                List<? extends Image> photos = mAlbumView.getPhotos();
+                String[] array = new String[photos.size()];
+                for (int i = 0; i < array.length; i++) {
+                    Avatar avatar = (Avatar) photos.get(i);
+                    array[i] = ImageTools.getSignedUrl(avatar.imageUrl.getUrl());
+                }
                 LshActivityUtils.newIntent(PhotoViewActivity.class)
-                        .putExtra(url, PhotoViewActivity.EXTRA_URL)
+                        .putExtra(array, PhotoViewActivity.EXTRA_URL_ARRAY_LIST)
+                        .putExtra(position, PhotoViewActivity.EXTRA_DISPLAY_ITEM)
                         .startActivity(getActivity());
             }
         });
@@ -67,6 +73,6 @@ public class AlbumActivity extends BaseToolbarActivity<AlbumContract.Presenter> 
         for (ImageUrl avatar : avatars) {
             urls.add(new Avatar(avatar));
         }
-        mPhotoView.setPhotos(urls);
+        mAlbumView.setPhotos(urls);
     }
 }
