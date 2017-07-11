@@ -12,6 +12,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;
@@ -270,6 +271,14 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     private void savePerson() {
         ////// 添加个人信息到选定的组里面, 并结束Activity
         mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), mCurSelectedFile);
+    }
+
+    @Override
+    public void showPersonDetail(String personId) {
+        finish();
+        LshActivityUtils.newIntent(PersonDetailActivity.class)
+                .putExtra(personId)
+                .startActivity(getActivity());
     }
 
     @Override

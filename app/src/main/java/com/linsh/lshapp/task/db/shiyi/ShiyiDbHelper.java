@@ -291,24 +291,24 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Flowable<Void> editPerson(Realm realm, Person person) {
+    public static Flowable<String> editPerson(Realm realm, Person person) {
         return editPerson(realm, null, person, null);
     }
 
-    public static Flowable<Void> editPerson(Realm realm, Person person, ImageUrl avatar) {
+    public static Flowable<String> editPerson(Realm realm, Person person, ImageUrl avatar) {
         return editPerson(realm, null, person, avatar);
     }
 
-    public static Flowable<Void> editPerson(Realm realm, String newGroupName, Person person) {
+    public static Flowable<String> editPerson(Realm realm, String newGroupName, Person person) {
         return editPerson(realm, newGroupName, person, null);
     }
 
-    public static Flowable<Void> editPerson(Realm realm, String newGroupName, Person person, ImageUrl avatar) {
+    public static Flowable<String> editPerson(Realm realm, String newGroupName, Person person, ImageUrl avatar) {
         if (person.isManaged())
             throw new IllegalArgumentException("无法处理被 Realm 所管理的对象");
-        return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
+        return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<String>() {
             @Override
-            protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
+            protected void execute(Realm realm, FlowableEmitter<? super String> emitter) {
                 // 查找 Person
                 Person realmPerson = realm.where(Person.class).equalTo("id", person.getId()).findFirst();
                 if (realmPerson != null) {
@@ -336,6 +336,9 @@ public class ShiyiDbHelper {
                             }
                         }
                     }
+                    emitter.onNext(realmPerson.getId());
+                } else {
+                    emitter.onNext("没有该联系人");
                 }
             }
         });
@@ -395,18 +398,18 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Flowable<Void> addPerson(Realm realm, String group, Person person) {
+    public static Flowable<String> addPerson(Realm realm, String group, Person person) {
         return addPerson(realm, group, person, new PersonDetail(person.getId()), new PersonAlbum(person.getId()));
     }
 
-    public static Flowable<Void> addPerson(Realm realm, String group, Person person, PersonDetail personDetail) {
+    public static Flowable<String> addPerson(Realm realm, String group, Person person, PersonDetail personDetail) {
         return addPerson(realm, group, person, personDetail, new PersonAlbum(person.getId()));
     }
 
-    public static Flowable<Void> addPerson(Realm realm, String group, Person person, PersonDetail personDetail, PersonAlbum personAlbum) {
-        return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
+    public static Flowable<String> addPerson(Realm realm, String group, Person person, PersonDetail personDetail, PersonAlbum personAlbum) {
+        return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<String>() {
             @Override
-            protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
+            protected void execute(Realm realm, FlowableEmitter<? super String> emitter) {
                 // 查找联系人
                 Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
                 // 无法保存已经存在的联系人
@@ -437,6 +440,7 @@ public class ShiyiDbHelper {
                 } else {
                     emitter.onError(new CustomThrowable("没有创建该分组, 无法添加"));
                 }
+                emitter.onNext(person.getId());
             }
         });
     }

@@ -97,7 +97,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
     public void savePerson(String group, String name, String desc, String sex, File avatarFile) {
         getView().showLoadingDialog();
 
-        Flowable<Void> flowable;
+        Flowable<String> flowable;
         if (avatarFile != null) {
             String avatarName = NameTool.getAvatarName(name);
             String thumbName = NameTool.getAvatarThumbName(avatarName);
@@ -136,17 +136,21 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
             flowable = getSavePersonObservable(group, name, desc, null, null, sex);
         }
         Disposable disposable = flowable.observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new EmptyConsumer<>(), throwable -> {
+                .subscribe(personId -> {
+                    getView().dismissLoadingDialog();
+                    if (mPerson == null) {
+                        getView().showPersonDetail(personId);
+                    } else {
+                        getView().finishActivity();
+                    }
+                }, throwable -> {
                     getView().dismissLoadingDialog();
                     getView().showToast("保存失败(" + throwable.getMessage() + ")");
-                }, () -> {
-                    getView().dismissLoadingDialog();
-                    getView().finishActivity();
                 });
         addDisposable(disposable);
     }
 
-    private Flowable<Void> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex) {
+    private Flowable<String> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex) {
         ImageUrl imageUrl = null;
         if (!LshStringUtils.isEmpty(avatarUrl) && LshRegexUtils.isURL(avatarUrl)) {
             imageUrl = new ImageUrl(avatarUrl, avatarThumbUrl);
@@ -155,7 +159,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
             Person person = new Person(name, desc, avatarUrl, avatarThumbUrl, sex);
             return ShiyiDbHelper.addPerson(getRealm(), group, person, new PersonDetail(person.getId()), new PersonAlbum(person.getId(), imageUrl));
         } else {
-            Flowable<Void> flowable;
+            Flowable<String> flowable;
             Person person = getRealm().copyFromRealm(mPerson);
             person.setName(name);
             person.setDescribe(desc);
