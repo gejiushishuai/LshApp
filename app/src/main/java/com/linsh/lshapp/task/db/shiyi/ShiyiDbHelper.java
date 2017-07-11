@@ -35,7 +35,7 @@ import io.realm.RealmResults;
 public class ShiyiDbHelper {
 
     public static RealmResults<Group> getGroups(Realm realm) {
-        return realm.where(Group.class).findAllAsync();
+        return realm.where(Group.class).findAllSortedAsync("sort");
     }
 
     public static Person getPerson(Realm realm, String personId) {
@@ -193,12 +193,12 @@ public class ShiyiDbHelper {
     }
 
     public static Flowable<Void> addTypeDetail(final Realm realm, final String personId, final String typeName,
-                                                 String typeDetail, String typeDetailDesc) {
+                                               String typeDetail, String typeDetailDesc) {
         return addTypeDetail(realm, personId, typeName, -1, typeDetail, typeDetailDesc);
     }
 
     private static Flowable<Void> addTypeDetail(final Realm realm, final String personId, final String typeName,
-                                                  final int sort, String typeDetail, String typeDetailDesc) {
+                                                final int sort, String typeDetail, String typeDetailDesc) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
@@ -391,12 +391,6 @@ public class ShiyiDbHelper {
                 // 重新设置sort字段
                 ShiyiDbUtils.renewSort(groups);
                 realm.copyToRealmOrUpdate(groups);
-                // 根据sort字段更新数据排序
-                Shiyi shiyi = realm.where(Shiyi.class).findFirst();
-                if (shiyi != null) {
-                    RealmList<Group> realmGroups = shiyi.getGroups();
-                    ShiyiDbUtils.sortToRealm(realm, realmGroups, "sort");
-                }
             }
         });
     }
