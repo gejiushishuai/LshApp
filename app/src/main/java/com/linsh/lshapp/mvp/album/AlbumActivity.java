@@ -11,7 +11,7 @@ import com.linsh.lshapp.model.bean.db.PersonAlbum;
 import com.linsh.lshapp.mvp.photo_view.PhotoViewActivity;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.view.PhotoView.PhotoView;
+import com.linsh.lshutils.view.albumview.AlbumView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class AlbumActivity extends BaseToolbarActivity<AlbumContract.Presenter> 
     public static final String EXTRA_URL_ARRAY_LIST = "STRING_ARRAY_LIST_EXTRA";
 
     @BindView(R.id.pv_album)
-    PhotoView mPhotoView;
+    AlbumView mPhotoView;
 
     @Override
     protected String getToolbarTitle() {
