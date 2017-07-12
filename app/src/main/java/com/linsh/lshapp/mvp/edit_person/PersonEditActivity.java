@@ -53,7 +53,8 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     @Override
     protected String getToolbarTitle() {
-        return "添加联系人";
+        String personId = getPersonId();
+        return LshStringUtils.isEmpty(personId) ? "添加联系人" : "修改联系人";
     }
 
     @Override
