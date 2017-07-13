@@ -13,7 +13,6 @@ import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableConsumer;
-import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
@@ -22,7 +21,6 @@ import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.bean.http.HttpInfo;
 import com.linsh.lshapp.model.bean.http.UploadInfo;
 import com.linsh.lshapp.model.throwabes.CustomThrowable;
-import com.linsh.lshapp.model.throwabes.PersonRepeatThrowable;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.HttpErrorCatcher;
@@ -47,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -89,65 +88,86 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
 
         Person person = getPerson(contact);
         PersonDetail personDetail = getPersonDetail(contact, person.getId());
-        Disposable addPersonAddDetailDisp = ShiyiDbHelper.addPerson(getRealm(), ShiyiModelHelper.UNNAME_GROUP_NAME, person, personDetail)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new EmptyConsumer<>(), throwable -> {
-                    getView().dismissLoadingDialog();
-                    if (throwable instanceof PersonRepeatThrowable) {
-                        LshLogUtils.i("已经存在该联系人");
-                        getView().showTextDialog("已经存在该联系人, 如果添加将会覆盖重复的属性", "添加", dialog -> {
-                            dialog.dismiss();
-                            getView().showLoadingDialog();
-                            addDisposable(ShiyiDbHelper.coverPersonAddDetail(getRealm(), person, personDetail)
-                                    .subscribe(new EmptyConsumer<>(), throwable2 -> {
-                                        getView().dismissLoadingDialog();
-                                        DefaultThrowableConsumer.showThrowableMsg(throwable2);
-                                    }, () -> {
-                                        getView().dismissLoadingDialog();
-                                        checkUploadAvatar(person, contact);
-                                    }));
-                        }, null, null);
-                    } else {
-                        DefaultThrowableConsumer.showThrowableMsg(throwable);
-                    }
-                }, () -> {
-                    getView().dismissLoadingDialog();
-                    checkUploadAvatar(person, contact);
-                });
-        addDisposable(addPersonAddDetailDisp);
-    }
 
-    private void checkUploadAvatar(Person person, Contact contact) {
-        if (LshStringUtils.notEmpty(contact.getPhotoUri())) {
-            LshLogUtils.i("通讯录中有该联系人的头像");
-            getView().showTextDialog("是否继续上传该联系人的头像?", "上传", new LshColorDialog.OnPositiveListener() {
-                @Override
-                public void onClick(LshColorDialog dialog) {
-                    LshLogUtils.i("上传头像");
-                    dialog.dismiss();
-                    getView().showLoadingDialog();
-                    addDisposable(uploadAvatar(person, contact)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .flatMap(imageUrl -> {
-                                if (imageUrl.getUrl() != null) {
-                                    LshLogUtils.i("上传头像成功, 保存联系人");
-                                    return ShiyiDbHelper.editPerson(getRealm(), person, imageUrl);
-                                }
-                                LshLogUtils.i("上传头像失败");
-                                return LshRxUtils.getDoNothingFlowable();
-                            })
-                            .subscribe(new EmptyConsumer<>(), new DismissLoadingThrowableConsumer(getView()), () -> {
+        Disposable disposable = ShiyiDbHelper
+                // 判断是否存在该联系人
+                .hasPersonName(person.getName())
+                .observeOn(AndroidSchedulers.mainThread())
+                // 添加或覆盖联系人
+                .flatMap(has -> {
+                    if (has) {
+                        return LshRxUtils.create(new FlowableOnSubscribe<Boolean>() {
+                            @Override
+                            public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
+                                LshLogUtils.i("已经存在该联系人");
                                 getView().dismissLoadingDialog();
-                                getView().removeCurrentItem();
-                            }));
-                }
-            }, "不上传", dialog -> {
-                dialog.dismiss();
-                getView().removeCurrentItem();
-            });
-        } else {
-            getView().removeCurrentItem();
-        }
+                                getView().showTextDialog("已经存在该联系人, 如果添加将会覆盖重复的属性", "添加", dialog -> {
+                                    dialog.dismiss();
+                                    getView().showLoadingDialog();
+                                    emitter.onNext(true);
+                                }, null, null);
+                            }
+                        }).flatMap(needCover -> {
+                            return ShiyiDbHelper.coverPersonAddDetail(getRealm(), person, personDetail);
+                        });
+                    } else {
+                        return ShiyiDbHelper.addPerson(getRealm(), ShiyiModelHelper.UNNAME_GROUP_NAME, person, personDetail);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                // 判断是否需要上传头像
+                .flatMap(personId -> {
+                    return LshRxUtils.create(new FlowableOnSubscribe<Boolean>() {
+                        @Override
+                        public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
+                            if (LshStringUtils.isEmpty(contact.getPhotoUri())) {
+                                // 不上传
+                                emitter.onNext(false);
+                            } else {
+                                // 弹窗询问
+                                getView().dismissLoadingDialog();
+                                getView().showTextDialog("是否继续上传该联系人的头像?", "上传", new LshColorDialog.OnPositiveListener() {
+                                    @Override
+                                    public void onClick(LshColorDialog dialog) {
+                                        LshLogUtils.i("上传头像");
+                                        dialog.dismiss();
+                                        getView().showLoadingDialog();
+                                        emitter.onNext(true);
+                                    }
+                                }, "不上传", dialog -> {
+                                    dialog.dismiss();
+                                    emitter.onNext(false);
+                                });
+                            }
+                        }
+                    });
+                })
+                .observeOn(Schedulers.io())
+                // 上传头像
+                .flatMap(uploadNeeded -> {
+                    if (uploadNeeded) {
+                        return uploadAvatar(person, contact)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                // 上传成功, 保存联系人
+                                .flatMap(imageUrl -> {
+                                    if (imageUrl.getUrl() != null) {
+                                        LshLogUtils.i("上传头像成功, 保存联系人");
+                                        return ShiyiDbHelper.editPerson(getRealm(), person, imageUrl)
+                                                .map(personId -> true);
+                                    }
+                                    LshLogUtils.i("上传头像失败");
+                                    return Flowable.just(false);
+                                });
+                    } else {
+                        return Flowable.just(true);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(success -> {
+                    getView().removeCurrentItem();
+                    getView().dismissLoadingDialog();
+                }, new DismissLoadingThrowableConsumer(getView()));
+        addDisposable(disposable);
     }
 
     public Flowable<ImageUrl> uploadAvatar(Person person, Contact contact) {
