@@ -14,7 +14,6 @@ import com.linsh.lshapp.model.bean.db.TypeLabel;
 import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
-import com.linsh.lshapp.model.throwabes.PersonRepeatThrowable;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
@@ -410,13 +409,6 @@ public class ShiyiDbHelper {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<String>() {
             @Override
             protected void execute(Realm realm, FlowableEmitter<? super String> emitter) {
-                // 查找联系人
-                Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
-                // 无法保存已经存在的联系人
-                if (realmPerson != null) {
-                    emitter.onError(new PersonRepeatThrowable("已经存在该联系人"));
-                    return;
-                }
                 // 没有指定组名, 则保存在"未分组"分组里面
                 String groupName = group;
                 if (LshStringUtils.isEmpty(groupName)) {
@@ -445,10 +437,10 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Flowable<Void> coverPersonAddDetail(Realm realm, Person person, PersonDetail personDetail) {
-        return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
+    public static Flowable<String> coverPersonAddDetail(Realm realm, Person person, PersonDetail personDetail) {
+        return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<String>() {
             @Override
-            protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
+            protected void execute(Realm realm, FlowableEmitter<? super String> emitter) {
                 // 获取 Person
                 Person realmPerson = realm.where(Person.class).equalTo("name", person.getName()).findFirst();
                 if (realmPerson != null) {
@@ -496,10 +488,25 @@ public class ShiyiDbHelper {
                     } else {
                         realm.copyToRealmOrUpdate(personDetail);
                     }
+                    emitter.onNext(realmPerson.getId());
                 } else {
                     emitter.onError(new CustomThrowable("该联系人不存在"));
                 }
             }
+        });
+    }
+
+    public static Flowable<Boolean> hasPersonName(String name) {
+        return LshRxUtils.getAsyncFlowable((realm, emitter) -> {
+            Person person = realm.where(Person.class).equalTo("name", name).findFirst();
+            emitter.onNext(person != null);
+        });
+    }
+
+    public static Flowable<Boolean> hasPersonId(String name) {
+        return LshRxUtils.getAsyncFlowable((realm, emitter) -> {
+            Person person = realm.where(Person.class).equalTo("id", name).findFirst();
+            emitter.onNext(person != null);
         });
     }
 }

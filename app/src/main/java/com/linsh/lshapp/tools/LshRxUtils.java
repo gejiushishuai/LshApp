@@ -5,6 +5,7 @@ import com.linsh.lshapp.model.action.AsyncConsumer;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Emitter;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
@@ -23,11 +24,13 @@ public class LshRxUtils {
     }
 
     public static <T> Flowable<T> getDoNothingFlowable() {
-        return Flowable.create(new FlowableOnSubscribe<T>() {
-            @Override
-            public void subscribe(FlowableEmitter<T> e) throws Exception {
-                e.onComplete();
-            }
+        return Flowable.create(Emitter::onComplete, BackpressureStrategy.ERROR);
+    }
+
+    public static <T> Flowable<T> getDoNothingFlowable(T onNext) {
+        return Flowable.create(e -> {
+            e.onNext(onNext);
+            e.onComplete();
         }, BackpressureStrategy.ERROR);
     }
 

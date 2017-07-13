@@ -112,6 +112,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                         if (!inputText.equals(lastName)) {
                             setName(inputText);
                             onPersonModified();
+                            mPresenter.checkName(inputText);
                         }
                         dialog.dismiss();
                     }

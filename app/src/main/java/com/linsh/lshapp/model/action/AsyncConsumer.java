@@ -10,6 +10,6 @@ import io.realm.Realm;
 public interface AsyncConsumer<T> {
 
 
-    void call(Realm realm, FlowableEmitter<? super T> subscriber);
+    void call(Realm realm, FlowableEmitter<? super T> emitter);
 
 }
