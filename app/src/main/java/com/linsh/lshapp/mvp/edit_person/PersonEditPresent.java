@@ -180,6 +180,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                                 });
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 // 保存联系人
                 .flatMap(url -> {
                     LshLogUtils.i("保存联系人");
