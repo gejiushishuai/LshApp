@@ -1,5 +1,6 @@
 package com.linsh.lshapp.tools;
 
+import android.net.Uri;
 import android.widget.ImageView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
@@ -81,6 +82,10 @@ public class ImageTools {
 
     public static void setImage(ImageView imageView, int res) {
         Glide.with(LshApplicationUtils.getContext()).load(res).into(imageView);
+    }
+
+    public static void setImage(ImageView imageView, Uri uri) {
+        Glide.with(LshApplicationUtils.getContext()).load(uri).into(imageView);
     }
 
     // 加载头像, 优先使用缩略图, 默认设置了 Loading 和 Error 的图片

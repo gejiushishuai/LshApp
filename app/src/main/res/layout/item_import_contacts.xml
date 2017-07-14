@@ -11,6 +11,15 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
 
+        <ImageView
+            android:id="@+id/iv_item_import_contacts_avatar"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="3dp"
+            android:src="@mipmap/ic_launcher"/>
+
         <TextView
             android:id="@+id/tv_item_import_contacts_name"
             style="@style/Text_title"

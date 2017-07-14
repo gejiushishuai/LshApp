@@ -1,7 +1,9 @@
 package com.linsh.lshapp.mvp.import_contacts;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -10,6 +12,7 @@ import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Event;
 import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.R;
+import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshListUtils;
@@ -39,6 +42,11 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
         String number = LshListUtils.joint(LshListUtils.getStringList(phoneNumbers,
                 PhoneNumber::getNormalizedNumber), " & ");
 
+        if (LshStringUtils.notEmpty(data.getPhotoUri())) {
+            ImageTools.setImage(holder.ivAvatar, Uri.parse(data.getPhotoUri()));
+        } else {
+            ImageTools.setImage(holder.ivAvatar, R.drawable.ic_contact);
+        }
         holder.tvName.setText(name);
         if (LshStringUtils.notEmpty(number)) {
             holder.tvNumber.setText("电话: " + number);
@@ -112,6 +120,7 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView ivAvatar;
         private final TextView tvName;
         private final TextView tvNumber;
         private final TextView tvAdd;
@@ -120,6 +129,7 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            ivAvatar = (ImageView) itemView.findViewById(R.id.iv_item_import_contacts_avatar);
             tvName = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_name);
             tvNumber = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_number);
             tvAdd = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_add);
