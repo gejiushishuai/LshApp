@@ -43,6 +43,10 @@ public class MainFragmentHelper {
         return true;
     }
 
+    public BaseMainFragment getCurFragment() {
+        return mFragment;
+    }
+
     public void replaceFragment(BaseMainFragment fragment, MainActivity activity) {
         mFragment = fragment;
         LshFragmentUtils.replaceFragment(fragment, R.id.fl_home_content, activity);

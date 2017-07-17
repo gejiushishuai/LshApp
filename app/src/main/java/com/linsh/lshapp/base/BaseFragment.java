@@ -1,8 +1,8 @@
 package com.linsh.lshapp.base;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +31,7 @@ public abstract class BaseFragment<T extends BaseActivity> extends Fragment {
         ButterKnife.bind(this, view);
 
         initView(view);
+        initView(view, savedInstanceState);
         initData();
     }
 
@@ -38,7 +39,17 @@ public abstract class BaseFragment<T extends BaseActivity> extends Fragment {
 
     protected abstract void initView(View view);
 
+    private void initView(View view, Bundle savedInstanceState) {
+    }
+
     protected abstract void initData();
+
+    public void onSaveInstanceState(Bundle outState, Void aVoid) {
+        super.onSaveInstanceState(outState);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+    }
 
     @Override
     public void onDestroyView() {

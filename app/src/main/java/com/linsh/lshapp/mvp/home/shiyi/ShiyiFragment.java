@@ -1,6 +1,7 @@
 package com.linsh.lshapp.mvp.home.shiyi;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -28,6 +29,9 @@ import java.util.List;
 public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> implements ShiyiContract.View {
 
     private ShiyiAdapter mShiyiAdapter;
+    private RecyclerView mRcv;
+    private int mCurRestoreItem;
+    private int mCurRestoreExpandedPosition = -1;
 
     @Override
     protected String getTitle() {
@@ -41,7 +45,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
 
     @Override
     protected void initView(View view) {
-        RecyclerView mRcv = (RecyclerView) view.findViewById(R.id.rcv_shiyi_content);
+        mRcv = (RecyclerView) view.findViewById(R.id.rcv_shiyi_content);
         mRcv.setLayoutManager(new LinearLayoutManager(LshApplicationUtils.getContext()));
         mShiyiAdapter = new ShiyiAdapter();
         mRcv.setAdapter(mShiyiAdapter);
@@ -171,11 +175,36 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
 
     @Override
     public void setData(List<Group> groups) {
-        mShiyiAdapter.setData(groups);
+        if (mCurRestoreExpandedPosition >= 0) {
+            mShiyiAdapter.setData(groups, mCurRestoreExpandedPosition);
+            mCurRestoreExpandedPosition = -1;
+            mRcv.scrollToPosition(mCurRestoreItem);
+        } else {
+            mShiyiAdapter.setData(groups);
+        }
     }
 
     @Override
     protected ShiyiContract.Presenter initPresenter() {
         return new ShiyiPresenter();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, Void aVoid) {
+        super.onSaveInstanceState(outState, aVoid);
+        int curItem = ((LinearLayoutManager) mRcv.getLayoutManager()).findFirstVisibleItemPosition();
+        int curExpandedPosition = mShiyiAdapter.getExpandedPosition();
+        outState.putInt("curItem", curItem);
+        outState.putInt("curExpandedPosition", curExpandedPosition);
+    }
+
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mCurRestoreItem = savedInstanceState.getInt("curItem");
+            mCurRestoreExpandedPosition = savedInstanceState.getInt("curExpandedPosition");
+        }
     }
 }

@@ -1,10 +1,12 @@
 package com.linsh.lshapp.mvp.home;
 
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -88,5 +90,24 @@ public class MainActivity extends BaseViewActivity<MainContract.MainPresenter> i
     @Override
     protected MainContract.MainPresenter initPresenter() {
         return new MainPresenter();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle fragmentBundle = new Bundle();
+        mHomeFragmentHelper.getCurFragment().onSaveInstanceState(fragmentBundle, null);
+        outState.putBundle("bundle_fragment", fragmentBundle);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            Bundle fragmentBundle = savedInstanceState.getBundle("bundle_fragment");
+            if (fragmentBundle != null) {
+                mHomeFragmentHelper.getCurFragment().onRestoreInstanceState(fragmentBundle);
+            }
+        }
     }
 }
