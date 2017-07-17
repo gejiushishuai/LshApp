@@ -57,6 +57,10 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
 
     @Override
     public void setData(List<Group> firstLevelData) {
+        if (firstLevelData == null) {
+            super.setData(null);
+            return;
+        }
         ShiyiDiffCallBack callBack = new ShiyiDiffCallBack(getData(), firstLevelData);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callBack, true);
         super.setData(firstLevelData, callBack.newExpandedPosition);
@@ -73,7 +77,7 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
             mOldData = oldData;
             mNewData = newData;
             oldExpandedPosition = getExpandedPosition();
-            if (oldExpandedPosition >= 0) {
+            if (mOldData != null && oldExpandedPosition >= 0) {
                 Group group = mOldData.get(oldExpandedPosition);
                 String id = group.getId();
                 for (int i = 0; i < mOldData.size(); i++) {
