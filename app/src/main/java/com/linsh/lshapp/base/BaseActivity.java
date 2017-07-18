@@ -27,6 +27,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         setScreenOrientation();
         // 初始化布局
         initView();
+        initView(savedInstanceState);
 
         mStatusTool.onCreate();
     }
@@ -34,6 +35,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getLayout();
 
     protected abstract void initView();
+
+    protected void initView(Bundle savedInstanceState) {
+    }
 
     @IntDef({ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,

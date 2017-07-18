@@ -21,6 +21,8 @@ public interface PersonEditContract {
 
         void setGroup(String groupName);
 
+        void setData(String group);
+
         void onPersonModified();
 
         void showPersonDetail(String personId);

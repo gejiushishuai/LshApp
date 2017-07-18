@@ -2,6 +2,7 @@ package com.linsh.lshapp.mvp.edit_person;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,6 +51,8 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     private File mCurPickedFile;
     private File mCurSelectedFile;
+    private boolean idDataInitted;
+    private boolean savedModified;
 
     @Override
     protected String getToolbarTitle() {
@@ -63,7 +66,19 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
     protected void initView() {
+    }
+
+    @Override
+    protected void initView(Bundle savedInstanceState) {
+        super.initView(savedInstanceState);
+        restoreInstanceState(savedInstanceState);
     }
 
     @OnClick({R.id.rl_shiyi_person_add_avatar_item, R.id.rl_shiyi_person_add_name_item, R.id.rl_shiyi_person_add_desc_item,
@@ -235,7 +250,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_person_add, menu);
         mConfirmItem = menu.findItem(R.id.menu_shiyi_add_person_confirm);
-        mConfirmItem.setEnabled(false); // 默认开始时确认修改按钮不可用
+        mConfirmItem.setEnabled(savedModified); // 默认开始时确认修改按钮不可用
         return true;
     }
 
@@ -289,11 +304,54 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("name", tvName.getText().toString());
+        outState.putString("desc", tvDesc.getText().toString());
+        outState.putString("sex", tvSex.getText().toString());
+        outState.putString("group", tvGroup.getText().toString());
+        if (mCurSelectedFile != null) {
+            outState.putString("avatar", mCurSelectedFile.getAbsolutePath());
+        }
+        if (mConfirmItem != null && mConfirmItem.isEnabled()) {
+            outState.putBoolean("modified", true);
+        }
+    }
+
+    protected void restoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            setName(savedInstanceState.getString("name"));
+            setDesc(savedInstanceState.getString("desc"));
+            setSex(savedInstanceState.getString("sex"));
+            setGroup(savedInstanceState.getString("group"));
+            String avatarPath = savedInstanceState.getString("avatar");
+            if (LshStringUtils.notEmpty(avatarPath)) {
+                mCurSelectedFile = new File(avatarPath);
+                ImageTools.setImage(ivAvatar, mCurSelectedFile);
+            }
+            savedModified = savedInstanceState.getBoolean("modified");
+            idDataInitted = true;
+        }
+    }
+
+    @Override
     public void setData(Person person) {
-        setAvatar(person.getAvatarThumb(), person.getAvatar());
-        setName(person.getName());
-        setDesc(person.getDescribe());
-        setSex(person.getGender());
+        if (!idDataInitted) {
+            setAvatar(person.getAvatarThumb(), person.getAvatar());
+            setName(person.getName());
+            setDesc(person.getDescribe());
+            setSex(person.getGender());
+        }
+        if (mCurSelectedFile == null) {
+            setAvatar(person.getAvatarThumb(), person.getAvatar());
+        }
+    }
+
+    @Override
+    public void setData(String group) {
+        if (!idDataInitted) {
+            setGroup(group);
+        }
     }
 
     @Override

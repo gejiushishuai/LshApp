@@ -61,7 +61,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                 }
             }).subscribe(group -> {
                 mPrimaryGroupName = group;
-                getView().setGroup(group);
+                getView().setData(group);
             });
             addDisposable(disposable);
 
