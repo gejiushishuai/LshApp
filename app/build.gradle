@@ -30,7 +30,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 9
-        versionName "1.1.0b"
+        versionName "1.1.0c"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
