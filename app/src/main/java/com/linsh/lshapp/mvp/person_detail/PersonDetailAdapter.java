@@ -10,7 +10,7 @@ import com.linsh.lshapp.model.bean.db.Type;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshutils.adapter.LshNestedDataRcvAdapter;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshRecourseUtils;
+import com.linsh.lshutils.utils.LshResourceUtils;
 import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
 /**
@@ -61,7 +61,7 @@ public class PersonDetailAdapter extends LshNestedDataRcvAdapter<Type, PersonDet
         String detail = typeDetail.getDetail();
         boolean empty = LshStringUtils.isEmpty(detail);
         holder.tvInfo.setText(empty ? "未填写" : detail);
-        holder.tvInfo.setTextColor(LshRecourseUtils.getColor(empty ? R.color.color_text_disabled : R.color.text_title));
+        holder.tvInfo.setTextColor(LshResourceUtils.getColor(empty ? R.color.color_text_disabled : R.color.text_title));
 
         holder.tvDetail.setText(typeDetail.getDescribe());
     }

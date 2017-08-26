@@ -12,7 +12,7 @@ import com.linsh.lshapp.model.bean.db.Type;
 import com.linsh.lshapp.model.bean.db.TypeDetail;
 import com.linsh.lshapp.model.result.SearchResult;
 import com.linsh.lshapp.tools.LshRxUtils;
-import com.linsh.lshutils.utils.LshRecourseUtils;
+import com.linsh.lshutils.utils.LshResourceUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -132,7 +132,7 @@ public class SearchPresenter extends RealmPresenterImpl<SearchContract.View> imp
         for (int i = startIndex; i <= text.length() - length; i++) {
             String substring = text.substring(i, i + length);
             if (substring.equals(query)) {
-                ForegroundColorSpan colorSpan = new ForegroundColorSpan(LshRecourseUtils.getColor(R.color.color_theme_dark_blue));
+                ForegroundColorSpan colorSpan = new ForegroundColorSpan(LshResourceUtils.getColor(R.color.color_theme_dark_blue));
                 spannable.setSpan(colorSpan, i, i + length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 i += length - 1;
             }
