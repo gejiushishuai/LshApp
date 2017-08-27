@@ -19,6 +19,7 @@ public class Person extends RealmObject {
     private String avatar;
     private String avatarThumb;
     private int gender;
+    private boolean syncWithContacts;
 
     public Person() {
     }
@@ -104,5 +105,13 @@ public class Person extends RealmObject {
         } else {
             this.gender = 0;
         }
+    }
+
+    public boolean isSyncWithContacts() {
+        return syncWithContacts;
+    }
+
+    public void setSyncWithContacts(boolean syncWithContacts) {
+        this.syncWithContacts = syncWithContacts;
     }
 }

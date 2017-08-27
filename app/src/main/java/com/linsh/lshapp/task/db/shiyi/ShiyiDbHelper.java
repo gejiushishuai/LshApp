@@ -2,6 +2,7 @@ package com.linsh.lshapp.task.db.shiyi;
 
 import com.linsh.lshapp.model.action.AsyncConsumer;
 import com.linsh.lshapp.model.action.AsyncTransaction;
+import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
@@ -19,7 +20,10 @@ import com.linsh.lshapp.tools.ShiyiModelHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshRegexUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
@@ -63,6 +67,67 @@ public class ShiyiDbHelper {
             public void call(Realm realm, FlowableEmitter<? super List<Group>> emitter) {
                 RealmResults<Group> groups = realm.where(Group.class).findAll();
                 emitter.onNext(realm.copyFromRealm(groups));
+            }
+        });
+    }
+
+    public static Flowable<List<ContactsPerson>> getSyncContactsPersons() {
+        return LshRxUtils.getAsyncFlowable(new AsyncConsumer<List<ContactsPerson>>() {
+            @Override
+            public void call(Realm realm, FlowableEmitter<? super List<ContactsPerson>> emitter) {
+                List<ContactsPerson> result = new ArrayList<>();
+                // 获取并遍历联系人
+                RealmResults<Person> persons = realm.where(Person.class).equalTo("syncWithContacts", false).findAll();
+                for (Person person : persons) {
+                    // 写入联系人数据
+                    ContactsPerson contactsPerson = new ContactsPerson();
+                    contactsPerson.setId(person.getId());
+                    contactsPerson.setName(person.getName());
+                    contactsPerson.setAvatar(person.getAvatar(), person.getAvatarThumb());
+                    // 获取联系人详情
+                    PersonDetail detail = realm.where(PersonDetail.class).equalTo("id", person.getId()).findFirst();
+                    if (detail != null) {
+                        // 获取类型 - 电话
+                        Type phoneType = detail.getTypes().where().equalTo("name", "电话").or().equalTo("name", "电话号码").findFirst();
+                        if (phoneType != null) {
+                            RealmList<TypeDetail> typeDetails = phoneType.getTypeDetails();
+                            for (TypeDetail typeDetail : typeDetails) {
+                                contactsPerson.addPhoneNumber(typeDetail.getDetail());
+                            }
+                        }
+                        // 获取类型 - 生日
+                        Type birthdayType = detail.getTypes().where().equalTo("name", "生日").findFirst();
+                        if (birthdayType != null) {
+                            RealmList<TypeDetail> typeDetails = birthdayType.getTypeDetails();
+                            for (TypeDetail typeDetail : typeDetails) {
+                                // 通过正则判断阳历和农历生日
+                                String birthday = typeDetail.getDetail();
+                                if (birthday.matches("(\\d{4}-)?\\d{1,2}-\\d{1,2}")) {
+                                    contactsPerson.setBirthday(birthday);
+                                } else {
+                                    Matcher matcher = Pattern.compile("((\\d{4})年)?(\\d{1,2})月(\\d{1,2})日").matcher(birthday);
+                                    if (matcher.find()) {
+                                        StringBuilder builder = new StringBuilder();
+                                        String year = matcher.group(2);
+                                        if (LshStringUtils.notEmpty(year)) {
+                                            builder.append(year).append("-");
+                                        }
+                                        builder.append(matcher.group(3)).append("-").append(matcher.group(4));
+                                        contactsPerson.setBirthday(builder.toString());
+                                    } else {
+                                        // TODO: 17/8/22  后期可能使用 yyyy-MM-dd 来表示农历生日
+                                        matcher = Pattern.compile("(.{2,4}年)?([\\u4e00-\\u9fa5]{1,2})月([\\u4e00-\\u9fa5]{1,3})").matcher(birthday);
+                                        if (matcher.find()) {
+                                            contactsPerson.setLunarBirthday(birthday);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    result.add(contactsPerson);
+                }
+                emitter.onNext(result);
             }
         });
     }

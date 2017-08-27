@@ -4,84 +4,122 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:divider="@drawable/shape_devider"
+    android:orientation="vertical"
+    android:showDividers="end">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:divider="@drawable/shape_devider"
+        android:showDividers="middle">
 
-        <ImageView
-            android:id="@+id/iv_item_import_contacts_avatar"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginBottom="3dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="3dp"
-            android:src="@mipmap/ic_launcher"/>
-
-        <TextView
-            android:id="@+id/tv_item_import_contacts_name"
-            style="@style/Text_title"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="10dp"
-            tools:text="我的好友"/>
-
-        <TextView
-            android:id="@+id/tv_item_import_contacts_number"
-            style="@style/Text_detail"
+        <LinearLayout
+            android:id="@+id/ll_item_import_contacts_left_contact"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
             android:layout_weight="1"
-            android:ellipsize="end"
-            android:lines="1"
-            android:padding="5dp"
-            android:text="电话: 15311448120&amp;18810670812"
-            android:textSize="14sp"/>
+            android:gravity="end|center_vertical">
 
-        <View
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:background="@color/line_whitebg"/>
+            <TextView
+                android:id="@+id/tv_item_import_contacts_left_name"
+                style="@style/Text_title"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                tools:text="林声鹤"/>
+
+            <ImageView
+                android:id="@+id/iv_item_import_contacts_left_avatar"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="3dp"
+                android:src="@mipmap/ic_launcher"/>
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_item_import_contacts_add"
-            style="@style/Text_title2"
-            android:layout_gravity="center_vertical|right"
-            android:layout_margin="5dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:text="添加"
-            android:textColor="@drawable/selector_press_color_theme_blue"/>
+            android:id="@+id/tv_item_import_contacts_status"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:drawableTop="@drawable/ic_sync_refresh"
+            android:gravity="center"
+            android:minWidth="50dp"
+            android:padding="5dp"
+            android:text="导入"/>
+
+        <LinearLayout
+            android:id="@+id/ll_item_import_contacts_right_contact"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv_item_import_contacts_right_avatar"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="3dp"
+                    android:src="@mipmap/ic_launcher"/>
+
+                <TextView
+                    android:id="@+id/tv_item_import_contacts_right_name"
+                    style="@style/Text_title"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:ellipsize="end"
+                    tools:text="林声鹤"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/rl_item_import_contacts_detail"
+    <LinearLayout
+        android:id="@+id/ll_item_import_contacts_detail_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible">
+        android:divider="@drawable/shape_devider"
+        android:showDividers="middle"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <TextView
-            android:id="@+id/tv_item_import_contacts_detail_text"
+            android:id="@+id/tv_item_import_contacts_left_detail_text"
             style="@style/Text_detail"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:padding="5dp"
             android:textSize="12sp"
-            tools:text="地址:北京芍药居 | 生日: 1992-02-13"/>
+            tools:text="15311448123 : 电话\n1992-02-13 : 生日"/>
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_item_import_contacts_right_detail_text"
+            style="@style/Text_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:textSize="12sp"
+            tools:text="电话 : 15311448123\n生日 : 1992-02-13"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/line_whitebg"/>
+    </LinearLayout>
 
 </LinearLayout>

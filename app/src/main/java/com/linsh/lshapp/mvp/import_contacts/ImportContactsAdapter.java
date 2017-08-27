@@ -1,10 +1,11 @@
 package com.linsh.lshapp.mvp.import_contacts;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.tamir7.contacts.Address;
@@ -12,10 +13,13 @@ import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Event;
 import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.R;
+import com.linsh.lshapp.model.bean.ContactsPerson;
+import com.linsh.lshapp.model.bean.ShiyiContact;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshListUtils;
+import com.linsh.lshutils.utils.LshLunarCalendarUtils;
+import com.linsh.lshutils.utils.LshResourceUtils;
 
 import java.util.List;
 
@@ -23,7 +27,7 @@ import java.util.List;
  * Created by Senh Linsh on 17/6/19.
  */
 
-class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContactsAdapter.MyViewHolder> implements View.OnClickListener {
+class ImportContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, ImportContactsAdapter.MyViewHolder> implements View.OnClickListener {
 
     @Override
     protected int getLayout() {
@@ -36,48 +40,140 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
     }
 
     @Override
-    protected void onBindViewHolder(MyViewHolder holder, Contact data, int position) {
-        String name = data.getDisplayName();
-        List<PhoneNumber> phoneNumbers = data.getPhoneNumbers();
-        String number = LshListUtils.joint(LshListUtils.getStringList(phoneNumbers,
-                PhoneNumber::getNormalizedNumber), " & ");
+    protected void onBindViewHolder(MyViewHolder holder, ContactMixer mixer, int position) {
+        ShiyiContact contact = mixer.getContact();
+        ContactsPerson person = mixer.getPerson();
 
-        if (LshStringUtils.notEmpty(data.getPhotoUri())) {
-            ImageTools.setImage(holder.ivAvatar, Uri.parse(data.getPhotoUri()));
+        // 设置左侧手机联系人信息
+        if (contact != null) {
+            String photoUri = contact.getPhotoUri();
+            String name = contact.getDisplayName();
+            List<PhoneNumber> phoneNumbers = contact.getPhoneNumbers();
+            String birthday = contact.getBirthday().getStartDate();
+            Event lunarBirthdayEvent = contact.getLunarBirthday();
+            String lunarBirthday = LshLunarCalendarUtils.normalStr2LunarStr(lunarBirthdayEvent.getStartDate());
+
+            if (LshStringUtils.notEmpty(photoUri)) {
+                ImageTools.setImage(holder.ivLeftAvatar, Uri.parse(photoUri));
+            } else {
+                ImageTools.setImage(holder.ivLeftAvatar, R.drawable.ic_contact);
+            }
+            holder.tvLeftName.setText(name);
+
+            StringBuilder builder = new StringBuilder();
+            for (PhoneNumber phoneNumber : phoneNumbers) {
+                if (builder.length() != 0) {
+                    builder.append("\n");
+                }
+                builder.append(phoneNumber.getNormalizedNumber()).append(" : 电话");
+            }
+            if (LshStringUtils.notEmpty(birthday)) {
+                if (builder.length() != 0) {
+                    builder.append("\n");
+                }
+                builder.append(birthday).append(" : 生日");
+            }
+            if (LshStringUtils.notEmpty(lunarBirthday)) {
+                if (builder.length() != 0) {
+                    builder.append("\n");
+                }
+                builder.append(lunarBirthday).append(" : 生日");
+            }
+            holder.tvLeftDetailText.setText(builder.toString());
+            holder.llLeftContact.setVisibility(View.VISIBLE);
         } else {
-            ImageTools.setImage(holder.ivAvatar, R.drawable.ic_contact);
+            holder.llLeftContact.setVisibility(View.INVISIBLE);
         }
-        holder.tvName.setText(name);
-        if (LshStringUtils.notEmpty(number)) {
-            holder.tvNumber.setText("电话: " + number);
+
+        // 设置右侧拾意联系人信息
+        if (person != null) {
+            String name = person.getName();
+            String avatarThumb = person.getAvatarThumb();
+            List<String> phoneNumbers = person.getPhoneNumbers();
+            String birthday = person.getBirthday();
+            String lunarBirthday = person.getLunarBirthday();
+
+            holder.tvRightName.setText(name);
+            if (LshStringUtils.notEmpty(avatarThumb)) {
+                ImageTools.setImage(holder.ivRightAvatar, avatarThumb);
+            } else {
+                ImageTools.setImage(holder.ivRightAvatar, R.drawable.ic_contact);
+            }
+
+            StringBuilder builder = new StringBuilder();
+            if (phoneNumbers != null) {
+                for (String phoneNumber : phoneNumbers) {
+                    if (builder.length() != 0) {
+                        builder.append("\n");
+                    }
+                    builder.append("电话 : ").append(phoneNumber);
+                }
+            }
+            if (LshStringUtils.notEmpty(birthday)) {
+                if (builder.length() != 0) {
+                    builder.append("\n");
+                }
+                builder.append("生日 : ").append(birthday);
+            }
+            if (LshStringUtils.notEmpty(lunarBirthday)) {
+                if (builder.length() != 0) {
+                    builder.append("\n");
+                }
+                builder.append("生日 : ").append(lunarBirthday);
+            }
+            holder.tvRightDetailText.setText(builder.toString());
+            holder.llRightContact.setVisibility(View.VISIBLE);
         } else {
-            holder.tvNumber.setText("");
+            holder.llRightContact.setVisibility(View.INVISIBLE);
         }
-        holder.rlDetailLayout.setVisibility(View.GONE);
+
+        // 比较联系人
+        int drawableRes = 0;
+        String text = null;
+        if (mixer.getStatus() == ContactMixer.IMPORT_FROM_CONTACTS) {
+            text = "导入";
+            drawableRes = R.drawable.ic_sync_import;
+        } else if (mixer.getStatus() == ContactMixer.EXPORT_TO_CONTACTS) {
+            text = "导出";
+            drawableRes = R.drawable.ic_sync_export;
+        } else if (mixer.getStatus() == ContactMixer.LINK_TO_CONTACTS) {
+            text = "关联";
+            drawableRes = R.drawable.ic_sync_connect;
+        } else if (mixer.getStatus() == ContactMixer.UPDATE_WITH_CONTACTS) {
+            text = "更新";
+            drawableRes = R.drawable.ic_sync_refresh;
+        } else if (mixer.getStatus() == ContactMixer.FINISH_UPDATE) {
+            text = "已同步";
+            drawableRes = R.drawable.ic_sync_done;
+        }
+        if (drawableRes != 0) {
+            holder.tvStatus.setText(text);
+            Drawable drawable = LshResourceUtils.getDrawable(drawableRes);
+            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+            holder.tvStatus.setCompoundDrawables(null, drawable, null, null);
+        }
+
+        holder.llDetailLayout.setVisibility(View.GONE);
         holder.itemView.setOnClickListener(this);
-        holder.tvAdd.setOnClickListener(this);
+        holder.tvStatus.setOnClickListener(this);
         holder.itemView.setTag(holder);
-        holder.tvAdd.setTag(holder);
+        holder.tvStatus.setTag(holder);
     }
 
     @Override
     public void onClick(View v) {
         MyViewHolder holder = (MyViewHolder) v.getTag();
-        if (v.getId() == R.id.tv_item_import_contacts_add) {
+        if (v.getId() == R.id.tv_item_import_contacts_status) {
             if (mOnImportContactsListener != null) {
-                mOnImportContactsListener.onAddContact(getData().get(holder.getAdapterPosition()), holder.getAdapterPosition());
+//                mOnImportContactsListener.onAddContact(getData().get(holder.getAdapterPosition()), holder.getAdapterPosition());
             }
         } else {
-            boolean visible = holder.rlDetailLayout.getVisibility() == View.VISIBLE;
+            boolean visible = holder.llDetailLayout.getVisibility() == View.VISIBLE;
+            String detail = holder.tvLeftDetailText.getText().toString() + holder.tvRightDetailText.getText().toString();
             if (visible) {
-                holder.rlDetailLayout.setVisibility(View.GONE);
-                holder.tvDetailText.setText("");
-            } else {
-                String detail = getDetail(getData().get(holder.getAdapterPosition()));
-                if (!LshStringUtils.isEmpty(detail)) {
-                    holder.rlDetailLayout.setVisibility(View.VISIBLE);
-                    holder.tvDetailText.setText(detail);
-                }
+                holder.llDetailLayout.setVisibility(View.GONE);
+            } else if (LshStringUtils.notEmpty(detail)) {
+                holder.llDetailLayout.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -120,21 +216,29 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<Contact, ImportContac
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView ivAvatar;
-        private final TextView tvName;
-        private final TextView tvNumber;
-        private final TextView tvAdd;
-        private final TextView tvDetailText;
-        private final RelativeLayout rlDetailLayout;
+        private LinearLayout llLeftContact;
+        private TextView tvLeftName;
+        private ImageView ivLeftAvatar;
+        private TextView tvLeftDetailText;
+        private LinearLayout llRightContact;
+        private ImageView ivRightAvatar;
+        private TextView tvRightName;
+        private TextView tvRightDetailText;
+        private TextView tvStatus;
+        private LinearLayout llDetailLayout;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            ivAvatar = (ImageView) itemView.findViewById(R.id.iv_item_import_contacts_avatar);
-            tvName = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_name);
-            tvNumber = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_number);
-            tvAdd = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_add);
-            tvDetailText = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_detail_text);
-            rlDetailLayout = (RelativeLayout) itemView.findViewById(R.id.rl_item_import_contacts_detail);
+            llLeftContact = (LinearLayout) itemView.findViewById(R.id.ll_item_import_contacts_left_contact);
+            tvLeftName = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_left_name);
+            ivLeftAvatar = (ImageView) itemView.findViewById(R.id.iv_item_import_contacts_left_avatar);
+            tvStatus = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_status);
+            llRightContact = (LinearLayout) itemView.findViewById(R.id.ll_item_import_contacts_right_contact);
+            ivRightAvatar = (ImageView) itemView.findViewById(R.id.iv_item_import_contacts_right_avatar);
+            tvRightName = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_right_name);
+            llDetailLayout = (LinearLayout) itemView.findViewById(R.id.ll_item_import_contacts_detail_layout);
+            tvLeftDetailText = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_left_detail_text);
+            tvRightDetailText = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_right_detail_text);
         }
     }
 }

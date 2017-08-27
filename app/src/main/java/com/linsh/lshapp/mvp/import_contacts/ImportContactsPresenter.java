@@ -13,6 +13,8 @@ import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableConsumer;
+import com.linsh.lshapp.model.bean.ContactsPerson;
+import com.linsh.lshapp.model.bean.ShiyiContact;
 import com.linsh.lshapp.model.bean.db.ImageUrl;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.PersonDetail;
@@ -36,6 +38,8 @@ import com.linsh.lshutils.utils.LshBitmapUtils;
 import com.linsh.lshutils.utils.LshDateUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
+import org.reactivestreams.Publisher;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -43,12 +47,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
 
@@ -58,27 +64,33 @@ import io.realm.RealmList;
 
 public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsContract.View> implements ImportContactsContract.Presenter {
 
+
     @Override
     protected void attachView() {
         getView().showLoadingDialog();
-        Flowable<List<Contact>> flowable = LshRxUtils.create(emitter -> {
-            Contacts.initialize(LshApplicationUtils.getContext());
-            emitter.onNext(Contacts.getQuery().find());
-        });
-        Disposable disposable = flowable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(contacts -> {
-                    getView().dismissLoadingDialog();
-                    if (contacts.size() > 0) {
-                        getView().setData(contacts);
-                    } else {
-                        getView().showTextDialog("手机通讯录中没有联系人哦");
+
+        ShiyiDbHelper.getSyncContactsPersons()
+                .flatMap(new Function<List<ContactsPerson>, Publisher<TreeMap<String, ContactMixer>>>() {
+                    @Override
+                    public Publisher<TreeMap<String, ContactMixer>> apply(List<ContactsPerson> contactsPersons) throws Exception {
+                        return LshRxUtils.create((FlowableOnSubscribe<TreeMap<String, ContactMixer>>) emitter -> {
+
+                            Contacts.initialize(LshApplicationUtils.getContext());
+                            List<ShiyiContact> contacts = ContactMixer.getContacts();
+                            emitter.onNext(ContactMixer.mix(contactsPersons, contacts));
+
+                        }).subscribeOn(Schedulers.io());
                     }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(map -> {
+                    getView().dismissLoadingDialog();
+                    getView().setData(new ArrayList<>(map.values()));
+
                 }, throwable -> {
                     getView().dismissLoadingDialog();
                     DefaultThrowableConsumer.showThrowableMsg(throwable);
                 });
-        addDisposable(disposable);
     }
 
     @Override

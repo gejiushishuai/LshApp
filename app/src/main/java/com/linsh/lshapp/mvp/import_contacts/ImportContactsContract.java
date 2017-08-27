@@ -13,7 +13,7 @@ public interface ImportContactsContract {
 
     interface View extends BaseContract.BaseView {
 
-        void setData(List<Contact> contacts);
+        void setData(List<ContactMixer> contacts);
 
         void removeCurrentItem();
     }

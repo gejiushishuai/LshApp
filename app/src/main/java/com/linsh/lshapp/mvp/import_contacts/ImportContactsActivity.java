@@ -41,8 +41,8 @@ public class ImportContactsActivity extends BaseToolbarActivity<ImportContactsCo
     }
 
     @Override
-    public void setData(List<Contact> contacts) {
-        mAdapter.setData(contacts);
+    public void setData(List<ContactMixer> contactMixers) {
+        mAdapter.setData(contactMixers);
     }
 
     @Override
