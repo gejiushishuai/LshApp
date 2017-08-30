@@ -1,16 +1,17 @@
 package com.linsh.lshapp.mvp.import_contacts;
 
+import android.Manifest;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.github.tamir7.contacts.Contact;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
+import com.linsh.lshutils.utils.LshPermissionUtils;
 
 import java.util.List;
 
 public class ImportContactsActivity extends BaseToolbarActivity<ImportContactsContract.Presenter>
-        implements ImportContactsContract.View, ImportContactsAdapter.OnImportContactsListener {
+        implements ImportContactsContract.View, ImportContactsAdapter.OnImportContactsListener, LshPermissionUtils.PermissionListener {
 
     private RecyclerView mRcvContent;
     private ImportContactsAdapter mAdapter;
@@ -38,6 +39,10 @@ public class ImportContactsActivity extends BaseToolbarActivity<ImportContactsCo
         mRcvContent.setLayoutManager(new LinearLayoutManager(this));
         mRcvContent.setAdapter(mAdapter);
         mAdapter.setOnImportContactsListener(this);
+
+        if (!LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
+            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, this);
+        }
     }
 
     @Override
@@ -46,16 +51,34 @@ public class ImportContactsActivity extends BaseToolbarActivity<ImportContactsCo
     }
 
     @Override
-    public void removeCurrentItem() {
+    public void updateItem() {
         if (curItem != -1) {
-            mAdapter.getData().remove(curItem);
-            mAdapter.notifyItemRemoved(curItem);
+            mAdapter.notifyItemChanged(curItem);
         }
     }
 
     @Override
-    public void onAddContact(Contact contact, int position) {
-        mPresenter.addContact(contact);
-        curItem = position;
+    public void onClickStatus(ContactMixer mixer, int position) {
+        if (LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
+            curItem = position;
+            mPresenter.onClickStatus(mixer);
+        } else {
+            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, this);
+        }
+    }
+
+    @Override
+    public void onGranted(String permission) {
+
+    }
+
+    @Override
+    public void onDenied(String permission, boolean isNeverAsked) {
+
+    }
+
+    @Override
+    public void onBeforeAndroidM(String permission) {
+
     }
 }

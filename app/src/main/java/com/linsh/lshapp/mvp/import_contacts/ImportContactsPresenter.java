@@ -25,6 +25,7 @@ import com.linsh.lshapp.model.bean.http.UploadInfo;
 import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
+import com.linsh.lshapp.tools.ContactsAdder;
 import com.linsh.lshapp.tools.HttpErrorCatcher;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;
@@ -65,6 +66,8 @@ import io.realm.RealmList;
 public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsContract.View> implements ImportContactsContract.Presenter {
 
 
+    private ContactsAdder mContactsAdder;
+
     @Override
     protected void attachView() {
         getView().showLoadingDialog();
@@ -94,10 +97,71 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
     }
 
     @Override
-    public void addContact(Contact contact) {
+    public void onClickStatus(ContactMixer mixer) {
+        if (mContactsAdder == null) {
+            mContactsAdder = new ContactsAdder();
+        }
+        int status = mixer.getStatus();
+        switch (status) {
+            case ContactMixer.IMPORT_FROM_CONTACTS:
+                importFromContact(mixer);
+                break;
+            case ContactMixer.EXPORT_TO_CONTACTS:
+                exportToContact(mixer);
+                break;
+            case ContactMixer.LINK_TO_CONTACTS:
+                linkToContact(mixer);
+                break;
+            case ContactMixer.UPDATE_WITH_CONTACTS:
+                updateWithContact(mixer);
+                break;
+            case ContactMixer.FINISH_UPDATE:
+            default:
+                break;
+        }
+    }
+
+    private void updateWithContact(ContactMixer mixer) {
+        getView().showTextDialog("以『拾意联系人』的数据进行覆盖或以『手机联系人』的数据进行覆盖？", "拾意联系人", new LshColorDialog.OnPositiveListener() {
+            @Override
+            public void onClick(LshColorDialog dialog) {
+                dialog.dismiss();
+                mContactsAdder.updateContact(mixer.getContact(), mixer.getPerson());
+                mixer.setStatus(ContactMixer.FINISH_UPDATE);
+                getView().updateItem();
+            }
+        }, "手机联系人", new LshColorDialog.OnNegativeListener() {
+            @Override
+            public void onClick(LshColorDialog dialog) {
+                dialog.dismiss();
+                importFromContact(mixer);
+            }
+        });
+    }
+
+    private void linkToContact(ContactMixer mixer) {
+        String personId = mixer.getContact().getPersonId();
+        if (LshStringUtils.isEmpty(personId)) {
+            mContactsAdder.insertOrUpdatePersonId(mixer.getContact(), mixer.getPerson().getId());
+        } else {
+            mContactsAdder.insertOrUpdatePersonId(mixer.getContact(), mixer.getPerson().getId());
+        }
+        mixer.getContact().setPersonId(mixer.getPerson().getId());
+        mixer.refreshStatus();
+        getView().updateItem();
+    }
+
+    private void exportToContact(ContactMixer mixer) {
+        mContactsAdder.addContact(mixer.getPerson());
+        mixer.setStatus(ContactMixer.FINISH_UPDATE);
+        getView().updateItem();
+    }
+
+    public void importFromContact(ContactMixer mixer) {
         getView().showLoadingDialog();
         LshLogUtils.i("添加联系人");
 
+        ShiyiContact contact = mixer.getContact();
         Person person = getPerson(contact);
         PersonDetail personDetail = getPersonDetail(contact, person.getId());
 
@@ -129,6 +193,7 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                 .observeOn(AndroidSchedulers.mainThread())
                 // 判断是否需要上传头像
                 .flatMap(personId -> {
+                    person.setId(personId);
                     return LshRxUtils.create(new FlowableOnSubscribe<Boolean>() {
                         @Override
                         public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
@@ -176,7 +241,9 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(success -> {
-                    getView().removeCurrentItem();
+                    mContactsAdder.insertOrUpdatePersonId(contact, person.getId());
+                    mixer.setStatus(ContactMixer.FINISH_UPDATE);
+                    getView().updateItem();
                     getView().dismissLoadingDialog();
                 }, new DismissLoadingThrowableConsumer(getView()));
         addDisposable(disposable);

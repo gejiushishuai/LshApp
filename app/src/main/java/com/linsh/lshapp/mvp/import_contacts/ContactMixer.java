@@ -3,13 +3,16 @@ package com.linsh.lshapp.mvp.import_contacts;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.CustomQuery;
 import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshArrayUtils;
 import com.linsh.lshutils.utils.LshContextUtils;
 import com.linsh.lshutils.utils.LshListUtils;
+import com.linsh.lshutils.utils.LshLunarCalendarUtils;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -46,7 +49,7 @@ public class ContactMixer {
         refreshStatus();
     }
 
-    private void refreshStatus() {
+    public void refreshStatus() {
         if (mPerson == null && mContact == null) {
             status = 0;
         } else if (mPerson != null && mContact == null) {
@@ -56,17 +59,22 @@ public class ContactMixer {
         } else if (!mPerson.getId().equals(mContact.getPersonId())) {
             status = LINK_TO_CONTACTS;
         } else {
+            // 名字 生日
+            String birthdayOfPerson = mPerson.getBirthday();
+            String birthdayOfContact = mContact.getBirthday() == null ? null : mContact.getBirthday().getStartDate();
             if (!LshStringUtils.isEquals(mPerson.getName(), mContact.getDisplayName())
-                    || !LshStringUtils.isEquals(mPerson.getBirthday(), mContact.getBirthday().getStartDate())) {
+                    || !LshStringUtils.isEquals(birthdayOfPerson, birthdayOfContact)) {
                 status = UPDATE_WITH_CONTACTS;
                 return;
             }
-            String lunarBirthdayOfPerson = mPerson.getLunarBirthday();
+            // 农历生日
+            String lunarBirthdayOfPerson = LshLunarCalendarUtils.lunarStr2NormalStr(mPerson.getLunarBirthday());
             String lunarBirthdayOfContact = mContact.getLunarBirthday() == null ? null : mContact.getLunarBirthday().getStartDate();
             if (!LshStringUtils.isEquals(lunarBirthdayOfPerson, lunarBirthdayOfContact)) {
                 status = UPDATE_WITH_CONTACTS;
                 return;
             }
+            // 电话
             List<String> phoneNumbersOfPerson = mPerson.getPhoneNumbers();
             List<PhoneNumber> phoneNumbersOfContact = mContact.getPhoneNumbers();
             boolean emptyOfPerson = LshListUtils.isEmpty(phoneNumbersOfPerson);
@@ -89,6 +97,14 @@ public class ContactMixer {
                     status = UPDATE_WITH_CONTACTS;
                     return;
                 }
+            }
+            // 头像
+            String avatarThumb = mPerson.getAvatarThumb();
+            String avatar = mPerson.getAvatar();
+            String photoUri = mContact.getPhotoUri();
+            if (LshStringUtils.isAllEmpty(avatarThumb, avatar) != LshStringUtils.isEmpty(photoUri)) {
+                status = UPDATE_WITH_CONTACTS;
+                return;
             }
             status = FINISH_UPDATE;
         }
@@ -167,10 +183,19 @@ public class ContactMixer {
         return status;
     }
 
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public static class ShiyiQuery extends CustomQuery<ShiyiContact> {
 
         public ShiyiQuery(Context context) {
             super(context);
+            Contact.Field[] values = Contact.Field.values();
+            ShiyiContact.ShiyiField[] values1 = ShiyiContact.ShiyiField.values();
+            Contact.AbstractField[] fields = new Contact.AbstractField[values.length + values1.length];
+            LshArrayUtils.addArrays(fields, values, values1);
+            include(fields);
         }
 
         @Override
@@ -180,8 +205,8 @@ public class ContactMixer {
 
         @Override
         protected void buildCustomFieldToContact(Cursor cursor, String mimeType, ShiyiContact shiyiContact) {
-            if (mimeType.equals(ShiyiContact.MIME_TYPE_LSHAPP_ID)) {
-                int columnIndex = cursor.getColumnIndex(ShiyiContact.COLUMN_LSHAPP_ID);
+            if (mimeType.equals(ShiyiContact.MIME_TYPE_PERSON_ID)) {
+                int columnIndex = cursor.getColumnIndex(ShiyiContact.COLUMN_PERSON_ID);
                 if (columnIndex >= 0) {
                     String personId = cursor.getString(columnIndex);
                     shiyiContact.setPersonId(personId);

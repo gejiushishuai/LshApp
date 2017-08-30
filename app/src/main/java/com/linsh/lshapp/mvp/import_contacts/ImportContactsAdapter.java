@@ -49,9 +49,9 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, ImportC
             String photoUri = contact.getPhotoUri();
             String name = contact.getDisplayName();
             List<PhoneNumber> phoneNumbers = contact.getPhoneNumbers();
-            String birthday = contact.getBirthday().getStartDate();
-            Event lunarBirthdayEvent = contact.getLunarBirthday();
-            String lunarBirthday = LshLunarCalendarUtils.normalStr2LunarStr(lunarBirthdayEvent.getStartDate());
+            String birthday = contact.getBirthday() == null ? null : contact.getBirthday().getStartDate();
+            String lunarBirthday = contact.getLunarBirthday() == null ?
+                    null : LshLunarCalendarUtils.normalStr2LunarStr(contact.getLunarBirthday().getStartDate());
 
             if (LshStringUtils.notEmpty(photoUri)) {
                 ImageTools.setImage(holder.ivLeftAvatar, Uri.parse(photoUri));
@@ -157,17 +157,18 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, ImportC
         holder.itemView.setOnClickListener(this);
         holder.tvStatus.setOnClickListener(this);
         holder.itemView.setTag(holder);
-        holder.tvStatus.setTag(holder);
+        holder.tvStatus.setTag(position);
     }
 
     @Override
     public void onClick(View v) {
-        MyViewHolder holder = (MyViewHolder) v.getTag();
         if (v.getId() == R.id.tv_item_import_contacts_status) {
+            int position = (int) v.getTag();
             if (mOnImportContactsListener != null) {
-//                mOnImportContactsListener.onAddContact(getData().get(holder.getAdapterPosition()), holder.getAdapterPosition());
+                mOnImportContactsListener.onClickStatus(getData().get(position), position);
             }
         } else {
+            MyViewHolder holder = (MyViewHolder) v.getTag();
             boolean visible = holder.llDetailLayout.getVisibility() == View.VISIBLE;
             String detail = holder.tvLeftDetailText.getText().toString() + holder.tvRightDetailText.getText().toString();
             if (visible) {
@@ -212,7 +213,7 @@ class ImportContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, ImportC
     }
 
     public interface OnImportContactsListener {
-        void onAddContact(Contact contact, int position);
+        void onClickStatus(ContactMixer mixer, int position);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

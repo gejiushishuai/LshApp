@@ -4,7 +4,9 @@ import android.net.Uri;
 import android.widget.ImageView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
+import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.linsh.lshapp.R;
@@ -20,6 +22,19 @@ import java.io.File;
  */
 
 public class ImageTools {
+
+    public static RequestManager getGlide() {
+        return Glide.with(LshApplicationUtils.getContext());
+    }
+
+    public static DrawableTypeRequest<GlideUrl> getGlide(String url) {
+        LazyHeaders.Builder headerBuilder = new LazyHeaders.Builder()
+                .addHeader("Authorization", QcloudSignCreater.getDownLoadSign(getCosPathFromUrl(url)));
+        GlideUrl glideUrl = new GlideUrl(url, headerBuilder.build());
+
+        return Glide.with(LshApplicationUtils.getContext())
+                .load(glideUrl);
+    }
 
     public static void setThumb(ImageView imageView, String thumbUrl, String ImageUrl) {
         setThumb(imageView, thumbUrl, ImageUrl, 0, 0);

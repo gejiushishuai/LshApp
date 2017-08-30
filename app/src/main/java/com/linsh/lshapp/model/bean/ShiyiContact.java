@@ -11,8 +11,8 @@ import java.util.List;
 
 public class ShiyiContact extends Contact {
 
-    public static final String MIME_TYPE_LSHAPP_ID = "vnd.com.linsh.cursor.item/lshappid";
-    public static final String COLUMN_LSHAPP_ID = "data1";
+    public static final String MIME_TYPE_PERSON_ID = "vnd.com.lshapp.cursor.item/personId";
+    public static final String COLUMN_PERSON_ID = "data1";
 
     private String personId;
 
@@ -26,7 +26,7 @@ public class ShiyiContact extends Contact {
 
     public enum ShiyiField implements AbstractField {
 
-        LshappId(MIME_TYPE_LSHAPP_ID, COLUMN_LSHAPP_ID);
+        LshappId(MIME_TYPE_PERSON_ID, COLUMN_PERSON_ID);
 
         private String mMimeType;
         private String mColumn;

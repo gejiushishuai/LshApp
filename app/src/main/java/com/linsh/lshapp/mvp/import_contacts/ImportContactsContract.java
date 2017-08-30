@@ -1,6 +1,5 @@
 package com.linsh.lshapp.mvp.import_contacts;
 
-import com.github.tamir7.contacts.Contact;
 import com.linsh.lshapp.base.BaseContract;
 
 import java.util.List;
@@ -15,11 +14,11 @@ public interface ImportContactsContract {
 
         void setData(List<ContactMixer> contacts);
 
-        void removeCurrentItem();
+        void updateItem();
     }
 
     interface Presenter extends BaseContract.BasePresenter<View> {
 
-        void addContact(Contact contact);
+        void onClickStatus(ContactMixer mixer);
     }
 }
