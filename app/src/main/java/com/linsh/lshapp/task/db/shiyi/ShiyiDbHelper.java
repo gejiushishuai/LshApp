@@ -482,7 +482,7 @@ public class ShiyiDbHelper {
                 Group realmGroup = realm.where(Group.class).equalTo("name", groupName).findFirst();
                 if (realmGroup == null && ShiyiModelHelper.UNNAME_GROUP_NAME.equals(groupName)) {
                     Shiyi shiyi = realm.where(Shiyi.class).findFirst();
-                    realmGroup = new Group(ShiyiModelHelper.UNNAME_GROUP_NAME, 1);
+                    realmGroup = realm.copyToRealm(new Group(ShiyiModelHelper.UNNAME_GROUP_NAME, 1));
                     RealmList<Group> groups = shiyi.getGroups();
                     groups.add(0, realmGroup);
                     ShiyiDbUtils.renewSort(groups);
