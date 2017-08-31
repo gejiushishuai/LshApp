@@ -126,9 +126,18 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
             @Override
             public void onClick(LshColorDialog dialog) {
                 dialog.dismiss();
-                mContactsAdder.updateContact(mixer.getContact(), mixer.getPerson());
-                mixer.setStatus(ContactMixer.FINISH_UPDATE);
-                getView().updateItem();
+                mContactsAdder.updateContact(mixer.getContact(), mixer.getPerson())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(contact -> {
+                            getView().dismissLoadingDialog();
+                            mixer.setContact(contact);
+                            getView().updateItem();
+                        }, error -> {
+                            error.printStackTrace();
+                            getView().dismissLoadingDialog();
+                            getView().showToast(error.getMessage());
+                            getView().updateItem();
+                        });
             }
         }, "手机联系人", new LshColorDialog.OnNegativeListener() {
             @Override
@@ -152,9 +161,20 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
     }
 
     private void exportToContact(ContactMixer mixer) {
-        mContactsAdder.addContact(mixer.getPerson());
-        mixer.setStatus(ContactMixer.FINISH_UPDATE);
-        getView().updateItem();
+        getView().showLoadingDialog();
+        Disposable disposable = mContactsAdder.addContact(mixer.getPerson())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(contact -> {
+                    getView().dismissLoadingDialog();
+                    mixer.setContact(contact);
+                    getView().updateItem();
+                }, error -> {
+                    error.printStackTrace();
+                    getView().dismissLoadingDialog();
+                    getView().showToast(error.getMessage());
+                    getView().updateItem();
+                });
+        addDisposable(disposable);
     }
 
     public void importFromContact(ContactMixer mixer) {
@@ -241,10 +261,10 @@ public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsCo
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(success -> {
+                    getView().dismissLoadingDialog();
                     mContactsAdder.insertOrUpdatePersonId(contact, person.getId());
                     mixer.setStatus(ContactMixer.FINISH_UPDATE);
                     getView().updateItem();
-                    getView().dismissLoadingDialog();
                 }, new DismissLoadingThrowableConsumer(getView()));
         addDisposable(disposable);
     }
