@@ -56,6 +56,9 @@ public class ShiyiMigration implements RealmMigration {
                                 personAlbum.getList("avatars").add(imageUrl);
                             }
                         });
+            case 6:
+                schema.get("Person")
+                        .addField("syncWithContacts", boolean.class);
         }
     }
 }
