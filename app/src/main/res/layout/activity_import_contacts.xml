@@ -6,6 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_theme_window_bg"
-    tools:context="com.linsh.lshapp.mvp.import_contacts.ImportContactsActivity">
+    tools:context="com.linsh.lshapp.mvp.sync_contacts.SyncContactsActivity">
 
 </android.support.v7.widget.RecyclerView>

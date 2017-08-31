@@ -1,4 +1,4 @@
-package com.linsh.lshapp.mvp.import_contacts;
+package com.linsh.lshapp.mvp.sync_contacts;
 
 import com.linsh.lshapp.base.BaseContract;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Senh Linsh on 17/4/25.
  */
 
-public interface ImportContactsContract {
+public interface SyncContactsContract {
 
     interface View extends BaseContract.BaseView {
 

@@ -1,4 +1,4 @@
-package com.linsh.lshapp.mvp.import_contacts;
+package com.linsh.lshapp.mvp.sync_contacts;
 
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -24,7 +24,7 @@ import java.util.List;
  * Created by Senh Linsh on 17/6/19.
  */
 
-class ImportContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, ImportContactsAdapter.MyViewHolder> implements View.OnClickListener {
+class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncContactsAdapter.MyViewHolder> implements View.OnClickListener {
 
     @Override
     protected int getLayout() {

@@ -1,4 +1,4 @@
-package com.linsh.lshapp.mvp.import_contacts;
+package com.linsh.lshapp.mvp.sync_contacts;
 
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
@@ -63,7 +63,7 @@ import io.realm.RealmList;
  * Created by Senh Linsh on 17/5/2.
  */
 
-public class ImportContactsPresenter extends RealmPresenterImpl<ImportContactsContract.View> implements ImportContactsContract.Presenter {
+public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContract.View> implements SyncContactsContract.Presenter {
 
 
     private ContactsAdder mContactsAdder;

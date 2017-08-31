@@ -9,7 +9,7 @@ import com.github.tamir7.contacts.Contact;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
 import com.linsh.lshapp.model.throwabes.CustomThrowable;
-import com.linsh.lshapp.mvp.import_contacts.ContactMixer;
+import com.linsh.lshapp.mvp.sync_contacts.ContactMixer;
 import com.linsh.lshutils.tools.LshContactsEditor;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;

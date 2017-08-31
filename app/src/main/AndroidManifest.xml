@@ -28,7 +28,7 @@
         <activity android:name=".mvp.setting.SettingsActivity"/>
         <activity android:name=".mvp.type_detail.TypeDetailActivity"/>
         <activity android:name=".mvp.edit_type.TypeEditActivity"/>
-        <activity android:name=".mvp.import_contacts.ImportContactsActivity"/>
+        <activity android:name=".mvp.sync_contacts.SyncContactsActivity"/>
         <activity android:name=".mvp.photo_view.PhotoViewActivity"/>
         <activity android:name=".mvp.search.SearchActivity"/>
         <activity android:name=".mvp.album.AlbumActivity"/>

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.common.LshConfig;
-import com.linsh.lshapp.mvp.import_contacts.ImportContactsActivity;
+import com.linsh.lshapp.mvp.sync_contacts.SyncContactsActivity;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshFragmentUtils;
 import com.linsh.lshutils.utils.LshPermissionUtils;
@@ -72,7 +72,7 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
     @Override
     public void onGranted(String permission) {
         if (permission.equals(Manifest.permission.READ_CONTACTS)) {
-            LshActivityUtils.newIntent(ImportContactsActivity.class).startActivity(this);
+            LshActivityUtils.newIntent(SyncContactsActivity.class).startActivity(this);
         }
     }
 
@@ -86,7 +86,7 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
     @Override
     public void onBeforeAndroidM(String permission) {
         if (permission.equals(Manifest.permission.READ_CONTACTS)) {
-            LshActivityUtils.newIntent(ImportContactsActivity.class).startActivity(this);
+            LshActivityUtils.newIntent(SyncContactsActivity.class).startActivity(this);
         }
     }
 

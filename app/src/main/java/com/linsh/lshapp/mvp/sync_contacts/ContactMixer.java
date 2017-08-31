@@ -1,4 +1,4 @@
-package com.linsh.lshapp.mvp.import_contacts;
+package com.linsh.lshapp.mvp.sync_contacts;
 
 import android.content.Context;
 import android.database.Cursor;

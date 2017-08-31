@@ -1,4 +1,4 @@
-package com.linsh.lshapp.mvp.import_contacts;
+package com.linsh.lshapp.mvp.sync_contacts;
 
 import android.Manifest;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,11 +10,11 @@ import com.linsh.lshutils.utils.LshPermissionUtils;
 
 import java.util.List;
 
-public class ImportContactsActivity extends BaseToolbarActivity<ImportContactsContract.Presenter>
-        implements ImportContactsContract.View, ImportContactsAdapter.OnImportContactsListener, LshPermissionUtils.PermissionListener {
+public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContract.Presenter>
+        implements SyncContactsContract.View, SyncContactsAdapter.OnImportContactsListener, LshPermissionUtils.PermissionListener {
 
     private RecyclerView mRcvContent;
-    private ImportContactsAdapter mAdapter;
+    private SyncContactsAdapter mAdapter;
     private int curItem = -1;
 
     @Override
@@ -23,8 +23,8 @@ public class ImportContactsActivity extends BaseToolbarActivity<ImportContactsCo
     }
 
     @Override
-    protected ImportContactsContract.Presenter initPresenter() {
-        return new ImportContactsPresenter();
+    protected SyncContactsContract.Presenter initPresenter() {
+        return new SyncContactsPresenter();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ImportContactsActivity extends BaseToolbarActivity<ImportContactsCo
     @Override
     protected void initView() {
         mRcvContent = (RecyclerView) findViewById(R.id.rcv_import_contact);
-        mAdapter = new ImportContactsAdapter();
+        mAdapter = new SyncContactsAdapter();
         mRcvContent.setLayoutManager(new LinearLayoutManager(this));
         mRcvContent.setAdapter(mAdapter);
         mAdapter.setOnImportContactsListener(this);
