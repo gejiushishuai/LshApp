@@ -15,7 +15,7 @@
 
     <Preference
         android:key="import_contacts"
-        android:title="导入手机联系人"/>
+        android:title="同步手机联系人"/>
 
     <Preference
         android:key="backup_database"
