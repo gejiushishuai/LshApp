@@ -121,19 +121,19 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
             if (builder.length() != 0) {
                 builder.append("\n");
             }
-            builder.append(phoneNumber.getNormalizedNumber()).append(isLeft ? " : 电话" : "电话 : ");
+            appendInfo(builder, "电话", phoneNumber.getNormalizedNumber(), isLeft);
         }
         if (LshStringUtils.notEmpty(birthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
-            builder.append(birthday).append(isLeft ? " : 生日" : "生日 : ");
+            appendInfo(builder, "生日", birthday, isLeft);
         }
         if (LshStringUtils.notEmpty(lunarBirthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
-            builder.append(lunarBirthday).append(isLeft ? " : 生日" : "生日 : ");
+            appendInfo(builder, "生日", lunarBirthday, isLeft);
         }
         return builder.toString();
     }
@@ -149,22 +149,31 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
                 if (builder.length() != 0) {
                     builder.append("\n");
                 }
-                builder.append(isRight ? "电话 : " : " : 电话").append(phoneNumber);
+                appendInfo(builder, "电话", phoneNumber, !isRight);
             }
         }
         if (LshStringUtils.notEmpty(birthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
-            builder.append(isRight ? "生日 : " : " : 生日").append(birthday);
+            appendInfo(builder, "生日", birthday, !isRight);
         }
         if (LshStringUtils.notEmpty(lunarBirthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
-            builder.append(isRight ? "生日 : " : " : 生日").append(lunarBirthday);
+            appendInfo(builder, "生日", lunarBirthday, !isRight);
         }
         return builder.toString();
+    }
+
+    private StringBuilder appendInfo(StringBuilder builder, String name, String value, boolean isLeft) {
+        if (isLeft) {
+            builder.append(value).append(" : ").append(name);
+        } else {
+            builder.append(name).append(" : ").append(value);
+        }
+        return builder;
     }
 
     private void setItemData(View layout, TextView tvName, String name,
