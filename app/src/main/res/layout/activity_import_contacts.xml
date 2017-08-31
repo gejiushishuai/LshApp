@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rcv_import_contact"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_theme_window_bg"
-    tools:context="com.linsh.lshapp.mvp.sync_contacts.SyncContactsActivity">
+    android:orientation="vertical">
 
-</android.support.v7.widget.RecyclerView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:divider="@drawable/shape_devider"
+        android:showDividers="middle">
+
+        <TextView
+            style="@style/Text_title2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="手机联系人"/>
+
+        <TextView
+            style="@style/Text_title2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="拾意联系人"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcv_import_contact"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.linsh.lshapp.mvp.sync_contacts.SyncContactsActivity">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
+

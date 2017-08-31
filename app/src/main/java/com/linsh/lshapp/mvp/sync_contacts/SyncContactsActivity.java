@@ -19,7 +19,7 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
 
     @Override
     protected String getToolbarTitle() {
-        return "导入联系人";
+        return "同步手机联系人";
     }
 
     @Override
