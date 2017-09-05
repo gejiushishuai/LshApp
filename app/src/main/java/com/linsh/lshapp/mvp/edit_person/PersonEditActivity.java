@@ -43,6 +43,8 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     TextView tvSex;
     @BindView(R.id.tv_shiyi_person_add_group)
     TextView tvGroup;
+    @BindView(R.id.iv_shiyi_person_add_sync)
+    ImageView ivSync;
 
     private MenuItem mConfirmItem;
     private String emptyText = "未填写";
@@ -82,7 +84,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     @OnClick({R.id.rl_shiyi_person_add_avatar_item, R.id.rl_shiyi_person_add_name_item, R.id.rl_shiyi_person_add_desc_item,
-            R.id.rl_shiyi_person_add_sex_item, R.id.rl_shiyi_person_add_group_item})
+            R.id.rl_shiyi_person_add_sex_item, R.id.rl_shiyi_person_add_group_item, R.id.ll_shiyi_person_add_sync_item})
     public void clickItems(View view) {
         switch (view.getId()) {
             case R.id.rl_shiyi_person_add_avatar_item:
@@ -100,9 +102,17 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
             case R.id.rl_shiyi_person_add_group_item:
                 selectGroup();
                 break;
+            case R.id.ll_shiyi_person_add_sync_item:
+                toggleSync();
+                break;
             default:
                 break;
         }
+    }
+
+    private void toggleSync() {
+        ivSync.setSelected(!ivSync.isSelected());
+        onPersonModified();
     }
 
     // 点击修改头像
@@ -287,7 +297,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     private void savePerson() {
         ////// 添加个人信息到选定的组里面, 并结束Activity
-        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), mCurSelectedFile);
+        mPresenter.savePerson(getGroup(), getName(), getDesc(), getSex(), getSync(), mCurSelectedFile);
     }
 
     @Override
@@ -341,6 +351,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
             setName(person.getName());
             setDesc(person.getDescribe());
             setSex(person.getGender());
+            setSync(person.isSyncWithContacts());
         }
         if (mCurSelectedFile == null) {
             setAvatar(person.getAvatarThumb(), person.getAvatar());
@@ -395,6 +406,14 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     public void setGroup(String group) {
         tvGroup.setText(emptyToEmptyText(group));
+    }
+
+    public void setSync(boolean sync) {
+        ivSync.setSelected(sync);
+    }
+
+    public boolean getSync() {
+        return ivSync.isSelected();
     }
 
     private boolean isEmpty(String text) {

@@ -72,7 +72,9 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
     protected void attachView() {
         getView().showLoadingDialog();
 
+        // 获取打开同步的拾意联系人
         ShiyiDbHelper.getSyncContactsPersons()
+                // 获取手机联系人, 并合并
                 .flatMap(new Function<List<ContactsPerson>, Publisher<TreeMap<String, ContactMixer>>>() {
                     @Override
                     public Publisher<TreeMap<String, ContactMixer>> apply(List<ContactsPerson> contactsPersons) throws Exception {
@@ -80,9 +82,17 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
 
                             Contacts.initialize(LshApplicationUtils.getContext());
                             List<ShiyiContact> contacts = ContactMixer.getContacts();
-                            emitter.onNext(ContactMixer.mix(contactsPersons, contacts));
+                            TreeMap<String, ContactMixer> mixers = ContactMixer.mix(contactsPersons, contacts);
+                            emitter.onNext(mixers);
 
                         }).subscribeOn(Schedulers.io());
+                    }
+                })
+                // 补全拾意联系人中没有打开同步但可以和手机联系人匹配的拾意联系人
+                .flatMap(new Function<TreeMap<String, ContactMixer>, Publisher<TreeMap<String, ContactMixer>>>() {
+                    @Override
+                    public Publisher<TreeMap<String, ContactMixer>> apply(TreeMap<String, ContactMixer> mixers) throws Exception {
+                        return ShiyiDbHelper.fixContactMixer(mixers);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -335,7 +345,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
     }
 
     public Person getPerson(Contact contact) {
-        return new Person(contact.getDisplayName(), "", "", "", "");
+        return new Person(contact.getDisplayName(), "", "", "", "", true);
     }
 
     public PersonDetail getPersonDetail(Contact contact, String personId) {

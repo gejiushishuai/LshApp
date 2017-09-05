@@ -122,6 +122,7 @@ public class ContactMixer {
     public static TreeMap<String, ContactMixer> mix(List<ContactsPerson> persons, List<ShiyiContact> contacts) {
         TreeMap<String, ContactMixer> map = new TreeMap<>();
 
+        // 先找出 ShiyiContact 中有与 ContactsPerson 的 id 相同的, 添加到 ContactMixer 中, 以 Id 为 key
         for (int i = 0; i < contacts.size(); i++) {
             ShiyiContact contact = contacts.get(i);
             String contactId = contact.getPersonId();
@@ -141,11 +142,11 @@ public class ContactMixer {
                 }
             }
         }
-
+        // 然后将同步的拾意联系人添加到 ContactMixer 中, 以 名字 为 key
         for (ContactsPerson person : persons) {
             putExitPerson(map, person, 0);
         }
-
+        // 然后将手机联系人添加到 ContactMixer 中, 以 名字 为 key
         for (ShiyiContact contact : contacts) {
             String key = contact.getDisplayName();
             if (map.containsKey(key)) {

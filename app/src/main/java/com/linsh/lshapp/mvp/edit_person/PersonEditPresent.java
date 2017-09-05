@@ -98,7 +98,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
     }
 
     @Override
-    public void savePerson(String group, String name, String desc, String sex, File avatarFile) {
+    public void savePerson(String group, String name, String desc, String sex, boolean sync, File avatarFile) {
         getView().showLoadingDialog();
 
         Disposable disposable = Flowable.just(mPerson == null || !mPerson.getName().equals(name))
@@ -184,7 +184,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                 // 保存联系人
                 .flatMap(url -> {
                     LshLogUtils.i("保存联系人");
-                    return getSavePersonObservable(group, name, desc, url[0], url[1], sex);
+                    return getSavePersonObservable(group, name, desc, url[0], url[1], sex, sync);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(personId -> {
@@ -201,13 +201,13 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
         addDisposable(disposable);
     }
 
-    private Flowable<String> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex) {
+    private Flowable<String> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex, boolean sync) {
         ImageUrl imageUrl = null;
         if (!LshStringUtils.isEmpty(avatarUrl) && LshRegexUtils.isURL(avatarUrl)) {
             imageUrl = new ImageUrl(avatarUrl, avatarThumbUrl);
         }
         if (mPerson == null) {
-            Person person = new Person(name, desc, avatarUrl, avatarThumbUrl, sex);
+            Person person = new Person(name, desc, avatarUrl, avatarThumbUrl, sex, sync);
             return ShiyiDbHelper.addPerson(getRealm(), group, person, new PersonDetail(person.getId()), new PersonAlbum(person.getId(), imageUrl));
         } else {
             Flowable<String> flowable;
@@ -215,6 +215,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
             person.setName(name);
             person.setDescribe(desc);
             person.setGender(sex);
+            person.setSyncWithContacts(sync);
             if (avatarUrl != null) {
                 person.setAvatar(avatarUrl, avatarThumbUrl);
             }

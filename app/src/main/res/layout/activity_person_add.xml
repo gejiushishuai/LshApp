@@ -136,4 +136,37 @@
         android:layout_height="1px"
         android:background="@color/line_whitebg"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="50dp"
+        android:background="@color/line_whitebg"/>
+
+    <LinearLayout
+        android:id="@+id/ll_shiyi_person_add_sync_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="10dp">
+
+        <TextView
+            style="@style/Text_title"
+            android:layout_weight="1"
+            android:text="与手机联系人同步"/>
+
+        <ImageView
+            android:id="@+id/iv_shiyi_person_add_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:src="@drawable/selector_toggle"
+            android:text="未填写"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_whitebg"/>
+
 </LinearLayout>

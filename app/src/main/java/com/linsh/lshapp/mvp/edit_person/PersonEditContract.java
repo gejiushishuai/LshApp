@@ -34,7 +34,7 @@ public interface PersonEditContract {
 
         void addGroup(String inputText);
 
-        void savePerson(String group, String name, String desc, String sex, File avatarFile);
+        void savePerson(String group, String name, String desc, String sex, boolean sync, File avatarFile);
 
         void checkName(String name);
     }

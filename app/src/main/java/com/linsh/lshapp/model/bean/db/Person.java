@@ -31,12 +31,13 @@ public class Person extends RealmObject {
         this.gender = gender;
     }
 
-    public Person(String name, String describe, String avatar, String avatarThumb, String gender) {
+    public Person(String name, String describe, String avatar, String avatarThumb, String gender, boolean sync) {
         this.id = ShiyiModelHelper.getPersonId(name);
         this.name = name;
         this.describe = describe;
         setAvatar(avatar, avatarThumb);
         setGender(gender);
+        syncWithContacts = sync;
     }
 
     public String getId() {
