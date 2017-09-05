@@ -62,11 +62,9 @@ public class RetrofitHelper {
                     mOkHttpClient = new OkHttpClient.Builder()
                             .cache(cache)
                             .retryOnConnectionFailure(true)
-                            .addNetworkInterceptor(new CacheInterceptor())
                             .connectTimeout(30, TimeUnit.SECONDS)
                             .writeTimeout(20, TimeUnit.SECONDS)
                             .readTimeout(20, TimeUnit.SECONDS)
-                            .addInterceptor(new HeaderInterceptor())
                             .build();
                 }
             }
@@ -75,7 +73,7 @@ public class RetrofitHelper {
 
 
     /**
-     * 添加UA拦截器，B站请求API需要加上UA才能正常使用
+     * 添加UA拦截器
      */
     private static class HeaderInterceptor implements Interceptor {
 
@@ -90,7 +88,7 @@ public class RetrofitHelper {
     }
 
     /**
-     * 为okhttp添加缓存，这里是考虑到服务器不支持缓存时，从而让okhttp支持缓存
+     * 为okhttp添加缓存
      */
     private static class CacheInterceptor implements Interceptor {
 
