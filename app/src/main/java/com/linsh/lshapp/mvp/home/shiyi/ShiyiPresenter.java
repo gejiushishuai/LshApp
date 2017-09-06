@@ -53,6 +53,14 @@ public class ShiyiPresenter extends RealmPresenterImpl<ShiyiContract.View> imple
     }
 
     @Override
+    public void syncPersonsInGroup(int position) {
+        Group group = mGroups.get(position);
+        Disposable disposable = ShiyiDbHelper.syncPersonsInGroup(getRealm(), group.getId())
+                .subscribe(new EmptyConsumer<Void>(), new DefaultThrowableConsumer());
+        addDisposable(disposable);
+    }
+
+    @Override
     public void addGroup(String groupName) {
         Disposable disposable = ShiyiDbHelper.addGroup(getRealm(), groupName)
                 .subscribe(new NothingConsumer<>(), new DefaultThrowableConsumer());

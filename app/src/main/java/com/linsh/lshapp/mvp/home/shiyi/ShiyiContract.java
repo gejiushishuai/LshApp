@@ -26,5 +26,7 @@ public interface ShiyiContract {
         void renameGroup(int position, String groupName);
 
         List<Group> getGroups();
+
+        void syncPersonsInGroup(int position);
     }
 }

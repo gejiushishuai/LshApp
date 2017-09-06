@@ -81,7 +81,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     private void showGroupLongClickSetting(View view, final int position) {
         LshPopupWindow popupWindow = new LshPopupWindow(getActivity());
         popupWindow.BuildList()
-                .setItems(new String[]{"添加分组", "重命名分组", "删除分组"}, new LshPopupWindow.OnItemClickListener() {
+                .setItems(new String[]{"添加分组", "重命名分组", "删除分组", "同步分组中所有联系人"}, new LshPopupWindow.OnItemClickListener() {
                     @Override
                     public void onClick(LshPopupWindow window, int index) {
                         switch (index) {
@@ -96,6 +96,10 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                             // 删除分组
                             case 2:
                                 mPresenter.deleteGroup(position);
+                                break;
+                            // 同步分组中所有联系人
+                            case 3:
+                                mPresenter.syncPersonsInGroup(position);
                                 break;
                         }
                         window.dismiss();

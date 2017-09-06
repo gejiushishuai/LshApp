@@ -244,6 +244,24 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 同步分组中所有联系人
+     */
+    public static Flowable<Void> syncPersonsInGroup(final Realm realm, final String groupId) {
+        return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
+            @Override
+            protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
+                Group group = realm.where(Group.class).equalTo("id", groupId).findFirst();
+                if (group != null) {
+                    RealmList<Person> persons = group.getPersons();
+                    for (Person person : persons) {
+                        person.setSyncWithContacts(true);
+                    }
+                }
+            }
+        });
+    }
+
     public static Flowable<Void> addTypeLabel(final Realm realm, final String labelName, final int size) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
