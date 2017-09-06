@@ -22,6 +22,7 @@
 -keep class com.linsh.lshapp.model.action.** { *; }
 -keep class com.linsh.lshapp.view.** {*;}
 -keep class com.linsh.lshutils.view.** {*;}
+-keep class com.linsh.lshapp.common.LshApplicationLike {*;}
 
 #---------------------------------2.第三方包-------------------------------
 #gson
