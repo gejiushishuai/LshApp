@@ -51,6 +51,7 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
             Person person = getSecondLevelData().get(getSecondPosition(position));
             secondLevelHolder.tvName.setText(person.getName());
             secondLevelHolder.tvDetail.setText(person.getDescribe());
+            secondLevelHolder.ivSync.setVisibility(person.isSyncWithContacts() ? View.VISIBLE : View.GONE);
             ImageTools.loadAvatar(secondLevelHolder.ivAvatar, person.getAvatarThumb(), person.getAvatar());
         }
     }
@@ -213,6 +214,7 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
 
     private class ShiyiSecondLevelHolder extends LshViewHolder {
         private ImageView ivAvatar;
+        private ImageView ivSync;
         private TextView tvName;
         private TextView tvDetail;
 
@@ -223,6 +225,7 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
         @Override
         public void initView(View itemView) {
             ivAvatar = (ImageView) itemView.findViewById(R.id.iv_item_contacts);
+            ivSync = (ImageView) itemView.findViewById(R.id.iv_item_contacts_sync);
             tvName = (TextView) itemView.findViewById(R.id.tv_item_contacts_name);
             tvDetail = (TextView) itemView.findViewById(R.id.tv_item_contacts_detail);
         }
