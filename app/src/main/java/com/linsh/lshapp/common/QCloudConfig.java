@@ -8,8 +8,8 @@ public class QCloudConfig {
 
     public static final String BUCKET_NAME = "lshapp";
     public static final int APP_ID = 1253199585;
-    public static final String SECRET_ID = "AKIDG3iI7EPKwyuvGjKB2wuwB1y1Q5ZGQ0Ps";
-    public static final String SECRET_KEY = "OscSPUat9U63Rul2NpsKsWJ1wyFllaaR";
+    public static final String SECRET_ID = "AKIDv0whMv4YbUFqHZ5eR3Zv6B8uVzNfjpof";
+    public static final String SECRET_KEY = "oT0QlvvlhT4Xt56xd8SaaP3b0TmutlSy";
 
 
     public static final String HOST = "http://tj.file.myqcloud.com/";
