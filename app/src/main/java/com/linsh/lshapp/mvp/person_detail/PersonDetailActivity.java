@@ -43,6 +43,8 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     TextView tvName;
     @BindView(R.id.iv_person_detail_sex)
     ImageView ivSex;
+    @BindView(R.id.iv_person_detail_sync)
+    ImageView ivSync;
     @BindView(R.id.tv_person_detail_desc)
     TextView tvDesc;
     @BindView(R.id.rcv_person_detail_content)
@@ -155,6 +157,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
             } else if (gender == 2) {
                 ivSex.setImageResource(R.drawable.ic_sex_female);
             }
+            ivSync.setVisibility(person.isSyncWithContacts() ? View.VISIBLE:View.GONE);
             ImageTools.loadAvatar(ivAvatar, person.getAvatarThumb(), person.getAvatar());
         }
     }
