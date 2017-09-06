@@ -191,7 +191,8 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
                 Person newPerson = mNewData.get(newExpandedPosition).getPersons().get(newPersonPosition);
                 return LshStringUtils.isEquals(oldPerson.getName(), newPerson.getName())
                         && LshStringUtils.isEquals(oldPerson.getDescribe(), newPerson.getDescribe())
-                        && LshStringUtils.isEquals(oldPerson.getAvatar(), newPerson.getAvatar());
+                        && LshStringUtils.isEquals(oldPerson.getAvatar(), newPerson.getAvatar())
+                        && oldPerson.isSyncWithContacts() == newPerson.isSyncWithContacts();
             }
             return false;
         }
