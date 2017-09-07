@@ -9,9 +9,12 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
+import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshActivityUtils;
+import com.linsh.lshutils.utils.LshIntentUtils;
 import com.linsh.lshutils.utils.LshPermissionUtils;
 
 import java.util.ArrayList;
@@ -89,6 +92,12 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
         ContactsPerson person = mixer.getPerson();
 
         ArrayList<String> items = new ArrayList<>();
+        if (contact != null) {
+            items.add("跳转至该手机联系人");
+        }
+        if (person != null || mixer.getStatus() == ContactMixer.FINISH_UPDATE) {
+            items.add("跳转至该拾意联系人");
+        }
         if (mixer.getStatus() == ContactMixer.FINISH_UPDATE && contact != null && person != null &&
                 LshStringUtils.isAllNotEmpty(contact.getPhotoUri(), person.getAvatar())) {
             items.add(0, "更新头像");
@@ -104,10 +113,30 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
                             case "更新头像":
                                 mPresenter.refreshAvatar(mixer);
                                 break;
+                            case "跳转至该手机联系人":
+                                gotoContact(contact);
+                                break;
+                            case "跳转至该拾意联系人":
+                                String id = person != null ? person.getId() : contact.getPersonId();
+                                LshActivityUtils.newIntent(PersonDetailActivity.class)
+                                        .putExtra(id)
+                                        .startActivity(getActivity());
+                                break;
                         }
                     }
                 })
                 .showAsDropDown(childAt, childAt.getWidth() / 2 - lshPopupWindow.getWidth() / 2, 0);
 
+    }
+
+    private void gotoContact(ShiyiContact contact) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            String lookupKey = contact.getLookupKey();
+            if (LshStringUtils.notEmpty(lookupKey)) {
+                LshIntentUtils.gotoContactDetail(contact.getId(), lookupKey);
+            }
+        } else {
+            LshIntentUtils.gotoContacts();
+        }
     }
 }
