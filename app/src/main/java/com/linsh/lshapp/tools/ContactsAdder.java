@@ -8,7 +8,6 @@ import com.bumptech.glide.request.target.Target;
 import com.github.tamir7.contacts.Contact;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
-import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.mvp.sync_contacts.ContactMixer;
 import com.linsh.lshutils.tools.LshContactsEditor;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
@@ -18,15 +17,12 @@ import com.linsh.lshutils.utils.LshImageUtils;
 import com.linsh.lshutils.utils.LshListUtils;
 import com.linsh.lshutils.utils.LshLunarCalendarUtils;
 
-import org.reactivestreams.Publisher;
-
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -88,19 +84,13 @@ public class ContactsAdder {
                 emitter.onNext(true);
             }
         }).subscribeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .map(result -> {
                     if (result instanceof Bitmap) {
                         byte[] bytes = LshImageUtils.bitmap2Bytes((Bitmap) result, 1000000);
                         contactBuilder.insertPhoto(bytes);
                     }
-                    return contactBuilder.getContactId();
-                })
-                .flatMap(new Function<Long, Publisher<ShiyiContact>>() {
-                    @Override
-                    public Publisher<ShiyiContact> apply(Long contactId) throws Exception {
-                        return queryContact(contactId);
-                    }
+                    return queryContact(contactBuilder.getContactId());
                 });
     }
 
@@ -165,35 +155,62 @@ public class ContactsAdder {
                 }
             }
         }).subscribeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .map(result -> {
                     if (result instanceof Bitmap) {
                         byte[] bytes = LshImageUtils.bitmap2Bytes((Bitmap) result, 1000000);
                         contactBuilder.insertPhoto(bytes);
                     }
-                    return contactBuilder.getContactId();
-                })
-                .flatMap(new Function<Long, Publisher<ShiyiContact>>() {
-                    @Override
-                    public Publisher<ShiyiContact> apply(Long contactId) throws Exception {
-                        return queryContact(contactId);
-                    }
+                    return queryContact(contactBuilder.getContactId());
                 });
     }
 
-    public static Flowable<ShiyiContact> queryContact(long contactId) {
-        return LshRxUtils.create(new FlowableOnSubscribe<ShiyiContact>() {
+    public static ShiyiContact queryContact(long contactId) {
+        ContactMixer.ShiyiQuery shiyiQuery = new ContactMixer.ShiyiQuery(LshContextUtils.get());
+        shiyiQuery.whereEqualTo(Contact.Field.RawContactId, contactId);
+        List<ShiyiContact> shiyiContacts = shiyiQuery.find();
+        if (!LshListUtils.isEmpty(shiyiContacts)) {
+            return shiyiContacts.get(0);
+        }
+        return null;
+    }
+
+    public Flowable<ShiyiContact> updatePhoto(ShiyiContact contact, String avatar) {
+        LshContactsEditor.ContactBuilder contactBuilder = mEditor.buildContact(contact.getId());
+        return LshRxUtils.create(new FlowableOnSubscribe<Object>() {
+
             @Override
-            public void subscribe(FlowableEmitter<ShiyiContact> emitter) throws Exception {
-                ContactMixer.ShiyiQuery shiyiQuery = new ContactMixer.ShiyiQuery(LshContextUtils.get());
-                shiyiQuery.whereEqualTo(Contact.Field.RawContactId, contactId);
-                List<ShiyiContact> shiyiContacts = shiyiQuery.find();
-                if (!LshListUtils.isEmpty(shiyiContacts)) {
-                    emitter.onNext(shiyiContacts.get(0));
-                } else {
-                    emitter.onError(new CustomThrowable("没有该联系人"));
-                }
+            public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
+                ImageTools.getGlide(avatar)
+                        .asBitmap()
+                        .listener(new RequestListener<GlideUrl, Bitmap>() {
+                            @Override
+                            public boolean onException(Exception e, GlideUrl model, Target<Bitmap> target, boolean isFirstResource) {
+                                e.printStackTrace();
+                                LshToastUtils.show("更新头像失败");
+                                emitter.onNext(e);
+                                emitter.onComplete();
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Bitmap resource, GlideUrl model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                emitter.onNext(resource);
+                                emitter.onComplete();
+                                return true;
+                            }
+                        }).preload();
             }
-        });
+        }).subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .map(result -> {
+                    if (result instanceof Bitmap) {
+                        byte[] bytes = LshImageUtils.bitmap2Bytes((Bitmap) result, 1000000);
+                        contactBuilder.insertPhoto(bytes);
+                        return queryContact(contactBuilder.getContactId());
+                    }
+                    return contact;
+                });
+
     }
 }

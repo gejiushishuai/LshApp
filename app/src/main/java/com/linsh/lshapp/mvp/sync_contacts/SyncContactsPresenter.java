@@ -70,8 +70,8 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
 
     @Override
     protected void attachView() {
+        mContactsAdder = new ContactsAdder();
         getView().showLoadingDialog();
-
         // 获取打开同步的拾意联系人
         ShiyiDbHelper.getSyncContactsPersons()
                 // 获取手机联系人, 并合并
@@ -108,9 +108,6 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
 
     @Override
     public void onClickStatus(ContactMixer mixer) {
-        if (mContactsAdder == null) {
-            mContactsAdder = new ContactsAdder();
-        }
         int status = mixer.getStatus();
         switch (status) {
             case ContactMixer.IMPORT_FROM_CONTACTS:
@@ -129,6 +126,17 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
             default:
                 break;
         }
+    }
+
+    @Override
+    public void refreshAvatar(ContactMixer mixer) {
+        Disposable disposable = mContactsAdder.updatePhoto(mixer.getContact(), mixer.getPerson().getAvatar())
+                .doOnSubscribe(onSubscribe -> getView().showLoadingDialog())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(new DefaultThrowableConsumer())
+                .doOnTerminate(() -> getView().dismissLoadingDialog())
+                .subscribe(contact -> getView().updateItem());
+        addDisposable(disposable);
     }
 
     private void updateWithContact(ContactMixer mixer) {
@@ -273,6 +281,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                 .subscribe(success -> {
                     getView().dismissLoadingDialog();
                     mContactsAdder.insertOrUpdatePersonId(contact, person.getId());
+                    contact.setPersonId(person.getId());
                     mixer.setStatus(ContactMixer.FINISH_UPDATE);
                     getView().updateItem();
                 }, new DismissLoadingThrowableConsumer(getView()));

@@ -1,13 +1,19 @@
 package com.linsh.lshapp.mvp.sync_contacts;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
+import android.provider.ContactsContract;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.CustomQuery;
 import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
+import com.linsh.lshutils.tools.LshCursorHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshArrayUtils;
 import com.linsh.lshutils.utils.LshContextUtils;
@@ -214,7 +220,38 @@ public class ContactMixer {
                 }
             }
         }
+
+        @Override
+        public List<ShiyiContact> find() {
+            List<ShiyiContact> shiyiContacts = super.find();
+            // 获取 lookKey
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                addLookupKey(shiyiContacts);
+            }
+            return shiyiContacts;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        private void addLookupKey(List<ShiyiContact> shiyiContacts) {
+            ContentResolver resolver = LshContextUtils.get().getContentResolver();
+            Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,
+                    new String[]{ContactsContract.Contacts.NAME_RAW_CONTACT_ID, ContactsContract.Contacts.LOOKUP_KEY},
+                    null, null, null);
+            if (cursor != null) {
+                LshCursorHelper helper = new LshCursorHelper(cursor);
+                while (cursor.moveToNext()) {
+                    Long contactId = helper.getLong(ContactsContract.Contacts.NAME_RAW_CONTACT_ID);
+                    Log.i("LshLog", "find lookUpKey: contactId=" + contactId);
+                    for (ShiyiContact shiyiContact : shiyiContacts) {
+                        if (shiyiContact.getId().equals(contactId)) {
+                            String lookUpKey = helper.getString(ContactsContract.Contacts.LOOKUP_KEY);
+                            shiyiContact.setLookupKey(lookUpKey);
+                            break;
+                        }
+                    }
+                }
+                cursor.close();
+            }
+        }
     }
-
-
 }

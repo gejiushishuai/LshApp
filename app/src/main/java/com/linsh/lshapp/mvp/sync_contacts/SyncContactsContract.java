@@ -20,5 +20,7 @@ public interface SyncContactsContract {
     interface Presenter extends BaseContract.BasePresenter<View> {
 
         void onClickStatus(ContactMixer mixer);
+
+        void refreshAvatar(ContactMixer mixer);
     }
 }

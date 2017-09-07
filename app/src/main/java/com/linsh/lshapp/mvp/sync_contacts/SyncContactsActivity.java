@@ -3,15 +3,22 @@ package com.linsh.lshapp.mvp.sync_contacts;
 import android.Manifest;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
+import com.linsh.lshapp.model.bean.ContactsPerson;
+import com.linsh.lshapp.model.bean.ShiyiContact;
+import com.linsh.lshapp.view.LshPopupWindow;
+import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
+import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshPermissionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContract.Presenter>
-        implements SyncContactsContract.View, SyncContactsAdapter.OnImportContactsListener, LshPermissionUtils.PermissionListener {
+        implements SyncContactsContract.View, SyncContactsAdapter.OnImportContactsListener, LshRecyclerViewAdapter.OnItemLongClickListener {
 
     private RecyclerView mRcvContent;
     private SyncContactsAdapter mAdapter;
@@ -39,9 +46,10 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
         mRcvContent.setLayoutManager(new LinearLayoutManager(this));
         mRcvContent.setAdapter(mAdapter);
         mAdapter.setOnImportContactsListener(this);
+        mAdapter.setOnItemLongClickListener(this);
 
         if (!LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
-            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, this);
+            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
         }
     }
 
@@ -63,22 +71,43 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
             curItem = position;
             mPresenter.onClickStatus(mixer);
         } else {
-            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, this);
+            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
         }
     }
 
     @Override
-    public void onGranted(String permission) {
+    public void onItemLongClick(int position) {
+        if (!LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
+            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
+            return;
+        }
+        curItem = position;
 
-    }
+        View childAt = mRcvContent.getChildAt(position);
+        ContactMixer mixer = mAdapter.getData().get(position);
+        ShiyiContact contact = mixer.getContact();
+        ContactsPerson person = mixer.getPerson();
 
-    @Override
-    public void onDenied(String permission, boolean isNeverAsked) {
-
-    }
-
-    @Override
-    public void onBeforeAndroidM(String permission) {
+        ArrayList<String> items = new ArrayList<>();
+        if (mixer.getStatus() == ContactMixer.FINISH_UPDATE && contact != null && person != null &&
+                LshStringUtils.isAllNotEmpty(contact.getPhotoUri(), person.getAvatar())) {
+            items.add(0, "更新头像");
+        }
+        LshPopupWindow lshPopupWindow = new LshPopupWindow(this);
+        lshPopupWindow.BuildList()
+                .setItems(items, new LshPopupWindow.OnItemClickListener() {
+                    @Override
+                    public void onClick(LshPopupWindow window, int index) {
+                        window.dismiss();
+                        String item = items.get(index);
+                        switch (item) {
+                            case "更新头像":
+                                mPresenter.refreshAvatar(mixer);
+                                break;
+                        }
+                    }
+                })
+                .showAsDropDown(childAt, childAt.getWidth() / 2 - lshPopupWindow.getWidth() / 2, 0);
 
     }
 }

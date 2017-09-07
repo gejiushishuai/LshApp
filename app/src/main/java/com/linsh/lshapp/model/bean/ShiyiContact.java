@@ -1,5 +1,8 @@
 package com.linsh.lshapp.model.bean;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Event;
 
@@ -15,6 +18,7 @@ public class ShiyiContact extends Contact {
     public static final String COLUMN_PERSON_ID = "data1";
 
     private String personId;
+    private String lookupKey;
 
     public String getPersonId() {
         return personId;
@@ -22,6 +26,16 @@ public class ShiyiContact extends Contact {
 
     public void setPersonId(String personId) {
         this.personId = personId;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public String getLookupKey() {
+        return lookupKey;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void setLookupKey(String lookupKey) {
+        this.lookupKey = lookupKey;
     }
 
     public enum ShiyiField implements AbstractField {
