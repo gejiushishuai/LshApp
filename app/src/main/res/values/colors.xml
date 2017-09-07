@@ -20,6 +20,7 @@
     <color name="line_blackbg">#161A1D</color>
     <color name="bg_title">#373B3E</color>
     <color name="bg_white">#FFFFFF</color>
+    <color name="bg_normal_white">#F6F6F6</color>
     <color name="bg_nothing">#EBEBEB</color>
     <color name="bg_green_select">#43C118</color>
     <color name="bg_green_bt_normal">#43C118</color>

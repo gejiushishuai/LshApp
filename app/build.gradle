@@ -97,6 +97,8 @@ dependencies {
     compile 'com.github.yuanxiang05:Contacts:1.0.3'
     // PhotoView
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
+    // PickerView
+    compile 'cn.carbswang.android:NumberPickerView:1.1.1'
 
     //////////  个人
     compile project(':LshUtils:lshutils')
