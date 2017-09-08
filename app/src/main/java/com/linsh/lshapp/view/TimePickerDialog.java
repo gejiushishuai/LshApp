@@ -87,7 +87,6 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
         tvCancel = (TextView) findViewById(R.id.tv_dialog_date_picker_cancel);
         tvConfirm = (TextView) findViewById(R.id.tv_dialog_date_picker_confirm);
 
-        ivYearToggle.setSelected(true);
         refreshDates();
 
         pvYear.setOnValueChangedListener(this);
