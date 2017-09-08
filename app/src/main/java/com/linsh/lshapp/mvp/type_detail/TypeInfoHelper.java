@@ -67,6 +67,7 @@ public class TypeInfoHelper {
 
         @Override
         public void setEditMode(EditText etInfo) {
+            LshEditTextUtils.disableEditState(etInfo);
             etInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
