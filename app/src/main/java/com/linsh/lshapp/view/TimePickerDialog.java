@@ -261,7 +261,7 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
             curDayIndex = day - 1;
 
             setHasYear(year > 0);
-            setIsLunar(year > 0);
+            setIsLunar(date.isLunar());
         }
         refreshDatesAndTitle();
         return this;
