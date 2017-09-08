@@ -39,6 +39,8 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
     private NumberPickerView pvYear;
     private NumberPickerView pvMonth;
     private NumberPickerView pvDay;
+    private OnClickListener mOnPositiveClickListener;
+    private OnClickListener mOnNegativeClickListener;
 
     private String[] years;
     private String[] months;
@@ -110,10 +112,18 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
                 refreshTitle();
                 break;
             case R.id.tv_dialog_date_picker_cancel:
-                dismiss();
+                if (mOnNegativeClickListener != null) {
+                    mOnNegativeClickListener.onClick(this);
+                } else {
+                    dismiss();
+                }
                 break;
             case R.id.tv_dialog_date_picker_confirm:
-                dismiss();
+                if (mOnPositiveClickListener != null) {
+                    mOnPositiveClickListener.onClick(this);
+                } else {
+                    dismiss();
+                }
                 break;
         }
     }
@@ -234,7 +244,10 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
     }
 
     public String getDateAsTitleString() {
-        return tvTitle.getText().toString();
+        if (tvTitle != null) {
+            return tvTitle.getText().toString();
+        }
+        return null;
     }
 
     public int[] getDateAsArray() {
@@ -249,21 +262,11 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
     }
 
     public void setOnPositiveClickListener(OnClickListener listener) {
-        tvConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onClick(TimePickerDialog.this);
-            }
-        });
+        mOnPositiveClickListener = listener;
     }
 
     public void setOnNegativeClickListener(OnClickListener listener) {
-        tvCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onClick(TimePickerDialog.this);
-            }
-        });
+        mOnNegativeClickListener = listener;
     }
 
     public interface OnClickListener {
