@@ -21,6 +21,8 @@ import com.linsh.lshutils.utils.LshDateUtils;
 import com.linsh.lshutils.utils.LshLunarCalendarUtils;
 import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
+import java.util.Date;
+
 import cn.carbswang.android.numberpickerview.library.NumberPickerView;
 
 /**
@@ -223,12 +225,46 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
         refreshTitle();
     }
 
+    public void setIsLunar(boolean isLunar) {
+        ivTypeToggle.setSelected(isLunar);
+    }
+
     public boolean isLunar() {
         return ivTypeToggle.isSelected();
     }
 
+    public void setHasYear(boolean hasYear) {
+        ivYearToggle.setSelected(hasYear);
+    }
+
     public boolean hasYear() {
         return ivYearToggle.isSelected();
+    }
+
+    public TimePickerDialog setDate(Date date, boolean hasYear, boolean isLunar) {
+        SimpleDate simpleDate = new SimpleDate(date, isLunar);
+        if (!hasYear) {
+            simpleDate.setYear(0);
+        }
+        return setDate(simpleDate);
+    }
+
+    public TimePickerDialog setDate(SimpleDate date) {
+        if (date != null) {
+            int year = date.getYear();
+            int month = date.getMonth();
+            int day = date.getDay();
+            if (year > 0) {
+                curYearIndex = year - startYear;
+            }
+            curMonthIndex = month - 1;
+            curDayIndex = day - 1;
+
+            setHasYear(year > 0);
+            setIsLunar(year > 0);
+        }
+        refreshDatesAndTitle();
+        return this;
     }
 
     public SimpleDate getDate() {

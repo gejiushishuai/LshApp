@@ -7,6 +7,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import com.linsh.lshapp.view.TimePickerDialog;
+import com.linsh.lshutils.module.SimpleDate;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshEditTextUtils;
 
@@ -69,7 +70,15 @@ public class TypeInfoHelper {
             etInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    SimpleDate date;
+                    try {
+                        date = new SimpleDate(etInfo.getText().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        date = new SimpleDate(1990, 1, 1);
+                    }
                     TimePickerDialog pickerDialog = new TimePickerDialog(etInfo.getContext())
+                            .setDate(date)
                             .setOnPositiveClickListener(dialog -> {
                                 dialog.dismiss();
                                 String title = dialog.getDate().getDisplayString();
