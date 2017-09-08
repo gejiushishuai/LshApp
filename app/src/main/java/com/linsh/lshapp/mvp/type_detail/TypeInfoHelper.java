@@ -69,12 +69,12 @@ public class TypeInfoHelper {
             etInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TimePickerDialog pickerDialog = new TimePickerDialog(etInfo.getContext());
-                    pickerDialog.setOnPositiveClickListener(dialog -> {
-                        dialog.dismiss();
-                        String title = pickerDialog.getDateAsTitleString();
-                        etInfo.setText(title);
-                    });
+                    TimePickerDialog pickerDialog = new TimePickerDialog(etInfo.getContext())
+                            .setOnPositiveClickListener(dialog -> {
+                                dialog.dismiss();
+                                String title = dialog.getDate().getDisplayString();
+                                etInfo.setText(title);
+                            });
                     pickerDialog.show();
                 }
             });

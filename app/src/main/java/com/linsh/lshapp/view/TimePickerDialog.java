@@ -2,12 +2,13 @@ package com.linsh.lshapp.view;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -15,11 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.linsh.lshapp.R;
+import com.linsh.lshutils.module.SimpleDate;
 import com.linsh.lshutils.utils.LshDateUtils;
 import com.linsh.lshutils.utils.LshLunarCalendarUtils;
-
-import java.util.Calendar;
-import java.util.Date;
+import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
 import cn.carbswang.android.numberpickerview.library.NumberPickerView;
 
@@ -28,6 +28,8 @@ import cn.carbswang.android.numberpickerview.library.NumberPickerView;
  */
 
 public class TimePickerDialog extends Dialog implements NumberPickerView.OnValueChangeListener, View.OnClickListener {
+
+    private View mView;
 
     private TextView tvTitle;
     private LinearLayout llType;
@@ -52,8 +54,9 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
     private int curMonthIndex = 0;
     private int curDayIndex = 0;
 
+
     public TimePickerDialog(@NonNull Context context) {
-        super(context, R.style.CustomDialog);
+        this(context, R.style.CustomDialog);
     }
 
     public TimePickerDialog(@NonNull Context context, @StyleRes int themeResId) {
@@ -62,32 +65,18 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
     }
 
     private void init() {
-    }
+        mView = LayoutInflater.from(getContext()).inflate(R.layout.layout_dialog_date_picker, null);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_dialog_date_picker);
-        // 设置 MatchParent 及在底部弹出窗口
-        Window window = getWindow();
-        WindowManager.LayoutParams lp = window.getAttributes();
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        lp.gravity = Gravity.BOTTOM;
-        window.setAttributes(lp);
-
-        tvTitle = (TextView) findViewById(R.id.tv_dialog_date_picker_title);
-        pvYear = (NumberPickerView) findViewById(R.id.pv_dialog_date_picker_year);
-        pvMonth = (NumberPickerView) findViewById(R.id.pv_dialog_date_picker_month);
-        pvDay = (NumberPickerView) findViewById(R.id.pv_dialog_date_picker_day);
-        llType = (LinearLayout) findViewById(R.id.ll_dialog_date_picker_type);
-        ivTypeToggle = (ImageView) findViewById(R.id.iv_dialog_date_picker_type_toggle);
-        llYear = (LinearLayout) findViewById(R.id.ll_dialog_date_picker_year);
-        ivYearToggle = (ImageView) findViewById(R.id.iv_dialog_date_picker_year_toggle);
-        tvCancel = (TextView) findViewById(R.id.tv_dialog_date_picker_cancel);
-        tvConfirm = (TextView) findViewById(R.id.tv_dialog_date_picker_confirm);
-
-        refreshDates();
+        tvTitle = (TextView) mView.findViewById(R.id.tv_dialog_date_picker_title);
+        pvYear = (NumberPickerView) mView.findViewById(R.id.pv_dialog_date_picker_year);
+        pvMonth = (NumberPickerView) mView.findViewById(R.id.pv_dialog_date_picker_month);
+        pvDay = (NumberPickerView) mView.findViewById(R.id.pv_dialog_date_picker_day);
+        llType = (LinearLayout) mView.findViewById(R.id.ll_dialog_date_picker_type);
+        ivTypeToggle = (ImageView) mView.findViewById(R.id.iv_dialog_date_picker_type_toggle);
+        llYear = (LinearLayout) mView.findViewById(R.id.ll_dialog_date_picker_year);
+        ivYearToggle = (ImageView) mView.findViewById(R.id.iv_dialog_date_picker_year_toggle);
+        tvCancel = (TextView) mView.findViewById(R.id.tv_dialog_date_picker_cancel);
+        tvConfirm = (TextView) mView.findViewById(R.id.tv_dialog_date_picker_confirm);
 
         pvYear.setOnValueChangedListener(this);
         pvMonth.setOnValueChangedListener(this);
@@ -99,11 +88,30 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(mView);
+        // 设置 Margin, 在 inflate() 时丢失该属性
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
+        int dp10 = LshUnitConverseUtils.dp2px(10);
+        layoutParams.setMargins(dp10, dp10, dp10, dp10);
+        // 设置 MatchParent 及在底部弹出窗口
+        Window window = getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.gravity = Gravity.BOTTOM;
+        window.setAttributes(lp);
+
+        refreshDatesAndTitle();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_dialog_date_picker_type:
                 ivTypeToggle.setSelected(!ivTypeToggle.isSelected());
-                refreshDates();
+                refreshDatesAndTitle();
                 break;
             case R.id.ll_dialog_date_picker_year:
                 ivYearToggle.setSelected(!ivYearToggle.isSelected());
@@ -140,7 +148,7 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
         tvTitle.setText(builder.toString());
     }
 
-    private void refreshDates() {
+    private void refreshDatesAndTitle() {
         setDates(hasYear(), curMonthIndex + 1, isLunar());
         refreshTitle();
     }
@@ -209,7 +217,6 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
         } else if (picker == pvMonth) {
             curMonthIndex = newVal;
             setDays(curMonthIndex + 1, isLunar());
-            refreshTitle();
         } else if (picker == pvDay) {
             curDayIndex = newVal;
         }
@@ -224,51 +231,22 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
         return ivYearToggle.isSelected();
     }
 
-    public String getDateAsNormalString() {
-        StringBuilder builder = new StringBuilder();
-        if (hasYear()) {
-            builder.append(years[curYearIndex]).append("-");
-        }
-        int month = curMonthIndex + 1;
-        if (month < 10) {
-            builder.append('0');
-        }
-        builder.append(month).append("-");
-        int day = curDayIndex + 1;
-        if (day < 10) {
-            builder.append('0');
-        }
-        builder.append(day);
-        return builder.toString();
-    }
-
-    public String getDateAsTitleString() {
-        if (tvTitle != null) {
-            return tvTitle.getText().toString();
-        }
-        return null;
-    }
-
-    public int[] getDateAsArray() {
+    public SimpleDate getDate() {
         int year = years.length <= 1 ? 0 : curYearIndex + startYear;
-        return new int[]{year, curMonthIndex + 1, curDayIndex + 1};
+        return new SimpleDate(year, curMonthIndex + 1, curDayIndex + 1, isLunar());
     }
 
-    public Date getDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(0, curMonthIndex, curDayIndex + 1);
-        return calendar.getTime();
-    }
-
-    public void setOnPositiveClickListener(OnClickListener listener) {
+    public TimePickerDialog setOnPositiveClickListener(OnClickListener listener) {
         mOnPositiveClickListener = listener;
+        return this;
     }
 
-    public void setOnNegativeClickListener(OnClickListener listener) {
+    public TimePickerDialog setOnNegativeClickListener(OnClickListener listener) {
         mOnNegativeClickListener = listener;
+        return this;
     }
 
     public interface OnClickListener {
-        void onClick(DialogInterface dialog);
+        void onClick(TimePickerDialog dialog);
     }
 }
