@@ -1,7 +1,5 @@
 package com.linsh.lshapp.mvp.type_detail;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +17,7 @@ import com.linsh.lshutils.view.LshColorDialog;
 import butterknife.BindView;
 
 public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.Presenter>
-        implements TypeDetailContract.View, View.OnLongClickListener, View.OnClickListener {
+        implements TypeDetailContract.View, View.OnLongClickListener {
 
     @BindView(R.id.et_type_detail_info)
     EditText etInfo;
@@ -29,6 +27,7 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
     TextView tvTimestamp;
 
     private boolean isEditMode;
+    private TypeInfoHelper.TypeInfo mTypeInfo;
 
     @Override
     protected int getLayout() {
@@ -37,7 +36,7 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
 
     @Override
     protected void initView() {
-
+        mTypeInfo = TypeInfoHelper.getHelper(getToolbarTitle());
     }
 
     @Override
@@ -101,40 +100,32 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
 
         String detail = typeDetail.getDetail();
         String describe = typeDetail.getDescribe();
+
         if (LshStringUtils.isAllEmpty(detail, describe)) {
             setEditMode();
         } else {
             etInfo.setText(LshStringUtils.nullStrToEmpty(detail));
-            etDesc.setText(LshStringUtils.nullStrToEmpty(describe));
-            etInfo.clearFocus();
-            etDesc.clearFocus();
             etInfo.setOnLongClickListener(this);
+
+            etDesc.setText(LshStringUtils.nullStrToEmpty(describe));
+            etDesc.clearFocus();
             etDesc.setOnLongClickListener(this);
-            etInfo.setFocusable(false);
             etDesc.setFocusable(false);
-            etInfo.setFocusableInTouchMode(false);
             etDesc.setFocusableInTouchMode(false);
 
-            // 判断是电话界面, 则可以点击拨打电话
-            String title = getToolbarTitle();
-            if ("电话".equals(title) || "电话号码".equals(title)) {
-                etInfo.setOnClickListener(this);
-            }
+            mTypeInfo.setDisplayMode(etInfo);
         }
         invalidateOptionsMenu();
     }
 
     private void setEditMode() {
+
         isEditMode = true;
-        etInfo.setOnClickListener(null);
-        etInfo.setOnLongClickListener(null);
         etDesc.setOnLongClickListener(null);
-        etInfo.setFocusableInTouchMode(true);
         etDesc.setFocusableInTouchMode(true);
-        etInfo.setFocusable(true);
         etDesc.setFocusable(true);
-        etInfo.requestFocus();
-        etInfo.setSelection(etInfo.getText().length());
+
+        mTypeInfo.setEditMode(etInfo);
     }
 
     @Override
@@ -146,22 +137,5 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.et_type_detail_info:
-                String number = etInfo.getText().toString();
-                if (!LshStringUtils.isEmpty(number) && number.matches("^\\d[\\d\\s-]+\\d$")) {
-                    number = number.replaceAll("\\s", "").replaceAll("-", "");
-                    Uri uri = Uri.parse("tel:" + number);
-                    Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-                    startActivity(intent);
-                }
-                break;
-            default:
-                break;
-        }
     }
 }
