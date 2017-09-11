@@ -71,14 +71,13 @@ public class TypeInfoHelper {
             etInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SimpleDate date = new SimpleDate(1990, 1, 1);
-                    try {
-                        String dateStr = etInfo.getText().toString();
-                        if (LshStringUtils.notEmpty(dateStr)) {
-                            date = new SimpleDate(dateStr);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    String dateStr = etInfo.getText().toString();
+                    SimpleDate date = null;
+                    if (!LshStringUtils.notEmpty(dateStr)) {
+                        date = SimpleDate.parseDateString(dateStr);
+                    }
+                    if (date == null) {
+                        date = new SimpleDate(1990, 1, 1);
                     }
                     TimePickerDialog pickerDialog = new TimePickerDialog(etInfo.getContext())
                             .setDate(date)
