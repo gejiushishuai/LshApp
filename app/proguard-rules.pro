@@ -21,7 +21,9 @@
 -keep class com.linsh.lshapp.model.** { *; }
 -keep class com.linsh.lshapp.model.action.** { *; }
 -keep class com.linsh.lshapp.view.** {*;}
+-keep class com.linsh.lshutils.module.** {*;}
 -keep class com.linsh.lshutils.view.** {*;}
+
 -keep class com.linsh.lshapp.common.LshApplicationLike {*;}
 
 #---------------------------------2.第三方包-------------------------------
@@ -90,6 +92,7 @@
 
 -keep class com.github.tamir7.contacts.** { *;}
 -keep class com.github.chrisbanes.photoview.** { *;}
+-keep class cn.carbswang.android.numberpickerview.library.** { *;}
 
 -keep class com.google.** { *;}
 -keep class org.apache.** { *;}
@@ -106,6 +109,8 @@
 -dontwarn sun.**
 -keep class rx.** {*;}
 -dontwarn rx.**
+-keep class io.** {*;}
+-dontwarn io.**
 
 
 -keepattributes *Annotation*
