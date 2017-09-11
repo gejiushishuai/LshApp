@@ -1,28 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:key="output_database"
-        android:title="@string/shiyi_settings_output_database"/>
+    <PreferenceCategory
+        android:title="导入">
 
-    <Preference
-        android:key="output_word_repository"
-        android:title="导出联系人词库"/>
+        <Preference
+            android:key="import_json"
+            android:title="导入Json数据"/>
 
-    <Preference
-        android:key="import_json"
-        android:title="导入Json数据"/>
+    </PreferenceCategory>
 
-    <Preference
-        android:key="import_contacts"
-        android:title="同步手机联系人"/>
+    <PreferenceCategory
+        android:title="导出">
 
-    <Preference
-        android:key="backup_database"
-        android:title="备份数据库"/>
+        <Preference
+            android:key="output_database"
+            android:title="@string/shiyi_settings_output_database"/>
 
-    <Preference
-        android:key="check_update"
-        android:title="检查更新"/>
+        <Preference
+            android:key="output_word_repository"
+            android:title="导出联系人词库"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="同步">
+
+        <Preference
+            android:key="import_contacts"
+            android:title="同步手机联系人"/>
+
+        <Preference
+            android:key="backup_database"
+            android:title="备份数据库"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="更新">
+
+        <Preference
+            android:key="check_update"
+            android:title="检查更新"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
