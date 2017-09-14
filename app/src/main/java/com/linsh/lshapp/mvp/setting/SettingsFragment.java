@@ -20,9 +20,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
         addPreferencesFromResource(R.xml.preferences);
 
+        findPreference("import_json").setOnPreferenceClickListener(this);
+        findPreference("import_wechat_contact").setOnPreferenceClickListener(this);
         findPreference("output_database").setOnPreferenceClickListener(this);
         findPreference("output_word_repository").setOnPreferenceClickListener(this);
-        findPreference("import_json").setOnPreferenceClickListener(this);
         findPreference("import_contacts").setOnPreferenceClickListener(this);
         findPreference("backup_database").setOnPreferenceClickListener(this);
         Preference checkUpdate = findPreference("check_update");
@@ -44,6 +45,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 break;
             case "import_contacts":
                 ((SettingsActivity)getActivity()).importContacts();
+                break;
+            case "import_wechat_contact":
+                ((SettingsActivity)getActivity()).importWechatContacts();
                 break;
             case "backup_database":
                 ((SettingsActivity)getActivity()).backupDatabase();

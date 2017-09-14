@@ -27,7 +27,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.linsh.lshapp"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 11
         versionName "1.1.2"
@@ -69,6 +69,7 @@ dependencies {
     ////////// 官方
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
+    compile 'com.google.android:flexbox:0.3.0'
     testCompile 'junit:junit:4.12'
     //////////  常用
     // glide

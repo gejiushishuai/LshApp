@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="#ddaaaaaa"
+              android:divider="@drawable/shape_devider_dark"
+              android:gravity="center"
+              android:orientation="vertical"
+              android:padding="5dip"
+              android:showDividers="middle">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:gravity="center"
+                  android:orientation="horizontal"
+                  android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/tv_import_wechat_close"
+            android:layout_width="20.0dip"
+            android:layout_height="20.0dip"
+            android:layout_marginRight="8.0dip"
+            android:src="@drawable/ic_common_close"
+            android:tint="#ff555555"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_import_wechat_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textColor="#ff333333"
+                android:textSize="18.0sp"/>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1.0px"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dip"
+                android:background="#ff777777"/>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/fl_import_wechat_flex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="160dp"
+                app:dividerDrawable="@drawable/shape_devider_empty"
+                app:flexWrap="wrap"
+                app:showDivider="middle">
+
+                <TextView
+                    android:id="@+id/tv_import_wechat_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="请跳转微信详细资料"
+                    android:textColor="#ff555555"
+                    android:textSize="14.0sp"/>
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_import_wechat_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8.0dip"
+            android:enabled="false"
+            android:gravity="center"
+            android:text="查找"
+            android:textSize="18.0sp"/>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcv_import_wechat_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"/>
+
+</LinearLayout>

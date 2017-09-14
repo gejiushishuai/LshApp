@@ -8,6 +8,10 @@
             android:key="import_json"
             android:title="导入Json数据"/>
 
+        <Preference
+            android:key="import_wechat_contact"
+            android:title="导入微信联系人"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

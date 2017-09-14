@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:divider="@drawable/shape_devider"
+    android:divider="@drawable/shape_devider_whitebg"
     android:orientation="vertical"
     android:showDividers="end">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@drawable/shape_devider"
+        android:divider="@drawable/shape_devider_whitebg"
         android:showDividers="middle">
 
         <LinearLayout
@@ -94,7 +94,7 @@
         android:id="@+id/ll_item_import_contacts_detail_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@drawable/shape_devider"
+        android:divider="@drawable/shape_devider_whitebg"
         android:showDividers="middle"
         android:visibility="gone"
         tools:visibility="visible">
