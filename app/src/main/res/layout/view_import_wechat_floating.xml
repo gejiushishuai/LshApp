@@ -18,9 +18,9 @@
                   android:padding="5dp">
 
         <ImageView
-            android:id="@+id/tv_import_wechat_close"
+            android:id="@+id/iv_import_wechat_close"
             android:layout_width="20.0dip"
-            android:layout_height="20.0dip"
+            android:layout_height="match_parent"
             android:layout_marginRight="8.0dip"
             android:src="@drawable/ic_common_close"
             android:tint="#ff555555"/>
@@ -51,7 +51,6 @@
                 android:id="@+id/fl_import_wechat_flex"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="160dp"
                 app:dividerDrawable="@drawable/shape_devider_empty"
                 app:flexWrap="wrap"
                 app:showDivider="middle">
@@ -61,7 +60,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="请跳转微信详细资料"
-                    android:textColor="#ff555555"
                     android:textSize="14.0sp"/>
 
             </com.google.android.flexbox.FlexboxLayout>
@@ -71,7 +69,7 @@
         <TextView
             android:id="@+id/tv_import_wechat_save"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="8.0dip"
             android:enabled="false"
             android:gravity="center"

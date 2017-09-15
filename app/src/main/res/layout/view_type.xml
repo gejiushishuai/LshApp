@@ -4,5 +4,4 @@
           android:layout_height="wrap_content"
           android:background="@drawable/selector_tag"
           android:text="djafh"
-          android:textColor="#ff555555"
           android:textSize="14.0sp"/>

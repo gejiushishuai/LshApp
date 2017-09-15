@@ -73,7 +73,10 @@ public class Test4Service extends AccessibilityService {
             if (LshStringUtils.isNotAllEmpty(name, wechatId)) {
                 List<Type> types = new ArrayList<>();
                 types.add(new Type("微信号", wechatId, true));
-                types.add(new Type("dd", "test"));
+                types.add(new Type("d2d", "微信号"));
+                types.add(new Type("d3d", "湖北武汉"));
+                types.add(new Type("d4d", "1月21日"));
+                types.add(new Type("d4d", "北京化工大学"));
                 RxBus.getDefault().post(new WechatContactEvent(name, types));
             }
         } else {

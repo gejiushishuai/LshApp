@@ -23,6 +23,8 @@ import com.linsh.lshapp.service.Test4Service;
 import com.linsh.lshapp.tools.ImportWechatHelper;
 import com.linsh.lshutils.tools.LshXmlCreater;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
+import com.linsh.lshutils.utils.LshBackgroundUtils;
+import com.linsh.lshutils.utils.LshScreenUtils;
 import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
 import java.util.List;
@@ -57,12 +59,15 @@ public class ImportWechatFloatingView extends FrameLayout {
         mRcvPersons.setLayoutManager(new LinearLayoutManager(mRcvPersons.getContext()));
         mAdapter = new ImportTypeAdapter();
         mRcvPersons.setAdapter(mAdapter);
-
-        findViewById(R.id.tv_import_wechat_close).setOnClickListener(view -> {
+        mRcvPersons.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+        // 关闭按钮 点击事件
+        View ivClose = findViewById(R.id.iv_import_wechat_close);
+        ivClose.setOnClickListener(view -> {
             Toast.makeText(getContext(), "关闭悬浮框", Toast.LENGTH_SHORT).show();
             getContext().startService(new Intent(getContext(), Test4Service.class)
                     .putExtra(Test4Service.COMMAND, Test4Service.COMMAND_CLOSE));
         });
+        // 保存按钮 点击事件
         mTvSave.setOnClickListener(view -> {
             String text = mTvSave.getText().toString();
             switch (text) {
@@ -81,9 +86,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                     break;
             }
         });
-        mTvName.setOnClickListener(view -> {
-            LshToastUtils.show("name");
-        });
+        LshBackgroundUtils.addPressedEffect(ivClose, mTvSave);
     }
 
     @Override
@@ -112,6 +115,9 @@ public class ImportWechatFloatingView extends FrameLayout {
             if (mFlTypes.getChildCount() > 1) {
                 mFlTypes.removeViews(1, mFlTypes.getChildCount() - 1);
             }
+            if (mFlTypes.getLayoutParams().width > 0) {
+                mFlTypes.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
         } else {
             mTvName.setText(name);
             mTvSave.setEnabled(true);
@@ -121,6 +127,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             for (Test4Service.Type type : types) {
                 TextView textView = (TextView) View.inflate(getContext(), R.layout.view_type, null);
                 textView.setText(type.value);
+                LshBackgroundUtils.addPressedEffect(textView);
                 textView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -129,7 +136,13 @@ public class ImportWechatFloatingView extends FrameLayout {
                         }
                     }
                 });
+                textView.setSelected(type.need);
                 mFlTypes.addView(textView);
+            }
+            mFlTypes.measure(0, 0);
+            int measuredWidth = mFlTypes.getMeasuredWidth();
+            if (measuredWidth > LshScreenUtils.getScreenWidth() / 2) {
+                mFlTypes.getLayoutParams().width = LshScreenUtils.getScreenWidth() / 2;
             }
         }
     }
@@ -160,6 +173,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             textView.setGravity(Gravity.CENTER);
             textView.setBackground(selector);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            LshBackgroundUtils.addPressedEffect(textView);
 
             textView.setOnClickListener(this);
             return new RecyclerView.ViewHolder(textView) {
