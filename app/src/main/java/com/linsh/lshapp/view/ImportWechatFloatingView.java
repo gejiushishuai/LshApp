@@ -19,7 +19,7 @@ import com.google.android.flexbox.FlexboxLayout;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.service.Test4Service;
+import com.linsh.lshapp.service.Test5Service;
 import com.linsh.lshapp.tools.ImportWechatHelper;
 import com.linsh.lshutils.tools.LshXmlCreater;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
@@ -28,6 +28,8 @@ import com.linsh.lshutils.utils.LshScreenUtils;
 import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
 import java.util.List;
+
+import io.reactivex.functions.Action;
 
 public class ImportWechatFloatingView extends FrameLayout {
     private final Context mContext;
@@ -39,6 +41,7 @@ public class ImportWechatFloatingView extends FrameLayout {
     private ImportTypeAdapter mAdapter;
     private TextView mTvSave;
     private FlexboxLayout mFlTypes;
+    private List<Test5Service.Type> mTypes;
 
     public ImportWechatFloatingView(Context paramContext) {
         super(paramContext);
@@ -64,8 +67,8 @@ public class ImportWechatFloatingView extends FrameLayout {
         View ivClose = findViewById(R.id.iv_import_wechat_close);
         ivClose.setOnClickListener(view -> {
             Toast.makeText(getContext(), "关闭悬浮框", Toast.LENGTH_SHORT).show();
-            getContext().startService(new Intent(getContext(), Test4Service.class)
-                    .putExtra(Test4Service.COMMAND, Test4Service.COMMAND_CLOSE));
+            getContext().startService(new Intent(getContext(), Test5Service.class)
+                    .putExtra(Test5Service.COMMAND, Test5Service.COMMAND_CLOSE));
         });
         // 保存按钮 点击事件
         mTvSave.setOnClickListener(view -> {
@@ -82,7 +85,15 @@ public class ImportWechatFloatingView extends FrameLayout {
                     mTvSave.setText("查找");
                     break;
                 case "保存":
-                    LshToastUtils.show("保存");
+                    mHelper.savePerson(mAdapter.getCurPersonId(), mTvName.getText().toString(), mTypes)
+                            .doOnComplete(new Action() {
+                                @Override
+                                public void run() throws Exception {
+                                    mAdapter.setState(0);
+                                    mTvSave.setText("查找");
+                                    LshToastUtils.show("已保存");
+                                }
+                            }).subscribe();
                     break;
             }
         });
@@ -105,7 +116,8 @@ public class ImportWechatFloatingView extends FrameLayout {
         mAdapter.setPersons(persons);
     }
 
-    public void setTypes(String name, List<Test4Service.Type> types) {
+    public void setTypes(String name, List<Test5Service.Type> types) {
+        mTypes = types;
         if (types == null || types.size() == 0) {
             mTvName.setText("---");
             mTvSave.setText("查找");
@@ -124,7 +136,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             mTvSave.setText("查找");
             mTvWechatId.setVisibility(GONE);
 
-            for (Test4Service.Type type : types) {
+            for (Test5Service.Type type : types) {
                 TextView textView = (TextView) View.inflate(getContext(), R.layout.view_type, null);
                 textView.setText(type.value);
                 LshBackgroundUtils.addPressedEffect(textView);
@@ -133,6 +145,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                     public void onClick(View v) {
                         if (!type.need) {
                             v.setSelected(!v.isSelected());
+                            type.selected = v.isSelected();
                         }
                     }
                 });
@@ -291,6 +304,21 @@ public class ImportWechatFloatingView extends FrameLayout {
                 curSelectedPos = -1;
                 v.setSelected(false);
             }
+        }
+
+        public String getCurPersonId() {
+            switch (mState) {
+                case 1:
+                    if (curSelectedPos == 0) {
+                        return null;
+                    } else if (curSelectedPos > 1) {
+                        return mPersons.get(curSelectedPos - 2).getId();
+                    }
+                    break;
+                case 3:
+                    return mGroups.get(curGroupPos).getPersons().get(curGroupPos).getId();
+            }
+            return null;
         }
     }
 

@@ -72,4 +72,22 @@ public class LshRxUtils {
             }
         }, BackpressureStrategy.ERROR).subscribeOn(Schedulers.io());
     }
+
+    public static <T> Flowable<T> getMainThreadFlowable(final AsyncConsumer<T> action1) {
+        return Flowable.create(new FlowableOnSubscribe<T>() {
+            @Override
+            public void subscribe(FlowableEmitter<T> emitter) throws Exception {
+                Realm bgRealm = Realm.getDefaultInstance();
+                try {
+                    action1.call(bgRealm, emitter);
+                } catch (final Throwable e) {
+                    e.printStackTrace();
+                    emitter.onError(e);
+                } finally {
+                    bgRealm.close();
+                }
+                emitter.onComplete();
+            }
+        }, BackpressureStrategy.ERROR).subscribeOn(AndroidSchedulers.mainThread());
+    }
 }

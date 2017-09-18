@@ -6,12 +6,15 @@ import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.Shiyi;
-import com.linsh.lshapp.service.Test4Service;
+import com.linsh.lshapp.service.Test5Service;
+import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
+import com.linsh.lshutils.utils.LshArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -29,7 +32,7 @@ public class ImportWechatHelper {
 
     public void attachView(ImportWechatFloatingView view) {
         mView = view;
-        mDisposable = RxBus.getDefault().toObservable(Test4Service.WechatContactEvent.class)
+        mDisposable = RxBus.getDefault().toObservable(Test5Service.WechatContactEvent.class)
                 .subscribe(wechatContactEvent -> {
                     mView.setTypes(wechatContactEvent.getName(), wechatContactEvent.getTypes());
                 });
@@ -71,5 +74,35 @@ public class ImportWechatHelper {
                 .subscribe(groups -> {
                     mView.setGroups(groups);
                 });
+    }
+
+    public Flowable<Void> savePerson(String personId, String personName, List<Test5Service.Type> types) {
+        if (personId != null) {
+            Test5Service.Type[] array = LshArrayUtils.toArray(types, new Test5Service.Type[types.size()]);
+            return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
+                @Override
+                public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {
+                    emitter.onNext(realm);
+                    emitter.onComplete();
+                }
+            }).flatMap(realm -> Flowable.fromArray(array)
+                    .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, personId, type.type, type.value, ""))
+            ).observeOn(AndroidSchedulers.mainThread());
+        } else {
+            Test5Service.Type[] array = LshArrayUtils.toArray(types, new Test5Service.Type[types.size()]);
+            return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
+                @Override
+                public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {
+                    emitter.onNext(realm);
+                    emitter.onComplete();
+                }
+            }).flatMap(realm -> {
+                Person person = new Person(personName);
+                return ShiyiDbHelper.addPerson(realm, ShiyiModelHelper.UNNAME_GROUP_NAME, person)
+                                .flatMap(personId1 -> Flowable.fromArray(array))
+                                .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, person.getId(), type.type, type.value, ""));
+                    }
+            ).observeOn(AndroidSchedulers.mainThread());
+        }
     }
 }

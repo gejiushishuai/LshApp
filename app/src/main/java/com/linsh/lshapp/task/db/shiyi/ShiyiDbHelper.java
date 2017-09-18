@@ -302,7 +302,19 @@ public class ShiyiDbHelper {
                         // 有同名的Type, 则在该Type的TypeDetails最后加上空的TypeDetail
                         Type type = typeResults.get(0);
                         RealmList<TypeDetail> typeDetails = type.getTypeDetails();
-                        typeDetails.add(new TypeDetail(type.getId(), typeDetails.size() + 1, typeDetail, typeDetailDesc));
+                        // 检查重复
+                        boolean repeated = false;
+                        for (TypeDetail detail : typeDetails) {
+                            if (detail.getDetail().equals(typeDetail) && detail.getDescribe().equals(typeDetailDesc)) {
+                                repeated = true;
+                                detail.setSort(typeDetails.size() + 1);
+                                ShiyiDbUtils.renewSort(typeDetails);
+                                break;
+                            }
+                        }
+                        if (!repeated) {
+                            typeDetails.add(new TypeDetail(type.getId(), typeDetails.size() + 1, typeDetail, typeDetailDesc));
+                        }
                     } else {
                         // 没有同名的Type, 则在types里面加上一个Type (该Type的TypeDetails里面默认有一个空的TypeDetail)
                         RealmList<Type> types = personDetail.getTypes();
@@ -328,6 +340,7 @@ public class ShiyiDbHelper {
                     types.add(newType);
                     newType.getTypeDetails().add(new TypeDetail(newType.getId(), 1, typeDetail, typeDetailDesc));
                 }
+                emitter.onComplete();
             }
         });
     }

@@ -2,8 +2,6 @@ package com.linsh.lshapp.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -11,17 +9,19 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.tools.FloatingViewManager;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
+import com.linsh.lshutils.tools.LshAccessibilityHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Test4Service extends AccessibilityService {
+public class Test5Service extends AccessibilityService {
     public static final String COMMAND = "COMMAND";
     public static final String COMMAND_CLOSE = "COMMAND_CLOSE";
     public static final String COMMAND_OPEN = "COMMAND_OPEN";
 
     FloatingViewManager mFloatingViewManager;
+    LshAccessibilityHelper mHelper;
 
     public void onCreate() {
         super.onCreate();
@@ -29,6 +29,9 @@ public class Test4Service extends AccessibilityService {
         if (mFloatingViewManager == null) {
             mFloatingViewManager = new FloatingViewManager();
             mFloatingViewManager.setView(new ImportWechatFloatingView(this));
+        }
+        if (mHelper == null) {
+            mHelper = new LshAccessibilityHelper(this);
         }
     }
 
@@ -57,26 +60,36 @@ public class Test4Service extends AccessibilityService {
         // 详细资料界面
         if (className.equals("com.tencent.mm.plugin.profile.ui.ContactInfoUI")) {
             String name = null;
-            String wechatId = null;
+            List<Type> types = new ArrayList<>();
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                AccessibilityNodeInfo info = findAccessibilityNodeInfosByViewId("com.tencent.mm:id/n_"); // n9 touxiang
+                AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.tencent.mm:id/n_");// 备注名
                 if (info != null) {
                     name = info.getText().toString().trim();
                 }
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                AccessibilityNodeInfo info = findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ah8");
+                info = mHelper.findFirstNodeInfoByViewId("com.tencent.mm:id/ah8"); // 微信号
                 if (info != null) {
-                    wechatId = info.getText().toString().replaceAll("微信号:", "").trim();
+                    String wechatId = info.getText().toString().replaceAll("微信号:", "").trim();
+                    if (wechatId.length() > 0) {
+                        types.add(new Type("微信号", wechatId, true));
+                    }
+                }
+                List<String> allText = mHelper.findAllText("com.tencent.mm:id/ia"); // 地区
+                for (int i = 0; i < allText.size(); i++) {
+                    String text = allText.get(i);
+                    if ("地区".equals(text) && i + 1 < allText.size()) {
+                        types.add(new Type("地址", allText.get(i + 1)));
+                        break;
+                    }
+                }
+                info = mHelper.findFirstNodeInfoByViewId("com.tencent.mm:id/c_c"); // 描述
+                if (info != null) {
+                    String desc = info.getText().toString().trim();
+                    if (desc.length() > 0) {
+                        types.add(new Type("备注", desc));
+                    }
                 }
             }
-            if (LshStringUtils.isNotAllEmpty(name, wechatId)) {
-                List<Type> types = new ArrayList<>();
-                types.add(new Type("微信号", wechatId, true));
-                types.add(new Type("d2d", "微信号"));
-                types.add(new Type("d3d", "湖北武汉"));
-                types.add(new Type("d4d", "1月21日"));
-                types.add(new Type("d4d", "北京化工大学"));
+            if (LshStringUtils.isNotAllEmpty(name) && types.size() > 0) {
                 RxBus.getDefault().post(new WechatContactEvent(name, types));
             }
         } else {
@@ -85,18 +98,6 @@ public class Test4Service extends AccessibilityService {
             if (packageName.equals("com.tencent.mm") && className.startsWith("android")) return;
             RxBus.getDefault().post(new WechatContactEvent(null, null));
         }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public AccessibilityNodeInfo findAccessibilityNodeInfosByViewId(String viewId) {
-        AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
-        if (nodeInfo != null) {
-            List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByViewId(viewId);
-            if (list != null && list.size() > 0) {
-                return list.get(0);
-            }
-        }
-        return null;
     }
 
     @Override

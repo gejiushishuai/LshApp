@@ -24,6 +24,10 @@ public class Person extends RealmObject {
     public Person() {
     }
 
+    public Person(String name) {
+        this(name, "", "", "", "", false);
+    }
+
     public Person(String name, String describe, int gender) {
         this.id = ShiyiModelHelper.getPersonId(name);
         this.name = name;
