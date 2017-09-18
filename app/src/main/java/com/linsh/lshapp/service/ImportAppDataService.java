@@ -11,11 +11,12 @@ import com.linsh.lshapp.tools.FloatingViewManager;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
 import com.linsh.lshutils.tools.LshAccessibilityHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.utils.LshRegexUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Test5Service extends AccessibilityService {
+public class ImportAppDataService extends AccessibilityService {
     public static final String COMMAND = "COMMAND";
     public static final String COMMAND_CLOSE = "COMMAND_CLOSE";
     public static final String COMMAND_OPEN = "COMMAND_OPEN";
@@ -57,7 +58,7 @@ public class Test5Service extends AccessibilityService {
     private void onStateChanged(AccessibilityEvent event) {
         String packageName = event.getPackageName().toString();
         String className = event.getClassName().toString();
-        // 详细资料界面
+        // 微信详细资料界面
         if (className.equals("com.tencent.mm.plugin.profile.ui.ContactInfoUI")) {
             String name = null;
             List<Type> types = new ArrayList<>();
@@ -92,10 +93,68 @@ public class Test5Service extends AccessibilityService {
             if (LshStringUtils.isNotAllEmpty(name) && types.size() > 0) {
                 RxBus.getDefault().post(new WechatContactEvent(name, types));
             }
+        } else if (className.equals("com.tencent.mobileqq.activity.FriendProfileCardActivity")) {
+            // QQ个人信息界面
+            String name = null;
+            List<Type> types = new ArrayList<>();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.tencent.mobileqq:id/common_xlistview"); // 备注名
+                if (info != null) {
+                    List<String> descriptions = mHelper.findAllContentDescriptions(info);
+                    for (String description : descriptions) {
+                        if (description.matches("昵称:.+")) {
+                            name = description.replaceAll("昵称:", "").trim();
+                            break;
+                        }
+                    }
+                }
+                info = mHelper.findFirstNodeInfoByViewId("com.tencent.mobileqq:id/info"); // QQ号
+                if (info != null) {
+                    String qqId = info.getText().toString().trim();
+                    if (qqId.matches("\\d+")) {
+                        types.add(new Type("QQ号", qqId, true));
+                    } else if (qqId.matches(".+\\(\\d+\\)")) {
+                        types.add(new Type("QQ号", qqId.replaceAll(".+\\(", "").replaceAll("\\)", ""), true));
+                    }
+                }
+            }
+            if (LshStringUtils.isNotAllEmpty(name) && types.size() > 0) {
+                RxBus.getDefault().post(new WechatContactEvent(name, types));
+            }
+        } else if (className.equals("com.alibaba.android.user.profile.v2.UserProfileActivity")) {
+            // 钉钉个人信息界面
+            String name = null;
+            List<Type> types = new ArrayList<>();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.alibaba.android.rimet:id/cell_subTitle");// 姓名
+                if (info != null) {
+                    name = info.getText().toString().trim();
+                }
+                info = mHelper.findFirstNodeInfoByViewId("com.alibaba.android.rimet:id/user_mobile_info_content_tv"); // 电话
+                if (info != null) {
+                    String qqId = info.getText().toString().trim();
+                    qqId = qqId.replaceAll("[+]\\d{2}-", "");
+                    if (qqId.matches("[\\d+-]+")) {
+                        types.add(new Type("电话", qqId, true));
+                    }
+                }
+                List<AccessibilityNodeInfo> infos = mHelper.findNodeInfosByViewId("com.alibaba.android.rimet:id/cell_subTitle"); // 邮箱
+                if (info != null && infos.size() > 0) {
+                    for (AccessibilityNodeInfo nodeInfo : infos) {
+                        String text = nodeInfo.getText() == null ? null : nodeInfo.getText().toString();
+                        if (text != null && LshRegexUtils.isEmail(text)) {
+                            types.add(new Type("邮箱", text));
+                            break;
+                        }
+                    }
+                }
+            }
+            if (LshStringUtils.isNotAllEmpty(name) && types.size() > 0) {
+                RxBus.getDefault().post(new WechatContactEvent(name, types));
+            }
         } else {
-            // 防止点击保存后执行
-            if (packageName.equals("com.linsh.lshapp")) return;
-            if (packageName.equals("com.tencent.mm") && className.startsWith("android")) return;
+            if (packageName.equals("com.linsh.lshapp")) return; // 防止点击悬浮窗发生变化
+            if (packageName.equals("com.tencent.mm") && className.startsWith("android")) return; // 防止点击微信界面控件发生变化
             RxBus.getDefault().post(new WechatContactEvent(null, null));
         }
     }

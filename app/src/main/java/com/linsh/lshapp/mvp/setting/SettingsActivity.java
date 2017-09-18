@@ -10,7 +10,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.common.LshConfig;
 import com.linsh.lshapp.mvp.sync_contacts.SyncContactsActivity;
-import com.linsh.lshapp.service.Test5Service;
+import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshutils.utils.LshAccessibilityUtils;
 import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshFragmentUtils;
@@ -78,8 +78,9 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
     public void importWechatContacts() {
         if (checkOverlayPermission()) {
             if (LshAccessibilityUtils.checkAccessibility()) {
-                startService(new Intent(this, Test5Service.class)
-                        .putExtra(Test5Service.COMMAND, Test5Service.COMMAND_OPEN));
+                startService(new Intent(this, ImportAppDataService.class)
+                        .putExtra(ImportAppDataService.COMMAND, ImportAppDataService.COMMAND_OPEN));
+                LshIntentUtils.gotoApp("com.tencent.mm");
             }
         }
     }

@@ -19,7 +19,7 @@ import com.google.android.flexbox.FlexboxLayout;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.service.Test5Service;
+import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshapp.tools.ImportWechatHelper;
 import com.linsh.lshutils.tools.LshXmlCreater;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
@@ -41,7 +41,7 @@ public class ImportWechatFloatingView extends FrameLayout {
     private ImportTypeAdapter mAdapter;
     private TextView mTvSave;
     private FlexboxLayout mFlTypes;
-    private List<Test5Service.Type> mTypes;
+    private List<ImportAppDataService.Type> mTypes;
 
     public ImportWechatFloatingView(Context paramContext) {
         super(paramContext);
@@ -67,8 +67,8 @@ public class ImportWechatFloatingView extends FrameLayout {
         View ivClose = findViewById(R.id.iv_import_wechat_close);
         ivClose.setOnClickListener(view -> {
             Toast.makeText(getContext(), "关闭悬浮框", Toast.LENGTH_SHORT).show();
-            getContext().startService(new Intent(getContext(), Test5Service.class)
-                    .putExtra(Test5Service.COMMAND, Test5Service.COMMAND_CLOSE));
+            getContext().startService(new Intent(getContext(), ImportAppDataService.class)
+                    .putExtra(ImportAppDataService.COMMAND, ImportAppDataService.COMMAND_CLOSE));
         });
         // 保存按钮 点击事件
         mTvSave.setOnClickListener(view -> {
@@ -116,7 +116,7 @@ public class ImportWechatFloatingView extends FrameLayout {
         mAdapter.setPersons(persons);
     }
 
-    public void setTypes(String name, List<Test5Service.Type> types) {
+    public void setTypes(String name, List<ImportAppDataService.Type> types) {
         mTypes = types;
         if (types == null || types.size() == 0) {
             mTvName.setText("---");
@@ -136,7 +136,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             mTvSave.setText("查找");
             mTvWechatId.setVisibility(GONE);
 
-            for (Test5Service.Type type : types) {
+            for (ImportAppDataService.Type type : types) {
                 TextView textView = (TextView) View.inflate(getContext(), R.layout.view_type, null);
                 textView.setText(type.value);
                 LshBackgroundUtils.addPressedEffect(textView);

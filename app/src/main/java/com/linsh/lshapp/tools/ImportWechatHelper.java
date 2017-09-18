@@ -6,7 +6,7 @@ import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
 import com.linsh.lshapp.model.bean.db.Shiyi;
-import com.linsh.lshapp.service.Test5Service;
+import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
 import com.linsh.lshutils.utils.LshArrayUtils;
@@ -32,7 +32,7 @@ public class ImportWechatHelper {
 
     public void attachView(ImportWechatFloatingView view) {
         mView = view;
-        mDisposable = RxBus.getDefault().toObservable(Test5Service.WechatContactEvent.class)
+        mDisposable = RxBus.getDefault().toObservable(ImportAppDataService.WechatContactEvent.class)
                 .subscribe(wechatContactEvent -> {
                     mView.setTypes(wechatContactEvent.getName(), wechatContactEvent.getTypes());
                 });
@@ -76,9 +76,9 @@ public class ImportWechatHelper {
                 });
     }
 
-    public Flowable<Void> savePerson(String personId, String personName, List<Test5Service.Type> types) {
+    public Flowable<Void> savePerson(String personId, String personName, List<ImportAppDataService.Type> types) {
         if (personId != null) {
-            Test5Service.Type[] array = LshArrayUtils.toArray(types, new Test5Service.Type[types.size()]);
+            ImportAppDataService.Type[] array = LshArrayUtils.toArray(types, new ImportAppDataService.Type[types.size()]);
             return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
                 @Override
                 public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {
@@ -89,7 +89,7 @@ public class ImportWechatHelper {
                     .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, personId, type.type, type.value, ""))
             ).observeOn(AndroidSchedulers.mainThread());
         } else {
-            Test5Service.Type[] array = LshArrayUtils.toArray(types, new Test5Service.Type[types.size()]);
+            ImportAppDataService.Type[] array = LshArrayUtils.toArray(types, new ImportAppDataService.Type[types.size()]);
             return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
                 @Override
                 public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {

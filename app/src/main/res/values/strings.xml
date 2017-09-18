@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">渊祥</string>
 
-    <string name="service_import_wechat">导入微信联系人</string>
+    <string name="service_import_wechat">导入其他APP联系人资料</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -59,7 +59,7 @@
                     android:id="@+id/tv_import_wechat_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="请跳转微信详细资料"
+                    android:text="请跳转其他APP详细资料"
                     android:textSize="14.0sp"/>
 
             </com.google.android.flexbox.FlexboxLayout>

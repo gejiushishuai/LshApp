@@ -10,7 +10,7 @@
 
         <Preference
             android:key="import_wechat_contact"
-            android:title="导入微信联系人"/>
+            android:title="导入其他APP联系人资料"/>
 
     </PreferenceCategory>
 
