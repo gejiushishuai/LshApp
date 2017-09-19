@@ -9,14 +9,20 @@ import com.linsh.lshapp.model.bean.db.Shiyi;
 import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
+import com.linsh.lshutils.utils.LshArrayUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -44,13 +50,38 @@ public class ImportWechatHelper {
     }
 
     public void findPersons(String name) {
-        LshRxUtils.getAsyncFlowable(new AsyncConsumer<List<Person>>() {
-            @Override
-            public void call(Realm realm, FlowableEmitter<? super List<Person>> emitter) {
-                RealmResults<Person> persons = realm.where(Person.class).contains("name", name).findAll();
-                emitter.onNext(realm.copyFromRealm(persons));
-            }
-        }).observeOn(AndroidSchedulers.mainThread())
+        Matcher matcher = Pattern.compile("^([\\u4e00-\\u9fa5]+)-?(\\w+)|(\\w+)-?([\\u4e00-\\u9fa5]+)$").matcher(name);
+        ArrayList<String> list = new ArrayList<>();
+        list.add(name);
+        if (matcher.find()) {
+            String group1 = matcher.group(1);
+            String group2 = matcher.group(2);
+            String group3 = matcher.group(3);
+            String group4 = matcher.group(4);
+            if (group1 != null && group1.length() >= 2) list.add(group1);
+            if (group2 != null && group2.length() >= 3) list.add(group2);
+            if (group3 != null && group3.length() >= 3) list.add(group3);
+            if (group4 != null && group4.length() >= 2) list.add(group4);
+        }
+        String[] names = LshArrayUtils.toArray(list, new String[list.size()]);
+        Flowable.fromArray(names)
+                // 匹配名字
+                .flatMap(eachName -> LshRxUtils.getAsyncFlowable((AsyncConsumer<List<Person>>) (realm, emitter) -> {
+                    RealmResults<Person> persons = realm.where(Person.class).contains("name", eachName, Case.INSENSITIVE).findAll();
+                    emitter.onNext(realm.copyFromRealm(persons));
+                    emitter.onComplete();
+                }))
+                .flatMap(Flowable::fromIterable)
+                // 合并名字
+                .collect((Callable<HashMap<String, Person>>) HashMap::new,
+                        (map, person) -> map.put(person.getId(), person))
+                // 去重
+                .map(map -> {
+                    ArrayList<Person> arrayList = new ArrayList<>();
+                    arrayList.addAll(map.values());
+                    return arrayList;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(new DefaultThrowableConsumer())
                 .subscribe(persons -> {
                     mView.setPersons(persons);
