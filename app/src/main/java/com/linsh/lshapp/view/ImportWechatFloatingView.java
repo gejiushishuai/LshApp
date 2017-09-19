@@ -240,7 +240,7 @@ public class ImportWechatFloatingView extends FrameLayout {
 
         public void setState(int state) {
             if (state == -1 || state == 0) {
-                if (mState == -1) state = 0;
+                if (state == 0 && mState == -1) state = 0;
                 else state = -1;
             }
             mState = state;
