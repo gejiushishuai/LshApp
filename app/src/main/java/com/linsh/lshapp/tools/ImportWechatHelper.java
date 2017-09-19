@@ -9,7 +9,6 @@ import com.linsh.lshapp.model.bean.db.Shiyi;
 import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
-import com.linsh.lshutils.utils.LshArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,19 +76,26 @@ public class ImportWechatHelper {
     }
 
     public Flowable<Void> savePerson(String personId, String personName, List<ImportAppDataService.Type> types) {
+        int length = 0;
+        for (ImportAppDataService.Type type : types) {
+            if (type.need || type.selected) length++;
+        }
+        ImportAppDataService.Type[] neededTypes = new ImportAppDataService.Type[length];
+        for (int i = 0; i < types.size(); i++) {
+            ImportAppDataService.Type type = types.get(i);
+            if (type.need || type.selected) neededTypes[i] = type;
+        }
         if (personId != null) {
-            ImportAppDataService.Type[] array = LshArrayUtils.toArray(types, new ImportAppDataService.Type[types.size()]);
             return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
                 @Override
                 public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {
                     emitter.onNext(realm);
                     emitter.onComplete();
                 }
-            }).flatMap(realm -> Flowable.fromArray(array)
+            }).flatMap(realm -> Flowable.fromArray(neededTypes)
                     .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, personId, type.type, type.value, ""))
             ).observeOn(AndroidSchedulers.mainThread());
         } else {
-            ImportAppDataService.Type[] array = LshArrayUtils.toArray(types, new ImportAppDataService.Type[types.size()]);
             return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
                 @Override
                 public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {
@@ -97,9 +103,9 @@ public class ImportWechatHelper {
                     emitter.onComplete();
                 }
             }).flatMap(realm -> {
-                Person person = new Person(personName);
-                return ShiyiDbHelper.addPerson(realm, ShiyiModelHelper.UNNAME_GROUP_NAME, person)
-                                .flatMap(personId1 -> Flowable.fromArray(array))
+                        Person person = new Person(personName);
+                        return ShiyiDbHelper.addPerson(realm, ShiyiModelHelper.UNNAME_GROUP_NAME, person)
+                                .flatMap(personId1 -> Flowable.fromArray(neededTypes))
                                 .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, person.getId(), type.type, type.value, ""));
                     }
             ).observeOn(AndroidSchedulers.mainThread());
