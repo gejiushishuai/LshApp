@@ -71,9 +71,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="8.0dip"
-            android:enabled="false"
             android:gravity="center"
-            android:text="查找"
+            android:text="跳转"
             android:textSize="18.0sp"/>
 
     </LinearLayout>

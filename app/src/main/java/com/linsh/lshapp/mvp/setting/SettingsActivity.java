@@ -80,7 +80,6 @@ public class SettingsActivity extends BaseToolbarActivity<SettingsContract.Prese
             if (LshAccessibilityUtils.checkAccessibility()) {
                 startService(new Intent(this, ImportAppDataService.class)
                         .putExtra(ImportAppDataService.COMMAND, ImportAppDataService.COMMAND_OPEN));
-                LshIntentUtils.gotoApp("com.tencent.mm");
             }
         }
     }

@@ -24,6 +24,7 @@ import com.linsh.lshapp.tools.ImportWechatHelper;
 import com.linsh.lshutils.tools.LshXmlCreater;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
 import com.linsh.lshutils.utils.LshBackgroundUtils;
+import com.linsh.lshutils.utils.LshIntentUtils;
 import com.linsh.lshutils.utils.LshScreenUtils;
 import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
@@ -74,6 +75,9 @@ public class ImportWechatFloatingView extends FrameLayout {
         mTvSave.setOnClickListener(view -> {
             String text = mTvSave.getText().toString();
             switch (text) {
+                case "跳转":
+                    mAdapter.setState(0);
+                    break;
                 case "查找":
                     mHelper.findPersons(mTvName.getText().toString());
                     break;
@@ -81,7 +85,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                     mAdapter.setState(mAdapter.mState - 1);
                     break;
                 case "收起":
-                    mAdapter.setState(0);
+                    mAdapter.setState(-1);
                     mTvSave.setText("查找");
                     break;
                 case "保存":
@@ -89,7 +93,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                             .doOnComplete(new Action() {
                                 @Override
                                 public void run() throws Exception {
-                                    mAdapter.setState(0);
+                                    mAdapter.setState(-1);
                                     mTvSave.setText("查找");
                                     LshToastUtils.show("已保存");
                                 }
@@ -121,8 +125,7 @@ public class ImportWechatFloatingView extends FrameLayout {
         if (types == null || types.size() == 0) {
             mTvName.setText("---");
             mTvSave.setText("查找");
-            mTvSave.setEnabled(false);
-            mAdapter.setState(0);
+            mAdapter.setState(-1);
             mTvWechatId.setVisibility(VISIBLE);
             if (mFlTypes.getChildCount() > 1) {
                 mFlTypes.removeViews(1, mFlTypes.getChildCount() - 1);
@@ -132,7 +135,6 @@ public class ImportWechatFloatingView extends FrameLayout {
             }
         } else {
             mTvName.setText(name);
-            mTvSave.setEnabled(true);
             mTvSave.setText("查找");
             mTvWechatId.setVisibility(GONE);
 
@@ -169,7 +171,7 @@ public class ImportWechatFloatingView extends FrameLayout {
         private List<Person> mPersons;
         private List<Group> mGroups;
 
-        private int mState; // 0 1 2 3
+        private int mState = -1; // 0 1 2 3
 
         private int curSelectedPos = -1;
         private int curGroupPos = -1;
@@ -197,6 +199,10 @@ public class ImportWechatFloatingView extends FrameLayout {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             TextView itemView = (TextView) holder.itemView;
             switch (mState) {
+                case 0:
+                    String[] texts = new String[]{"跳转至微信", "跳转至 QQ", "跳转至钉钉"};
+                    itemView.setText(texts[position]);
+                    break;
                 case 1:
                     if (position == 0) {
                         itemView.setText("添加该联系人");
@@ -220,6 +226,8 @@ public class ImportWechatFloatingView extends FrameLayout {
         @Override
         public int getItemCount() {
             switch (mState) {
+                case 0:
+                    return 3;
                 case 1:
                     return mPersons == null ? 0 : 2 + mPersons.size();
                 case 2:
@@ -231,18 +239,25 @@ public class ImportWechatFloatingView extends FrameLayout {
         }
 
         public void setState(int state) {
-            if (state == 0 && mState == 0) return;
-
+            if (state == -1 || state == 0) {
+                if (mState == -1) state = 0;
+                else state = -1;
+            }
             mState = state;
             curSelectedPos = -1;
             switch (state) {
+                case -1:
+                    mPersons = null;
+                    mTvSave.setText("跳转");
+                    mRcvPersons.setVisibility(GONE);
+                    break;
                 case 0:
                     mPersons = null;
-                    mRcvPersons.setVisibility(GONE);
+                    mTvSave.setText("跳转");
+                    mRcvPersons.setVisibility(VISIBLE);
                     break;
                 case 1:
                     mTvSave.setText("收起");
-                    mTvSave.setEnabled(true);
                     mRcvPersons.setVisibility(VISIBLE);
                     break;
                 case 2:
@@ -250,12 +265,10 @@ public class ImportWechatFloatingView extends FrameLayout {
                         mHelper.getGroups();
                     }
                     mTvSave.setText("返回");
-                    mTvSave.setEnabled(true);
                     mRcvPersons.setVisibility(VISIBLE);
                     break;
                 case 3:
                     mTvSave.setText("返回");
-                    mTvSave.setEnabled(true);
                     mRcvPersons.setVisibility(VISIBLE);
                     break;
                 default:
@@ -278,6 +291,22 @@ public class ImportWechatFloatingView extends FrameLayout {
         public void onClick(View v) {
             int position = (int) v.getTag();
             switch (mState) {
+                case 0:
+                    if (mAdapter.mState == 0) {
+                        switch (position) {
+                            case 0:
+                                LshIntentUtils.gotoApp("com.tencent.mm");
+                                break;
+                            case 1:
+                                LshIntentUtils.gotoApp("com.tencent.mobileqq");
+                                break;
+                            case 2:
+                                LshIntentUtils.gotoApp("com.alibaba.android.rimet");
+                                break;
+                        }
+                        setState(-1);
+                    }
+                    break;
                 case 1:
                     if (position == 1) {
                         setState(2);
