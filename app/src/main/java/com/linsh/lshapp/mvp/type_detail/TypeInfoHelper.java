@@ -73,7 +73,7 @@ public class TypeInfoHelper {
                 public void onClick(View v) {
                     String dateStr = etInfo.getText().toString();
                     SimpleDate date = null;
-                    if (!LshStringUtils.notEmpty(dateStr)) {
+                    if (LshStringUtils.notEmpty(dateStr)) {
                         date = SimpleDate.parseDateString(dateStr);
                     }
                     if (date == null) {
