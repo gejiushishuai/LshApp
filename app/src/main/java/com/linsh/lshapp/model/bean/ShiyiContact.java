@@ -5,6 +5,7 @@ import android.support.annotation.RequiresApi;
 
 import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Event;
+import com.linsh.lshutils.utils.LshOSUtils;
 
 import java.util.List;
 
@@ -61,6 +62,15 @@ public class ShiyiContact extends Contact {
         }
     }
 
+    @Override
+    public Event getBirthday() {
+        List<Event> events = getEvents();
+        for (Event event : events) {
+            if (event.getType() == Event.Type.BIRTHDAY) return event;
+            if (event.getType() == Event.Type.CUSTOM && "生日".equals(event.getLabel())) return event;
+        }
+        return null;
+    }
 
     public Event getLunarBirthday() {
         List<Event> events = getEvents();
@@ -70,5 +80,27 @@ public class ShiyiContact extends Contact {
             }
         }
         return null;
+    }
+
+    public String getBirthdayStr() {
+        Event birthday = getBirthday();
+        return birthday == null ? null : birthday.getStartDate();
+    }
+
+    public String getLunarBirthdayStr() {
+        Event lunarBirthday = getLunarBirthday();
+        return lunarBirthday == null ? null : lunarBirthday.getStartDate();
+    }
+
+    // 重写父类方法
+    @Override
+    protected Contact addEvent(Event event) {
+        if (LshOSUtils.getRomType() == LshOSUtils.ROM.MIUI) {
+            String startDate = event.getStartDate();
+            if (startDate.startsWith("--")) {
+                event.setStartDate(startDate.substring(2, startDate.length()));
+            }
+        }
+        return super.addEvent(event);
     }
 }

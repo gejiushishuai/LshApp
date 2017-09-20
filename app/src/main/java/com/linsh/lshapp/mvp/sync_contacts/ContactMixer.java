@@ -13,12 +13,12 @@ import com.github.tamir7.contacts.CustomQuery;
 import com.github.tamir7.contacts.PhoneNumber;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
+import com.linsh.lshutils.module.SimpleDate;
 import com.linsh.lshutils.tools.LshCursorHelper;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshArrayUtils;
 import com.linsh.lshutils.utils.LshContextUtils;
 import com.linsh.lshutils.utils.LshListUtils;
-import com.linsh.lshutils.utils.LshLunarCalendarUtils;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -74,9 +74,10 @@ public class ContactMixer {
                 return;
             }
             // 农历生日
-            String lunarBirthdayOfPerson = LshLunarCalendarUtils.lunarStr2NormalStr(mPerson.getLunarBirthday());
-            String lunarBirthdayOfContact = mContact.getLunarBirthday() == null ? null : mContact.getLunarBirthday().getStartDate();
-            if (!LshStringUtils.isEquals(lunarBirthdayOfPerson, lunarBirthdayOfContact)) {
+            SimpleDate lunarBirthdayOfPerson = SimpleDate.parseDateString(mPerson.getLunarBirthday());
+            SimpleDate lunarBirthdayOfContact = SimpleDate.parseDateString(mContact.getLunarBirthdayStr());
+            if ((lunarBirthdayOfPerson == null && lunarBirthdayOfContact != null) ||
+                    (lunarBirthdayOfPerson != null && !lunarBirthdayOfPerson.isSameDay(lunarBirthdayOfContact, true))) {
                 status = UPDATE_WITH_CONTACTS;
                 return;
             }

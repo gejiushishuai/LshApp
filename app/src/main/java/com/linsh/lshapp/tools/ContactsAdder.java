@@ -123,6 +123,7 @@ public class ContactsAdder {
                     }
                 }
                 if (LshStringUtils.notEmpty(birthday)) {
+
                     contactBuilder.insertBirthday(birthday);
                 }
                 if (LshStringUtils.notEmpty(lunarBirthday)) {
@@ -211,6 +212,5 @@ public class ContactsAdder {
                     }
                     return contact;
                 });
-
     }
 }

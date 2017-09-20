@@ -95,7 +95,7 @@ dependencies {
     provided 'com.tencent.tinker:tinker-android-anno:1.7.9'
     compile 'com.tencent.tinker:tinker-android-lib:1.7.9'
     // 通讯录
-    compile 'com.github.yuanxiang05:Contacts:1.0.3'
+    compile 'com.github.yuanxiang05:Contacts:1.0.4'
     // PhotoView
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     // PickerView

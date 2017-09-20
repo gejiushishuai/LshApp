@@ -32,21 +32,18 @@ import com.linsh.lshapp.tools.LshIdTools;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.NameTool;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
+import com.linsh.lshutils.module.SimpleDate;
 import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
 import com.linsh.lshutils.utils.Basic.LshLogUtils;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshBitmapUtils;
-import com.linsh.lshutils.utils.LshDateUtils;
 import com.linsh.lshutils.view.LshColorDialog;
 
 import org.reactivestreams.Publisher;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -397,20 +394,11 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                     case UNKNOWN:
                     case LUNAR_BIRTHDAY:
                         // 农历生日, 目前魅族可以, 小米不行
-                        String birthday = null;
-                        try {
-                            String startDate = event.getStartDate();
-                            if (startDate.matches("\\d{2}-\\d{2}")) {
-                                Date date = new SimpleDateFormat("MM-dd").parse(startDate);
-                                birthday = LshDateUtils.getLunarDate(date, false);
-                            } else if (startDate.matches("\\d{4}-\\d{1,2}-\\d{1,2}")) {
-                                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
-                                birthday = LshDateUtils.getLunarDate(date, false);
-                            }
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        if (birthday != null) {
+                        String birthday = event.getStartDate();
+                        SimpleDate simpleDate = SimpleDate.parseDateString(birthday);
+                        if (simpleDate != null) {
+                            simpleDate.setLunar(true);
+                            birthday = simpleDate.getDisplayString();
                             type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, birthday, null));
                         }
                         break;
