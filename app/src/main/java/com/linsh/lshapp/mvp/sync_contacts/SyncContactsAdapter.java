@@ -94,6 +94,7 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
                     , null, holder.tvLeftDetailText, getDetailText(person, false));
         } else {
             holder.llLeftContact.setVisibility(View.INVISIBLE);
+            holder.tvLeftDetailText.setText("");
         }
     }
 
@@ -107,6 +108,7 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
                     , uri, holder.tvRightDetailText, getDetailText(contact, false));
         } else {
             holder.llRightContact.setVisibility(View.INVISIBLE);
+            holder.tvRightDetailText.setText("");
         }
     }
 
