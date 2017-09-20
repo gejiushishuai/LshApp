@@ -14,33 +14,36 @@
         android:divider="@drawable/shape_devider_whitebg"
         android:showDividers="middle">
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/ll_item_import_contacts_left_contact"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="end|center_vertical">
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tv_item_import_contacts_left_name"
                 style="@style/Text_title"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="end"
                 android:layout_marginBottom="10dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="65dp"
                 android:layout_marginTop="10dp"
                 android:ellipsize="end"
-                tools:text="林声鹤"/>
+                android:lines="1"
+                tools:text="林声鹤-linsh"/>
 
             <ImageView
                 android:id="@+id/iv_item_import_contacts_left_avatar"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
+                android:layout_gravity="end"
                 android:layout_marginBottom="3dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="3dp"
                 android:src="@mipmap/ic_launcher"/>
 
-        </LinearLayout>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tv_item_import_contacts_status"
@@ -80,9 +83,11 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
                     android:layout_marginTop="10dp"
                     android:ellipsize="end"
-                    tools:text="林声鹤"/>
+                    android:lines="1"
+                    tools:text="林声鹤-linsh"/>
 
             </LinearLayout>
 

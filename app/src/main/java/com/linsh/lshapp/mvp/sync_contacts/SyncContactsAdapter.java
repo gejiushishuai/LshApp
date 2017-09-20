@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.tamir7.contacts.PhoneNumber;
@@ -222,27 +221,27 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout llLeftContact;
+        private View llLeftContact;
         private TextView tvLeftName;
         private ImageView ivLeftAvatar;
         private TextView tvLeftDetailText;
-        private LinearLayout llRightContact;
+        private View llRightContact;
         private ImageView ivRightAvatar;
         private TextView tvRightName;
         private TextView tvRightDetailText;
         private TextView tvStatus;
-        private LinearLayout llDetailLayout;
+        private View llDetailLayout;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            llLeftContact = (LinearLayout) itemView.findViewById(R.id.ll_item_import_contacts_left_contact);
+            llLeftContact = itemView.findViewById(R.id.ll_item_import_contacts_left_contact);
             tvLeftName = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_left_name);
             ivLeftAvatar = (ImageView) itemView.findViewById(R.id.iv_item_import_contacts_left_avatar);
             tvStatus = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_status);
-            llRightContact = (LinearLayout) itemView.findViewById(R.id.ll_item_import_contacts_right_contact);
+            llRightContact = itemView.findViewById(R.id.ll_item_import_contacts_right_contact);
             ivRightAvatar = (ImageView) itemView.findViewById(R.id.iv_item_import_contacts_right_avatar);
             tvRightName = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_right_name);
-            llDetailLayout = (LinearLayout) itemView.findViewById(R.id.ll_item_import_contacts_detail_layout);
+            llDetailLayout = itemView.findViewById(R.id.ll_item_import_contacts_detail_layout);
             tvLeftDetailText = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_left_detail_text);
             tvRightDetailText = (TextView) itemView.findViewById(R.id.tv_item_import_contacts_right_detail_text);
         }
