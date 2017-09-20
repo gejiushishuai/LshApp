@@ -76,8 +76,7 @@ public class ContactMixer {
             // 农历生日
             SimpleDate lunarBirthdayOfPerson = SimpleDate.parseDateString(mPerson.getLunarBirthday());
             SimpleDate lunarBirthdayOfContact = SimpleDate.parseDateString(mContact.getLunarBirthdayStr());
-            if ((lunarBirthdayOfPerson == null && lunarBirthdayOfContact != null) ||
-                    (lunarBirthdayOfPerson != null && !lunarBirthdayOfPerson.isSameDay(lunarBirthdayOfContact, true))) {
+            if (!SimpleDate.isEqual(lunarBirthdayOfPerson, lunarBirthdayOfContact, true)) {
                 status = UPDATE_WITH_CONTACTS;
                 return;
             }

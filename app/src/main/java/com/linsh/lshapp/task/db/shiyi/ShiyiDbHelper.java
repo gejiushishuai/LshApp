@@ -19,6 +19,7 @@ import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.mvp.sync_contacts.ContactMixer;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
+import com.linsh.lshutils.module.SimpleDate;
 import com.linsh.lshutils.utils.Basic.LshStringUtils;
 import com.linsh.lshutils.utils.LshRegexUtils;
 
@@ -26,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
@@ -115,24 +114,12 @@ public class ShiyiDbHelper {
                 for (TypeDetail typeDetail : typeDetails) {
                     // 通过正则判断阳历和农历生日
                     String birthday = typeDetail.getDetail();
-                    if (birthday.matches("(\\d{4}-)?\\d{1,2}-\\d{1,2}")) {
-                        contactsPerson.setBirthday(birthday);
-                    } else {
-                        Matcher matcher = Pattern.compile("((\\d{4})年)?(\\d{1,2})月(\\d{1,2})日").matcher(birthday);
-                        if (matcher.find()) {
-                            StringBuilder builder = new StringBuilder();
-                            String year = matcher.group(2);
-                            if (LshStringUtils.notEmpty(year)) {
-                                builder.append(year).append("-");
-                            }
-                            builder.append(matcher.group(3)).append("-").append(matcher.group(4));
-                            contactsPerson.setBirthday(builder.toString());
+                    SimpleDate simpleDate = SimpleDate.parseDateString(birthday);
+                    if (simpleDate != null) {
+                        if (simpleDate.isLunar()) {
+                            contactsPerson.setLunarBirthday(simpleDate.getDisplayString());
                         } else {
-                            // TODO: 17/8/22  后期可能使用 yyyy-MM-dd 来表示农历生日
-                            matcher = Pattern.compile("(.{2,4}年)?([\\u4e00-\\u9fa5]{1,2})月([\\u4e00-\\u9fa5]{1,3})").matcher(birthday);
-                            if (matcher.find()) {
-                                contactsPerson.setLunarBirthday(birthday);
-                            }
+                            contactsPerson.setBirthday(simpleDate.getNormalizedString());
                         }
                     }
                 }

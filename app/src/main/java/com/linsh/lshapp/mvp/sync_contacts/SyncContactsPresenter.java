@@ -389,17 +389,20 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                 switch (event.getType()) {
                     case BIRTHDAY:
                         // 生日
-                        type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, event.getStartDate(), null));
+                        String birthday = event.getStartDate();
+                        SimpleDate simpleDate1 = SimpleDate.parseDateString(birthday);
+                        birthday = simpleDate1 == null ? birthday : simpleDate1.getDisplayString();
+                        type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, birthday, null));
                         break;
                     case UNKNOWN:
                     case LUNAR_BIRTHDAY:
                         // 农历生日, 目前魅族可以, 小米不行
-                        String birthday = event.getStartDate();
-                        SimpleDate simpleDate = SimpleDate.parseDateString(birthday);
+                        String lunarBirthday = event.getStartDate();
+                        SimpleDate simpleDate = SimpleDate.parseDateString(lunarBirthday);
                         if (simpleDate != null) {
                             simpleDate.setLunar(true);
-                            birthday = simpleDate.getDisplayString();
-                            type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, birthday, null));
+                            lunarBirthday = simpleDate.getDisplayString();
+                            type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, lunarBirthday, null));
                         }
                         break;
                 }
