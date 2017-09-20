@@ -79,14 +79,13 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
     }
 
     @Override
-    public void onItemLongClick(int position) {
+    public void onItemLongClick(View view, int position) {
         if (!LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
             LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
             return;
         }
         curItem = position;
 
-        View childAt = mRcvContent.getChildAt(position);
         ContactMixer mixer = mAdapter.getData().get(position);
         ShiyiContact contact = mixer.getContact();
         ContactsPerson person = mixer.getPerson();
@@ -125,7 +124,7 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
                         }
                     }
                 })
-                .showAsDropDown(childAt, childAt.getWidth() / 2 - lshPopupWindow.getWidth() / 2, 0);
+                .showAsDropDown(view, view.getWidth() / 2 - lshPopupWindow.getWidth() / 2, 0);
 
     }
 
