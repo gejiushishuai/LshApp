@@ -50,7 +50,7 @@ public class ImportWechatHelper {
     }
 
     public void findPersons(String name) {
-        Matcher matcher = Pattern.compile("^([\\u4e00-\\u9fa5]+)-?(\\w+)|(\\w+)-?([\\u4e00-\\u9fa5]+)$").matcher(name);
+        Matcher matcher = Pattern.compile("^([\\u4e00-\\u9fa5]+)-?([a-zA-Z0-9_]+)|([a-zA-Z0-9_]+)-?([\\u4e00-\\u9fa5]+)$").matcher(name);
         ArrayList<String> list = new ArrayList<>();
         list.add(name);
         if (matcher.find()) {

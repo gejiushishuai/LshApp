@@ -78,7 +78,7 @@ public class ImportAppDataService extends AccessibilityService {
                 for (int i = 0; i < allText.size(); i++) {
                     String text = allText.get(i);
                     if ("地区".equals(text) && i + 1 < allText.size()) {
-                        types.add(new Type("地址", allText.get(i + 1)));
+                        types.add(new Type("地址", allText.get(i + 1).replaceAll(" ", "").trim()));
                         break;
                     }
                 }
