@@ -123,8 +123,7 @@ public class ImportWechatFloatingView extends FrameLayout {
     public void setTypes(String name, List<ImportAppDataService.Type> types) {
         mTypes = types;
         if (types == null || types.size() == 0) {
-            mTvName.setText("---");
-            mTvSave.setText("查找");
+            mTvName.setText(name == null ? "---" : name);
             mAdapter.setState(-1);
             mTvWechatId.setVisibility(VISIBLE);
             if (mFlTypes.getChildCount() > 1) {
@@ -135,9 +134,12 @@ public class ImportWechatFloatingView extends FrameLayout {
             }
         } else {
             mTvName.setText(name);
-            mTvSave.setText("查找");
+            mAdapter.setState(-2);
             mTvWechatId.setVisibility(GONE);
 
+            if (mFlTypes.getChildCount() > 1) {
+                mFlTypes.removeViews(1, mFlTypes.getChildCount() - 1);
+            }
             for (ImportAppDataService.Type type : types) {
                 TextView textView = (TextView) View.inflate(getContext(), R.layout.view_type, null);
                 textView.setText(type.value);
@@ -246,6 +248,11 @@ public class ImportWechatFloatingView extends FrameLayout {
             mState = state;
             curSelectedPos = -1;
             switch (state) {
+                case -2:
+                    mPersons = null;
+                    mTvSave.setText("查找");
+                    mRcvPersons.setVisibility(GONE);
+                    break;
                 case -1:
                     mPersons = null;
                     mTvSave.setText("跳转");
