@@ -22,9 +22,8 @@ public class RealmTool {
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("shiyi.realm")
                 .encryptionKey(getEncryptionKey())
-                .schemaVersion(7)
+                .schemaVersion(8)
                 .migration(new ShiyiMigration())
-//                .modules(new Shiyi(), new PersonDetail())
                 .build();
         // 设置默认配置
         Realm.setDefaultConfiguration(config);

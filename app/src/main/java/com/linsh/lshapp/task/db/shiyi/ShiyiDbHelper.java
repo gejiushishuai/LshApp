@@ -444,8 +444,8 @@ public class ShiyiDbHelper {
                     }
                     // 分组名不为空时, 更改分组
                     Group curGroup = realm.where(Group.class).equalTo("persons.id", realmPerson.getId()).findFirst();
-                    // 组名不一样, 确定更改
                     if (curGroup != null) {
+                        // 组名不一样, 确定更改
                         if (newGroupName != null && !curGroup.getName().equals(newGroupName)) {
                             Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
                             if (newGroup != null) {
