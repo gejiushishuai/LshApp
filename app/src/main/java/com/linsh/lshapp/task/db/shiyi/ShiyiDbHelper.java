@@ -223,9 +223,14 @@ public class ShiyiDbHelper {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
-                Group group = realm.where(Group.class).equalTo("id", groupId).findFirst();
-                if (group != null) {
-                    group.setName(newGroupName);
+                Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
+                if (newGroup != null) {
+                    emitter.onError(new CustomThrowable("该分组已经存在"));
+                } else {
+                    Group group = realm.where(Group.class).equalTo("id", groupId).findFirst();
+                    if (group != null) {
+                        group.setName(newGroupName);
+                    }
                 }
             }
         });
