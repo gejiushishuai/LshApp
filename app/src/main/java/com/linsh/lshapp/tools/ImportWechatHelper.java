@@ -133,7 +133,8 @@ public class ImportWechatHelper {
                     emitter.onComplete();
                 }
             }).flatMap(realm -> Flowable.fromArray(neededTypes)
-                    .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, personId, type.type, type.value, ""))
+                    .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, personId, type.type,
+                            type.typeDetail, type.describe == null ? "" : type.describe))
             ).observeOn(AndroidSchedulers.mainThread());
         } else {
             return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
@@ -146,7 +147,8 @@ public class ImportWechatHelper {
                         Person person = new Person(personName);
                         return ShiyiDbHelper.addPerson(realm, ShiyiModelHelper.UNNAME_GROUP_NAME, person)
                                 .flatMap(personId1 -> Flowable.fromArray(neededTypes))
-                                .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, person.getId(), type.type, type.value, ""));
+                                .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, person.getId(), type.type,
+                                        type.typeDetail, type.describe == null ? "" : type.describe));
                     }
             ).observeOn(AndroidSchedulers.mainThread());
         }

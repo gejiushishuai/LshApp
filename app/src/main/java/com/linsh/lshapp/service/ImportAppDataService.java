@@ -74,7 +74,7 @@ public class ImportAppDataService extends AccessibilityService {
                         types.add(new Type("微信号", wechatId, true));
                     }
                 }
-                List<String> allText = mHelper.findAllText("com.tencent.mm:id/ia"); // 地区
+                List<String> allText = mHelper.findAllTexts("com.tencent.mm:id/ia"); // 地区
                 for (int i = 0; i < allText.size(); i++) {
                     String text = allText.get(i);
                     if ("地区".equals(text) && i + 1 < allText.size()) {
@@ -126,7 +126,7 @@ public class ImportAppDataService extends AccessibilityService {
             String name = null;
             List<Type> types = new ArrayList<>();
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.alibaba.android.rimet:id/cell_subTitle");// 姓名
+                AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.alibaba.android.rimet:id/user_header_full_name");// 姓名
                 if (info != null) {
                     name = info.getText().toString().trim();
                 }
@@ -138,13 +138,23 @@ public class ImportAppDataService extends AccessibilityService {
                         types.add(new Type("电话", qqId, true));
                     }
                 }
-                List<AccessibilityNodeInfo> infos = mHelper.findNodeInfosByViewId("com.alibaba.android.rimet:id/cell_subTitle"); // 邮箱
-                if (infos != null && infos.size() > 0) {
-                    for (AccessibilityNodeInfo nodeInfo : infos) {
-                        String text = nodeInfo.getText() == null ? null : nodeInfo.getText().toString();
-                        if (text != null && LshRegexUtils.isEmail(text)) {
-                            types.add(new Type("邮箱", text));
-                            break;
+                List<String> allTexts = mHelper.findAllTexts();
+                for (int i = 0; i < allTexts.size(); i++) {
+                    String text = allTexts.get(i);
+                    if (text.contains("邮箱")) {
+                        if (i + 1 < allTexts.size()) {
+                            String email = allTexts.get(i + 1);
+                            if (LshRegexUtils.isEmail(email)) {
+                                types.add(new Type("邮箱", email));
+                            }
+                        }
+                    } else if (text.equals("部门")) {
+                        if (i + 1 < allTexts.size()) {
+                            types.add(new Type("工作", allTexts.get(i + 1), "部门"));
+                        }
+                    } else if (text.equals("职位")) {
+                        if (i + 1 < allTexts.size()) {
+                            types.add(new Type("工作", allTexts.get(i + 1), "职位"));
                         }
                     }
                 }
@@ -153,8 +163,9 @@ public class ImportAppDataService extends AccessibilityService {
                 RxBus.getDefault().post(new WechatContactEvent(name, types));
             }
         } else {
-            if (packageName.equals("com.linsh.lshapp")) return; // 防止点击悬浮窗发生变化
-            if (packageName.equals("com.tencent.mm") && className.startsWith("android")) return; // 防止点击微信界面控件发生变化
+            if (packageName.equals("com.linsh.lshapp")) return; // 防止点击悬浮窗而发生变化
+            if (className.startsWith("android.app.")) return; // 防止点击界面控件而发生变化
+            if (className.startsWith("android.widget.")) return;
             RxBus.getDefault().post(new WechatContactEvent(null, null));
         }
     }
@@ -208,18 +219,25 @@ public class ImportAppDataService extends AccessibilityService {
 
     public static class Type {
         public String type;
-        public String value;
+        public String typeDetail;
+        public String describe;
         public boolean selected;
         public boolean need;
 
-        public Type(String type, String value) {
+        public Type(String type, String typeDetail) {
             this.type = type;
-            this.value = value;
+            this.typeDetail = typeDetail;
         }
 
-        public Type(String type, String value, boolean cancel) {
+        public Type(String type, String typeDetail, String describe) {
             this.type = type;
-            this.value = value;
+            this.typeDetail = typeDetail;
+            this.describe = describe;
+        }
+
+        public Type(String type, String typeDetail, boolean cancel) {
+            this.type = type;
+            this.typeDetail = typeDetail;
             this.need = cancel;
         }
     }

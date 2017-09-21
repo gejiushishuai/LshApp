@@ -142,7 +142,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             }
             for (ImportAppDataService.Type type : types) {
                 TextView textView = (TextView) View.inflate(getContext(), R.layout.view_type, null);
-                textView.setText(type.value);
+                textView.setText(type.typeDetail);
                 LshBackgroundUtils.addPressedEffect(textView);
                 textView.setOnClickListener(new OnClickListener() {
                     @Override
