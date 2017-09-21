@@ -50,6 +50,7 @@ public class ImportWechatHelper {
     }
 
     public void findPersons(String name) {
+        name = name.trim();
         Matcher matcher = Pattern.compile("^([\\u4e00-\\u9fa5]+)-?([a-zA-Z0-9_]+)|([a-zA-Z0-9_]+)-?([\\u4e00-\\u9fa5]+)$").matcher(name);
         ArrayList<String> list = new ArrayList<>();
         list.add(name);
@@ -62,6 +63,14 @@ public class ImportWechatHelper {
             if (group2 != null && group2.length() >= 3) list.add(group2);
             if (group3 != null && group3.length() >= 3) list.add(group3);
             if (group4 != null && group4.length() >= 2) list.add(group4);
+        }
+        if (name.contains(" ")) {
+            String[] splits = name.split(" ");
+            for (String split : splits) {
+                if (split.length() > 2) {
+                    list.add(split);
+                }
+            }
         }
         String[] names = LshArrayUtils.toArray(list, new String[list.size()]);
         Flowable.fromArray(names)
