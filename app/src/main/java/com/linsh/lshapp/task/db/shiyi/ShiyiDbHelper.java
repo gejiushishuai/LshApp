@@ -206,7 +206,7 @@ public class ShiyiDbHelper {
                             RealmList<Person> persons = unnameGroup.getPersons();
                             persons.addAll(copyPersons);
                             // 对联系人进行排序并保存
-                            ShiyiDbUtils.sortToRealm(realm, persons, "id");
+                            ShiyiDbUtils.sortToRealm(realm, persons, "pinyin");
                         }
                         group.getPersons().clear();
                         group.deleteFromRealm();
@@ -249,6 +249,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 添加类型标签
+     */
     public static Flowable<Void> addTypeLabel(final Realm realm, final String labelName, final int size) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -266,6 +269,9 @@ public class ShiyiDbHelper {
         return addType(realm, personId, typeName, -1);
     }
 
+    /**
+     * 添加类型
+     */
     public static Flowable<Void> addType(final Realm realm, final String personId, final String typeName, final int sort) {
         return addTypeDetail(realm, personId, typeName, sort, "", "");
     }
@@ -275,6 +281,9 @@ public class ShiyiDbHelper {
         return addTypeDetail(realm, personId, typeName, -1, typeDetail, typeDetailDesc);
     }
 
+    /**
+     * 添加类型信息
+     */
     private static Flowable<Void> addTypeDetail(final Realm realm, final String personId, final String typeName,
                                                 final int sort, String typeDetail, String typeDetailDesc) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
@@ -332,6 +341,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 删除类型
+     */
     public static Flowable<Void> deleteType(final Realm realm, final String typeId) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -344,6 +356,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 删除类型信息
+     */
     public static Flowable<Void> deleteTypeDetail(final Realm realm, final String typeDetailId) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -354,6 +369,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 删除联系人
+     */
     public static Flowable<Void> deletePerson(final Realm realm, final String personId) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -368,6 +386,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 编辑类型信息
+     */
     public static Flowable<Void> editTypeDetail(final Realm realm, final String typeDetailId, final String info, final String desc) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -394,6 +415,9 @@ public class ShiyiDbHelper {
         return editPerson(realm, newGroupName, person, null);
     }
 
+    /**
+     * 编辑联系人
+     */
     public static Flowable<String> editPerson(Realm realm, String newGroupName, Person person, ImageUrl avatar) {
         if (person.isManaged())
             throw new IllegalArgumentException("无法处理被 Realm 所管理的对象");
@@ -414,18 +438,19 @@ public class ShiyiDbHelper {
                         personAlbum.addAvatar(avatar);
                     }
                     // 分组名不为空时, 更改分组
-                    if (newGroupName != null) {
-                        Group oldGroup = realm.where(Group.class).equalTo("persons.id", realmPerson.getId()).findFirst();
-                        // 组名不一样, 确定更改
-                        if (oldGroup != null && !oldGroup.getName().equals(newGroupName)) {
+                    Group curGroup = realm.where(Group.class).equalTo("persons.id", realmPerson.getId()).findFirst();
+                    // 组名不一样, 确定更改
+                    if (curGroup != null) {
+                        if (newGroupName != null && !curGroup.getName().equals(newGroupName)) {
                             Group newGroup = realm.where(Group.class).equalTo("name", newGroupName).findFirst();
                             if (newGroup != null) {
-                                oldGroup.getPersons().remove(realmPerson);
+                                curGroup.getPersons().remove(realmPerson);
                                 newGroup.getPersons().add(realmPerson);
-                                // 对联系人进行排序并保存
-                                ShiyiDbUtils.sortToRealm(realm, newGroup.getPersons(), "id");
+                                curGroup = newGroup;
                             }
                         }
+                        // 对联系人所在分组进行排序
+                        ShiyiDbUtils.sortToRealm(realm, curGroup.getPersons(), "pinyin");
                     }
                     emitter.onNext(realmPerson.getId());
                 } else {
@@ -435,6 +460,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 保存类型
+     */
     public static Flowable<Void> savePersonTypes(Realm realm, final String personId, final List<Type> types) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -451,6 +479,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 移除类型
+     */
     public static Flowable<Void> removePersonType(Realm realm, final String personId, final String typeName) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -466,6 +497,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 移除类型标签
+     */
     public static Flowable<Void> removeTypeLabel(Realm realm, final String typeName) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
@@ -478,7 +512,10 @@ public class ShiyiDbHelper {
         });
     }
 
-    public static Flowable<Void> saveGroups(Realm realm, final List<Group> groups) {
+    /**
+     * 保存或更新所有分组
+     */
+    public static Flowable<Void> saveOrUpdateGroups(Realm realm, final List<Group> groups) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
@@ -497,6 +534,9 @@ public class ShiyiDbHelper {
         return addPerson(realm, group, person, personDetail, new PersonAlbum(person.getId()));
     }
 
+    /**
+     * 添加联系人
+     */
     public static Flowable<String> addPerson(Realm realm, String group, Person person, PersonDetail personDetail, PersonAlbum personAlbum) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<String>() {
             @Override
@@ -520,7 +560,7 @@ public class ShiyiDbHelper {
                     realm.copyToRealmOrUpdate(personDetail);
                     realm.copyToRealmOrUpdate(personAlbum);
                     // 对联系人进行排序并保存
-                    ShiyiDbUtils.sortToRealm(realm, realmGroup.getPersons(), "id");
+                    ShiyiDbUtils.sortToRealm(realm, realmGroup.getPersons(), "pinyin");
                 } else {
                     emitter.onError(new CustomThrowable("没有创建该分组, 无法添加"));
                 }
@@ -529,6 +569,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 覆盖联系人和详情
+     */
     public static Flowable<String> coverPersonAddDetail(Realm realm, Person person, PersonDetail personDetail) {
         return LshRxUtils.getAsyncTransactionFlowable(realm, new AsyncTransaction<String>() {
             @Override
@@ -588,6 +631,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 是否存在当前联系人名字
+     */
     public static Flowable<Boolean> hasPersonName(String name) {
         return LshRxUtils.getAsyncFlowable((realm, emitter) -> {
             Person person = realm.where(Person.class).equalTo("name", name).findFirst();
@@ -595,6 +641,9 @@ public class ShiyiDbHelper {
         });
     }
 
+    /**
+     * 是否存在当前联系人 id
+     */
     public static Flowable<Boolean> hasPersonId(String name) {
         return LshRxUtils.getAsyncFlowable((realm, emitter) -> {
             Person person = realm.where(Person.class).equalTo("id", name).findFirst();
@@ -602,7 +651,9 @@ public class ShiyiDbHelper {
         });
     }
 
-    // 由于 ContactMixer 可能出现手机联系人和拾意中存在但是没有在拾意中同步的联系人, 需要进行补全
+    /**
+     * 由于 ContactMixer 可能出现手机联系人和拾意中存在但是没有在拾意中同步的联系人, 需要进行补全
+     */
     public static Flowable<TreeMap<String, ContactMixer>> fixContactMixer(TreeMap<String, ContactMixer> mixers) {
         return LshRxUtils.getAsyncFlowable((realm, emitter) -> {
 

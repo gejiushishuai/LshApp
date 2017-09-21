@@ -36,7 +36,7 @@ public class EditGroupPresenter extends RealmPresenterImpl<TypeEditContract.View
 
     @Override
     public void saveTypes(List<Group> groups) {
-        Disposable disposable = ShiyiDbHelper.saveGroups(getRealm(), groups)
+        Disposable disposable = ShiyiDbHelper.saveOrUpdateGroups(getRealm(), groups)
                 .subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer(), () -> getView().finishActivity());
         addDisposable(disposable);
     }
