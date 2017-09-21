@@ -139,7 +139,7 @@ public class ImportAppDataService extends AccessibilityService {
                     }
                 }
                 List<AccessibilityNodeInfo> infos = mHelper.findNodeInfosByViewId("com.alibaba.android.rimet:id/cell_subTitle"); // 邮箱
-                if (info != null && infos.size() > 0) {
+                if (infos != null && infos.size() > 0) {
                     for (AccessibilityNodeInfo nodeInfo : infos) {
                         String text = nodeInfo.getText() == null ? null : nodeInfo.getText().toString();
                         if (text != null && LshRegexUtils.isEmail(text)) {
