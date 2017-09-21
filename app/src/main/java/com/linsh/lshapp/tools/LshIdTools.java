@@ -23,6 +23,7 @@ public class LshIdTools {
 
     //转换一个字符串
     private static String getStringPinYin(String str) {
+        if (str == null || str.length() == 0) return "";
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < str.length(); ++i) {
             String tempPinyin = getCharacterPinYin(str.charAt(i));

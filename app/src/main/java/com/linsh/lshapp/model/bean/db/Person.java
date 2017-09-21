@@ -14,6 +14,7 @@ import io.realm.annotations.PrimaryKey;
 public class Person extends RealmObject {
     @PrimaryKey
     private String id;
+    private String pinyin;
     private String name;
     private String describe;
     private String avatar;
@@ -30,15 +31,15 @@ public class Person extends RealmObject {
 
     public Person(String name, String describe, int gender) {
         this.id = ShiyiModelHelper.getPersonId(name);
-        this.name = name;
+        setName(name);
         this.describe = describe;
         this.gender = gender;
     }
 
     public Person(String name, String describe, String avatar, String avatarThumb, String gender, boolean sync) {
         this.id = ShiyiModelHelper.getPersonId(name);
-        this.name = name;
         this.describe = describe;
+        setName(name);
         setAvatar(avatar, avatarThumb);
         setGender(gender);
         syncWithContacts = sync;
@@ -58,6 +59,7 @@ public class Person extends RealmObject {
 
     public void setName(String name) {
         this.name = name;
+        this.pinyin = ShiyiModelHelper.getId(name);
     }
 
     public String getDescribe() {

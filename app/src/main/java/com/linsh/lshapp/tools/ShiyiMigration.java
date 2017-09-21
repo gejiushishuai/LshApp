@@ -59,6 +59,13 @@ public class ShiyiMigration implements RealmMigration {
             case 6:
                 schema.get("Person")
                         .addField("syncWithContacts", boolean.class);
+            case 7:
+                schema.get("Person")
+                        .addField("pinyin", String.class)
+                        .transform(obj -> {
+                            obj.set("pinyin", ShiyiModelHelper.getId(obj.get("name")));
+                        });
+                break;
         }
     }
 }
