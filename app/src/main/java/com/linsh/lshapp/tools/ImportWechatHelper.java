@@ -116,14 +116,9 @@ public class ImportWechatHelper {
     }
 
     public Flowable<Void> savePerson(String personId, String personName, List<ImportAppDataService.Type> types) {
-        int length = 0;
-        for (ImportAppDataService.Type type : types) {
-            if (type.need || type.selected) length++;
-        }
-        ImportAppDataService.Type[] neededTypes = new ImportAppDataService.Type[length];
-        for (int i = 0; i < types.size(); i++) {
+        for (int i = types.size() - 1; i >= 0; i--) {
             ImportAppDataService.Type type = types.get(i);
-            if (type.need || type.selected) neededTypes[i] = type;
+            if (!type.need && !type.selected) types.remove(i);
         }
         if (personId != null) {
             return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
@@ -132,7 +127,7 @@ public class ImportWechatHelper {
                     emitter.onNext(realm);
                     emitter.onComplete();
                 }
-            }).flatMap(realm -> Flowable.fromArray(neededTypes)
+            }).flatMap(realm -> Flowable.fromIterable(types)
                     .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, personId, type.type,
                             type.typeDetail, type.describe == null ? "" : type.describe))
             ).observeOn(AndroidSchedulers.mainThread());
@@ -146,7 +141,7 @@ public class ImportWechatHelper {
             }).flatMap(realm -> {
                         Person person = new Person(personName);
                         return ShiyiDbHelper.addPerson(realm, ShiyiModelHelper.UNNAME_GROUP_NAME, person)
-                                .flatMap(personId1 -> Flowable.fromArray(neededTypes))
+                                .flatMap(personId1 -> Flowable.fromIterable(types))
                                 .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, person.getId(), type.type,
                                         type.typeDetail, type.describe == null ? "" : type.describe));
                     }
