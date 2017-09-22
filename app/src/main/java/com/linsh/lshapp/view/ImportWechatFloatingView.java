@@ -31,6 +31,7 @@ import com.linsh.lshutils.utils.LshUnitConverseUtils;
 import java.util.List;
 
 import io.reactivex.functions.Action;
+import io.realm.Realm;
 
 public class ImportWechatFloatingView extends FrameLayout {
     private final Context mContext;
@@ -43,6 +44,7 @@ public class ImportWechatFloatingView extends FrameLayout {
     private TextView mTvSave;
     private FlexboxLayout mFlTypes;
     private List<ImportAppDataService.Type> mTypes;
+    private Realm mRealm;
 
     public ImportWechatFloatingView(Context paramContext) {
         super(paramContext);
@@ -89,7 +91,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                     mTvSave.setText("查找");
                     break;
                 case "保存":
-                    mHelper.savePerson(mAdapter.getCurPersonId(), mTvName.getText().toString(), mTypes)
+                    mHelper.savePerson(mRealm, mAdapter.getCurPersonId(), mTvName.getText().toString(), mTypes)
                             .doOnComplete(new Action() {
                                 @Override
                                 public void run() throws Exception {
@@ -107,12 +109,14 @@ public class ImportWechatFloatingView extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mRealm = Realm.getDefaultInstance();
         mHelper.attachView(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRealm.close();
         mHelper.detachView();
     }
 

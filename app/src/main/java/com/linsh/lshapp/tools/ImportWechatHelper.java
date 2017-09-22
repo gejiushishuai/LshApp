@@ -115,37 +115,25 @@ public class ImportWechatHelper {
                 });
     }
 
-    public Flowable<Void> savePerson(String personId, String personName, List<ImportAppDataService.Type> types) {
+    public Flowable<Void> savePerson(Realm realm, String personId, String personName, List<ImportAppDataService.Type> types) {
         for (int i = types.size() - 1; i >= 0; i--) {
             ImportAppDataService.Type type = types.get(i);
             if (!type.need && !type.selected) types.remove(i);
         }
         if (personId != null) {
-            return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
-                @Override
-                public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {
-                    emitter.onNext(realm);
-                    emitter.onComplete();
-                }
-            }).flatMap(realm -> Flowable.fromIterable(types)
+            // 添加类型
+            return Flowable.fromIterable(types)
                     .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, personId, type.type,
                             type.typeDetail, type.describe == null ? "" : type.describe))
-            ).observeOn(AndroidSchedulers.mainThread());
+                    .observeOn(AndroidSchedulers.mainThread());
         } else {
-            return LshRxUtils.getMainThreadFlowable(new AsyncConsumer<Realm>() {
-                @Override
-                public void call(Realm realm, FlowableEmitter<? super Realm> emitter) {
-                    emitter.onNext(realm);
-                    emitter.onComplete();
-                }
-            }).flatMap(realm -> {
-                        Person person = new Person(personName);
-                        return ShiyiDbHelper.addPerson(realm, ShiyiModelHelper.UNNAME_GROUP_NAME, person)
-                                .flatMap(personId1 -> Flowable.fromIterable(types))
-                                .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, person.getId(), type.type,
-                                        type.typeDetail, type.describe == null ? "" : type.describe));
-                    }
-            ).observeOn(AndroidSchedulers.mainThread());
+            // 添加联系人再添加类型
+            Person person = new Person(personName);
+            return ShiyiDbHelper.addPerson(realm, ShiyiModelHelper.UNNAME_GROUP_NAME, person)
+                    .flatMap(personId1 -> Flowable.fromIterable(types))
+                    .flatMap(type -> ShiyiDbHelper.addTypeDetail(realm, person.getId(), type.type,
+                            type.typeDetail, type.describe == null ? "" : type.describe))
+                    .observeOn(AndroidSchedulers.mainThread());
         }
     }
 }
