@@ -2,7 +2,7 @@
 apply plugin: 'com.tencent.tinker.patch'
 
 // 每次打包补丁时需要配置的变量
-def baseInfo = ""
+def baseInfo = "app-1.1.4-0921-15-46-41"
 
 def tinkerEnabled = false
 
