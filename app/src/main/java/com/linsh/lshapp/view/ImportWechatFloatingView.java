@@ -356,7 +356,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                     }
                     break;
                 case 3:
-                    return mGroups.get(curGroupPos).getPersons().get(curGroupPos).getId();
+                    return mGroups.get(curGroupPos).getPersons().get(curSelectedPos).getId();
             }
             return null;
         }
