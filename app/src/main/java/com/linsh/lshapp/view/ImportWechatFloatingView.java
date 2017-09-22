@@ -19,10 +19,12 @@ import com.google.android.flexbox.FlexboxLayout;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.model.bean.db.Group;
 import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshapp.tools.ImportWechatHelper;
 import com.linsh.lshutils.tools.LshXmlCreater;
 import com.linsh.lshutils.utils.Basic.LshToastUtils;
+import com.linsh.lshutils.utils.LshActivityUtils;
 import com.linsh.lshutils.utils.LshBackgroundUtils;
 import com.linsh.lshutils.utils.LshIntentUtils;
 import com.linsh.lshutils.utils.LshScreenUtils;
@@ -172,7 +174,7 @@ public class ImportWechatFloatingView extends FrameLayout {
         mAdapter.setGroups(groups);
     }
 
-    private class ImportTypeAdapter extends RecyclerView.Adapter implements OnClickListener {
+    private class ImportTypeAdapter extends RecyclerView.Adapter implements OnClickListener, OnLongClickListener {
 
         private List<Person> mPersons;
         private List<Group> mGroups;
@@ -197,6 +199,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             LshBackgroundUtils.addPressedEffect(textView);
 
             textView.setOnClickListener(this);
+            textView.setOnLongClickListener(this);
             return new RecyclerView.ViewHolder(textView) {
             };
         }
@@ -344,6 +347,30 @@ public class ImportWechatFloatingView extends FrameLayout {
                 curSelectedPos = -1;
                 v.setSelected(false);
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int position = (int) v.getTag();
+            switch (mState) {
+                case 1:
+                    if (position > 1) {
+                        LshActivityUtils.newIntent(PersonDetailActivity.class)
+                                .putExtra(mPersons.get(position - 2).getId())
+                                .newTask()
+                                .startActivity(getContext());
+                    }
+                    break;
+                case 3:
+                    LshActivityUtils.newIntent(PersonDetailActivity.class)
+                            .putExtra(mGroups.get(curGroupPos).getPersons().get(position).getId())
+                            .newTask()
+                            .startActivity(getContext());
+                    break;
+            }
+
+
+            return false;
         }
 
         public String getCurPersonId() {
