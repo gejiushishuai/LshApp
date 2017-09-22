@@ -36,6 +36,8 @@
                 android:id="@+id/tv_import_wechat_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minWidth="80dp"
                 android:text="---"
                 android:textColor="#ff333333"
                 android:textSize="18.0sp"/>

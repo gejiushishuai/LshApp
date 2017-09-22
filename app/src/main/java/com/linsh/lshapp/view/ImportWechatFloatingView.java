@@ -128,8 +128,8 @@ public class ImportWechatFloatingView extends FrameLayout {
 
     public void setTypes(String name, List<ImportAppDataService.Type> types) {
         mTypes = types;
-        if (types == null || types.size() == 0) {
-            mTvName.setText(name == null ? "---" : name);
+        if (name == null) {
+            mTvName.setText("---");
             mAdapter.setState(-1);
             mTvWechatId.setVisibility(VISIBLE);
             if (mFlTypes.getChildCount() > 1) {
@@ -288,6 +288,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                 default:
                     break;
             }
+            mTvSave.setEnabled(true);
             notifyDataSetChanged();
         }
 
@@ -327,6 +328,9 @@ public class ImportWechatFloatingView extends FrameLayout {
                         return;
                     }
                     mTvSave.setText(curSelectedPos != position ? "保存" : "收起");
+                    if (mTypes == null || mTypes.size() == 0) {
+                        mTvSave.setEnabled(curSelectedPos == position);
+                    }
                     break;
                 case 2:
                     curGroupPos = position;
@@ -334,6 +338,9 @@ public class ImportWechatFloatingView extends FrameLayout {
                     return;
                 case 3:
                     mTvSave.setText(curSelectedPos != position ? "保存" : "返回");
+                    if (mTypes == null || mTypes.size() == 0) {
+                        mTvSave.setEnabled(curSelectedPos == position);
+                    }
                     break;
             }
             if (curSelectedPos != position) {

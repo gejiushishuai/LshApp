@@ -21,8 +21,9 @@ public class ImportAppDataService extends AccessibilityService {
     public static final String COMMAND_CLOSE = "COMMAND_CLOSE";
     public static final String COMMAND_OPEN = "COMMAND_OPEN";
 
-    FloatingViewManager mFloatingViewManager;
-    LshAccessibilityHelper mHelper;
+    private FloatingViewManager mFloatingViewManager;
+    private LshAccessibilityHelper mHelper;
+    private String curName;
 
     public void onCreate() {
         super.onCreate();
@@ -60,12 +61,12 @@ public class ImportAppDataService extends AccessibilityService {
         String className = event.getClassName().toString();
         // 微信详细资料界面
         if (className.equals("com.tencent.mm.plugin.profile.ui.ContactInfoUI")) {
-            String name = null;
+            curName = null;
             List<Type> types = new ArrayList<>();
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.tencent.mm:id/n_");// 备注名
                 if (info != null) {
-                    name = info.getText().toString().trim();
+                    curName = info.getText().toString().trim();
                 }
                 info = mHelper.findFirstNodeInfoByViewId("com.tencent.mm:id/ah8"); // 微信号
                 if (info != null) {
@@ -90,12 +91,12 @@ public class ImportAppDataService extends AccessibilityService {
                     }
                 }
             }
-            if (LshStringUtils.isNotAllEmpty(name) && types.size() > 0) {
-                RxBus.getDefault().post(new WechatContactEvent(name, types));
+            if (LshStringUtils.isNotAllEmpty(curName)) {
+                RxBus.getDefault().post(new WechatContactEvent(curName, types));
             }
         } else if (className.equals("com.tencent.mobileqq.activity.FriendProfileCardActivity")) {
             // QQ个人信息界面
-            String name = null;
+            curName = null;
             List<Type> types = new ArrayList<>();
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.tencent.mobileqq:id/common_xlistview"); // 备注名
@@ -103,7 +104,7 @@ public class ImportAppDataService extends AccessibilityService {
                     List<String> descriptions = mHelper.findAllContentDescriptions(info);
                     for (String description : descriptions) {
                         if (description.matches("昵称:.+")) {
-                            name = description.replaceAll("昵称:", "").trim();
+                            curName = description.replaceAll("昵称:", "").trim();
                             break;
                         }
                     }
@@ -118,17 +119,17 @@ public class ImportAppDataService extends AccessibilityService {
                     }
                 }
             }
-            if (LshStringUtils.isNotAllEmpty(name) && types.size() > 0) {
-                RxBus.getDefault().post(new WechatContactEvent(name, types));
+            if (LshStringUtils.isNotAllEmpty(curName)) {
+                RxBus.getDefault().post(new WechatContactEvent(curName, types));
             }
         } else if (className.equals("com.alibaba.android.user.profile.v2.UserProfileActivity")) {
             // 钉钉个人信息界面
-            String name = null;
+            curName = null;
             List<Type> types = new ArrayList<>();
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 AccessibilityNodeInfo info = mHelper.findFirstNodeInfoByViewId("com.alibaba.android.rimet:id/user_header_full_name");// 姓名
                 if (info != null) {
-                    name = info.getText().toString().trim();
+                    curName = info.getText().toString().trim();
                 }
                 info = mHelper.findFirstNodeInfoByViewId("com.alibaba.android.rimet:id/user_mobile_info_content_tv"); // 电话
                 if (info != null) {
@@ -159,13 +160,17 @@ public class ImportAppDataService extends AccessibilityService {
                     }
                 }
             }
-            if (LshStringUtils.isNotAllEmpty(name) && types.size() > 0) {
-                RxBus.getDefault().post(new WechatContactEvent(name, types));
+            if (LshStringUtils.isNotAllEmpty(curName)) {
+                RxBus.getDefault().post(new WechatContactEvent(curName, types));
             }
         } else {
-            if (packageName.equals("com.linsh.lshapp")) return; // 防止点击悬浮窗而发生变化
             if (className.startsWith("android.app.")) return; // 防止点击界面控件而发生变化
             if (className.startsWith("android.widget.")) return;
+            if (className.startsWith("com.tencent.smtt.webkit.adapter")) return;
+            if (className.equals("com.tencent.mobileqq.activity.QQBrowserActivity")) {
+                RxBus.getDefault().post(new WechatContactEvent(curName, new ArrayList<>()));
+                return;
+            }
             RxBus.getDefault().post(new WechatContactEvent(null, null));
         }
     }
