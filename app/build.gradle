@@ -29,8 +29,8 @@ android {
         applicationId "com.linsh.lshapp"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.1.3c"
+        versionCode 13
+        versionName "1.1.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
