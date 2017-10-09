@@ -48,7 +48,7 @@ public class EditTypeLabelPresenter extends RealmPresenterImpl<TypeEditContract.
         Disposable disposable = LshRxUtils.getAsyncTransactionFlowable(getRealm(), new AsyncTransaction<Void>() {
             @Override
             protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
-                ShiyiDbUtils.renewSort(mTypeLabels);
+                ShiyiDbUtils.renewSort(data);
                 realm.copyToRealmOrUpdate(data);
             }
         }).subscribe(new EmptyConsumer<>(), new DefaultThrowableConsumer(), () -> {
