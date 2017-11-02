@@ -7,6 +7,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.mvp.home.MainActivity;
 import com.linsh.lshapp.mvp.home.shiyi.ShiyiFragment;
+import com.linsh.lshapp.mvp.home.yingmao.YingmaoFragment;
 import com.linsh.lshapp.mvp.search.SearchActivity;
 import com.linsh.lshapp.mvp.setting.SettingsActivity;
 import com.linsh.lshutils.utils.LshActivityUtils;
@@ -32,6 +33,8 @@ public class MainFragmentHelper {
 //            fragment = new ShenCaiFragment();
         } else if (id == R.id.nav_huhu) {
 //            fragment = new XiaoHuHuFragment();
+        } else if (id == R.id.nav_yingmao) {
+            fragment = new YingmaoFragment();
         } else if (id == R.id.nav_seek) {
             LshActivityUtils.newIntent(SearchActivity.class).startActivity(activity);
         } else if (id == R.id.nav_setting) {
@@ -61,8 +64,9 @@ public class MainFragmentHelper {
 
     // 点击Menu菜单时调用此方法创建选项菜单
     public void onCreateOptionsMenu(MainActivity activity, Menu menu) {
-        if (mFragment != null) {
-            activity.getMenuInflater().inflate(mFragment.getOptionsMenuItems(), menu);
+        int menuRes = mFragment.getOptionsMenuItems();
+        if (mFragment != null && menuRes > 0) {
+            activity.getMenuInflater().inflate(menuRes, menu);
         }
     }
 }

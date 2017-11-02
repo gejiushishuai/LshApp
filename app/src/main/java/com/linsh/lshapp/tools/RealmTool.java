@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.linsh.lshapp.common.LshConfig;
+import com.linsh.lshapp.common.LshConstants;
 import com.linsh.lshutils.utils.Basic.LshIOUtils;
 
 import java.io.File;
@@ -20,7 +21,7 @@ public class RealmTool {
     public static void init(Application application) {
         Realm.init(application);
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("shiyi.realm")
+                .name(LshConstants.NAME_REALM_FILE)
                 .encryptionKey(getEncryptionKey())
                 .schemaVersion(8)
                 .migration(new ShiyiMigration())

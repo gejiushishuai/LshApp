@@ -3,6 +3,8 @@ package com.linsh.lshapp.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -56,6 +58,17 @@ public class LshPopupWindow extends PopupWindow {
         public LshPopupWindow showAsDropDown(View anchor, int xoff, int yoff) {
             // 显示在指定的View下面
             LshPopupWindow.this.showAsDropDown(anchor, xoff, yoff);
+            return LshPopupWindow.this;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        public LshPopupWindow showAsDropDown(View anchor, int xoff, int yoff, int gravity) {
+            LshPopupWindow.this.showAsDropDown(anchor, xoff, yoff, gravity);
+            return LshPopupWindow.this;
+        }
+
+        public LshPopupWindow showAtLocation(View parent, int gravity, int x, int y) {
+            LshPopupWindow.this.showAtLocation(parent, gravity, x, y);
             return LshPopupWindow.this;
         }
 

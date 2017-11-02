@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">渊祥</string>
 
-    <string name="service_import_wechat">导入其他APP联系人资料</string>
+    <string name="service_import_wechat">渊祥 -> 导入其他APP联系人资料</string>
+    <string name="service_sign_in">渊祥 -> 签到</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -12,4 +13,5 @@
     <string name="shiyi_add_new_type">添加新类型</string>
     <string name="shiyi_settings_output_database">导出数据库到本地</string>
     <string name="accessibility_service_description">前往微信界面提取联系人</string>
+    <string name="accessibility_service_description_sign_in">签到吧 少年</string>
 </resources>

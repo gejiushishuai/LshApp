@@ -25,4 +25,5 @@
     <color name="bg_green_select">#43C118</color>
     <color name="bg_green_bt_normal">#43C118</color>
     <color name="bg_green_bt_pressed">#298409</color>
+    <color name="white">#FFF</color>
 </resources>

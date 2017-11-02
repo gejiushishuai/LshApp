@@ -14,6 +14,9 @@
         <item
             android:id="@+id/nav_huhu"
             android:title="呼呼"/>
+        <item
+            android:id="@+id/nav_yingmao"
+            android:title="应卯"/>
     </group>
 
     <item android:title="其他">
