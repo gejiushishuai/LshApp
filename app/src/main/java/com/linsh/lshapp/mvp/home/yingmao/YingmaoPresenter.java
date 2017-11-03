@@ -27,14 +27,6 @@ public class YingmaoPresenter extends BasePresenterImpl<YingmaoContract.View> im
 
     @Override
     protected void attachView() {
-        Client[] values = Client.values();
-        Disposable disposable = SignInHelper.checkSign(values)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(signIns -> {
-                    mSignIns = signIns;
-                    getView().setData(mSignIns);
-                });
-        addDisposable(disposable);
         Disposable disposable1 = RxBus.getDefault().toObservable(SignInEvent.class)
                 .subscribe(event -> {
                     String client = event.getClient();
@@ -54,6 +46,17 @@ public class YingmaoPresenter extends BasePresenterImpl<YingmaoContract.View> im
     @Override
     public void detachView() {
         super.detachView();
+    }
+
+    @Override
+    public void refreshData() {
+        Disposable disposable = SignInHelper.checkSign(Client.values())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(signIns -> {
+                    mSignIns = signIns;
+                    getView().setData(mSignIns);
+                });
+        addDisposable(disposable);
     }
 
     @Override

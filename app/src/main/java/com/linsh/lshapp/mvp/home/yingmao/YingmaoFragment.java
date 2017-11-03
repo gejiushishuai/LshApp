@@ -95,4 +95,10 @@ public class YingmaoFragment extends BaseMainFragment<YingmaoContract.Presenter>
     public void setData(List<SignIn> signIns) {
         mAdapter.setData(signIns);
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mPresenter.refreshData();
+    }
 }

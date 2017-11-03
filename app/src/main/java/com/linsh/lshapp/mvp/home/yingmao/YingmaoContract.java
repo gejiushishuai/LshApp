@@ -24,5 +24,7 @@ public interface YingmaoContract {
         void switchIgnore(SignIn signIn);
 
         void signInAll();
+
+        void refreshData();
     }
 }
