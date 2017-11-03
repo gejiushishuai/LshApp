@@ -46,6 +46,12 @@ public class SignInService4 extends AccessibilityService {
         }
     }
 
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        isWorking = true;
+    }
+
     /**
      * 监听窗口变化的回调
      */
@@ -63,7 +69,6 @@ public class SignInService4 extends AccessibilityService {
     @Override
     public void onInterrupt() {
         LshLogUtils.i("onInterrupt");
-        isWorking = true;
     }
 
     private void onStateChanged(AccessibilityEvent event) {
@@ -129,7 +134,7 @@ public class SignInService4 extends AccessibilityService {
                 if (className.equals("com.ct.client.MainActivity")) {
                     // 主页 -> 点击签到
                     mHandler.postDelayed(() -> {
-                        if (!error) {
+                        if (error) {
                             LshToastUtils.show("我好像找不到签到按钮了, 你自己来吧...");
                             return;
                         }
