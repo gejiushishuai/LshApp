@@ -148,7 +148,7 @@ public class SignInService4 extends AccessibilityService {
                         }
                     }, 1000);
                 } else if (className.equals("com.ct.client.common.webview.OnlineBusinessWebkitActivity")) {
-                    if (mHelper.findFirstNodeInfoByText("我的签到") != null) {
+                    if (mHelper.findFirstNodeInfoByText("我的签到") != null || mHelper.findFirstNodeInfoByText("签到送流量") != null) {
                         // 签到页
                         signIn.setState(SignIn.STATE_SIGNED);
                         updateSignInDb(signIn);
