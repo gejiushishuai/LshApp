@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'realm-android'
 
 android {
@@ -24,7 +23,7 @@ android {
     }
 
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.linsh.lshapp"
         minSdkVersion 16
@@ -47,13 +46,10 @@ android {
         }
     }
     // 控制打包apk的文件名
-    applicationVariants.all {
-        variant ->
-            variant.outputs.each { output ->
-                output.outputFile = new File(
-                        output.outputFile.parent,
-                        output.outputFile.name.replace(output.outputFile.name, "LshApp_" + "v${variant.versionName}") + ".apk")
-            }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "LshApp_v${variant.versionName}.apk"
+        }
     }
     compileOptions {
         targetCompatibility 1.8
