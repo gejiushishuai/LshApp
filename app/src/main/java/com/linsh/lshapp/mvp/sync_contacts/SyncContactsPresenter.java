@@ -10,16 +10,22 @@ import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Contacts;
 import com.github.tamir7.contacts.Event;
 import com.github.tamir7.contacts.PhoneNumber;
+import com.linsh.dialog.LshColorDialog;
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.module.SimpleDate;
+import com.linsh.utilseverywhere.BitmapUtils;
+import com.linsh.utilseverywhere.LogUtils;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableConsumer;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
-import com.linsh.lshapp.model.bean.db.ImageUrl;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.PersonDetail;
-import com.linsh.lshapp.model.bean.db.Type;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.ImageUrl;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.Type;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
 import com.linsh.lshapp.model.bean.http.HttpInfo;
 import com.linsh.lshapp.model.bean.http.UploadInfo;
 import com.linsh.lshapp.model.throwabes.CustomThrowable;
@@ -32,12 +38,6 @@ import com.linsh.lshapp.tools.LshIdTools;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.NameTool;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
-import com.linsh.lshutils.module.SimpleDate;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
-import com.linsh.lshutils.utils.Basic.LshLogUtils;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshBitmapUtils;
-import com.linsh.lshutils.view.LshColorDialog;
 
 import org.reactivestreams.Publisher;
 
@@ -77,7 +77,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                     public Publisher<TreeMap<String, ContactMixer>> apply(List<ContactsPerson> contactsPersons) throws Exception {
                         return LshRxUtils.create((FlowableOnSubscribe<TreeMap<String, ContactMixer>>) emitter -> {
 
-                            Contacts.initialize(LshApplicationUtils.getContext());
+                            Contacts.initialize(ContextUtils.get());
                             List<ShiyiContact> contacts = ContactMixer.getContacts();
                             TreeMap<String, ContactMixer> mixers = ContactMixer.mix(contactsPersons, contacts);
                             emitter.onNext(mixers);
@@ -165,7 +165,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
 
     private void linkToContact(ContactMixer mixer) {
         String personId = mixer.getContact().getPersonId();
-        if (LshStringUtils.isEmpty(personId)) {
+        if (StringUtils.isEmpty(personId)) {
             mContactsAdder.insertOrUpdatePersonId(mixer.getContact(), mixer.getPerson().getId());
         } else {
             mContactsAdder.insertOrUpdatePersonId(mixer.getContact(), mixer.getPerson().getId());
@@ -194,7 +194,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
 
     public void importFromContact(ContactMixer mixer) {
         getView().showLoadingDialog();
-        LshLogUtils.i("添加联系人");
+        LogUtils.i("添加联系人");
 
         ShiyiContact contact = mixer.getContact();
         Person person = getPerson(contact);
@@ -210,7 +210,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                         return LshRxUtils.create(new FlowableOnSubscribe<Boolean>() {
                             @Override
                             public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
-                                LshLogUtils.i("已经存在该联系人");
+                                LogUtils.i("已经存在该联系人");
                                 getView().dismissLoadingDialog();
                                 getView().showTextDialog("已经存在该联系人, 如果添加将会覆盖重复的属性", "添加", dialog -> {
                                     dialog.dismiss();
@@ -232,7 +232,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                     return LshRxUtils.create(new FlowableOnSubscribe<Boolean>() {
                         @Override
                         public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
-                            if (LshStringUtils.isEmpty(contact.getPhotoUri())) {
+                            if (StringUtils.isEmpty(contact.getPhotoUri())) {
                                 // 不上传
                                 emitter.onNext(false);
                             } else {
@@ -241,7 +241,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                                 getView().showTextDialog("是否继续上传该联系人的头像?", "上传", new LshColorDialog.OnPositiveListener() {
                                     @Override
                                     public void onClick(LshColorDialog dialog) {
-                                        LshLogUtils.i("上传头像");
+                                        LogUtils.i("上传头像");
                                         dialog.dismiss();
                                         getView().showLoadingDialog();
                                         emitter.onNext(true);
@@ -263,11 +263,11 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
                                 // 上传成功, 保存联系人
                                 .flatMap(imageUrl -> {
                                     if (imageUrl.getUrl() != null) {
-                                        LshLogUtils.i("上传头像成功, 保存联系人");
+                                        LogUtils.i("上传头像成功, 保存联系人");
                                         return ShiyiDbHelper.editPerson(getRealm(), person, imageUrl)
                                                 .map(personId -> true);
                                     }
-                                    LshLogUtils.i("上传头像失败");
+                                    LogUtils.i("上传头像失败");
                                     return Flowable.just(false);
                                 });
                     } else {
@@ -290,10 +290,10 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
         return LshRxUtils.create((FlowableOnSubscribe<ImageUrl>) emitter -> {
             // 判断是否有联系人头像
             String photoUri = contact.getPhotoUri();
-            if (LshStringUtils.notEmpty(photoUri)) {
+            if (StringUtils.notEmpty(photoUri)) {
                 try {
                     Uri uri = Uri.parse(contact.getPhotoUri());
-                    ContentResolver resolver = LshApplicationUtils.getContext().getContentResolver();
+                    ContentResolver resolver = ContextUtils.get().getContentResolver();
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, uri);
 
                     String avatarName = NameTool.getAvatarName(person.getName());
@@ -303,17 +303,17 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
 
                     if (bitmap.getByteCount() > 500 * 500) {
                         // 生成原图和缩略图
-                        if (LshBitmapUtils.saveBitmap(bitmap, avatarFile, true) && avatarFile.exists()) {
-                            LshBitmapUtils.compressBitmap(avatarFile, thumbFile, 256, 256, 50);
+                        if (BitmapUtils.saveBitmap(bitmap, avatarFile, true) && avatarFile.exists()) {
+                            BitmapUtils.compressBitmap(avatarFile, thumbFile, 256, 256, 50);
                         }
                     } else if (bitmap.getByteCount() > 256 * 256) {
                         // 生成缩略图
                         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
                         bitmap.recycle();
-                        LshBitmapUtils.saveBitmap(scaledBitmap, thumbFile, 50, true);
+                        BitmapUtils.saveBitmap(scaledBitmap, thumbFile, 50, true);
                     } else {
                         // 直接用作缩略图
-                        LshBitmapUtils.saveBitmap(bitmap, thumbFile, 50, true);
+                        BitmapUtils.saveBitmap(bitmap, thumbFile, 50, true);
                     }
 
                     ImageUrl imageUrl = new ImageUrl();
@@ -411,7 +411,7 @@ public class SyncContactsPresenter extends RealmPresenterImpl<SyncContactsContra
         }
         // 添加备注
         String note = contact.getNote();
-        if (!LshStringUtils.isEmpty(note)) {
+        if (!StringUtils.isEmpty(note)) {
             Type type = new Type(personId, "备注", types.size() + 1);
             types.add(type);
             type.getTypeDetails().add(new TypeDetail(type.getId(), type.getTypeDetails().size() + 1, note, null));

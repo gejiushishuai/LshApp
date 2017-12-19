@@ -2,10 +2,10 @@ package com.linsh.lshapp.tools;
 
 import android.os.Environment;
 
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.FileUtils;
+import com.linsh.utilseverywhere.IOUtils;
 import com.linsh.lshapp.common.LshConfig;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
-import com.linsh.lshutils.utils.Basic.LshFileUtils;
-import com.linsh.lshutils.utils.Basic.LshIOUtils;
 
 import java.io.File;
 
@@ -32,17 +32,17 @@ public class LshFileFactory {
     }
 
     private static File getCacheDir() {
-        File cacheDir = LshApplicationUtils.getContext().getExternalCacheDir();
+        File cacheDir = ContextUtils.get().getExternalCacheDir();
         if (cacheDir == null) {
-            cacheDir = LshApplicationUtils.getContext().getCacheDir();
+            cacheDir = ContextUtils.get().getCacheDir();
         }
         return cacheDir;
     }
 
     private static File getFileAir() {
-        File filesDir = LshApplicationUtils.getContext().getExternalFilesDir(null);
+        File filesDir = ContextUtils.get().getExternalFilesDir(null);
         if (filesDir == null) {
-            filesDir = LshApplicationUtils.getContext().getFilesDir();
+            filesDir = ContextUtils.get().getFilesDir();
         }
         return filesDir;
     }
@@ -54,26 +54,26 @@ public class LshFileFactory {
     }
 
     public static File getRealmFile() {
-        File file = new File(LshApplicationUtils.getContext().getFilesDir(), "realm/shiyi.realm");
+        File file = new File(ContextUtils.get().getFilesDir(), "realm/shiyi.realm");
         if (file.exists()) {
             if (!file.delete()) {
                 return file;
             }
         } else {
-            LshFileUtils.makeParentDirs(file);
+            FileUtils.makeParentDirs(file);
         }
         Realm realm = Realm.getDefaultInstance();
         realm.writeCopyTo(file);
-        LshIOUtils.close(realm);
+        IOUtils.close(realm);
         return file;
     }
 
     public static File getUploadAvatarFile(String id) {
-        return new File(LshApplicationUtils.getContext().getExternalCacheDir(), "avatar_" + id + ".jpg");
+        return new File(ContextUtils.get().getExternalCacheDir(), "avatar_" + id + ".jpg");
     }
 
     public static File getUploadThumbFile(String id) {
-        return new File(LshApplicationUtils.getContext().getExternalCacheDir(), "thumb_" + id + ".jpg");
+        return new File(ContextUtils.get().getExternalCacheDir(), "thumb_" + id + ".jpg");
     }
 
     /**
@@ -81,7 +81,7 @@ public class LshFileFactory {
      */
     public static String getLogFile(String fileName) {
         File file = new File(getAppDir(), "log/" + fileName);
-        LshFileUtils.makeParentDirs(file);
+        FileUtils.makeParentDirs(file);
         return file.getAbsolutePath();
     }
 
@@ -92,7 +92,7 @@ public class LshFileFactory {
     }
 
     private static void makeDir(File dir) {
-        LshFileUtils.makeDirs(dir);
+        FileUtils.makeDirs(dir);
     }
 
     public static File getApkDir() {

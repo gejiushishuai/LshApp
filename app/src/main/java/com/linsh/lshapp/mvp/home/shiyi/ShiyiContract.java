@@ -1,7 +1,7 @@
 package com.linsh.lshapp.mvp.home.shiyi;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
 
 import java.util.List;
 

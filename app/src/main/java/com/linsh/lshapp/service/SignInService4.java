@@ -10,14 +10,14 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.linsh.utilseverywhere.tools.AccessibilityHelper;
+import com.linsh.utilseverywhere.AppUtils;
+import com.linsh.utilseverywhere.LogUtils;
+import com.linsh.utilseverywhere.ScreenUtils;
+import com.linsh.utilseverywhere.ShellUtils;
+import com.linsh.utilseverywhere.ToastUtils;
 import com.linsh.lshapp.model.bean.SignIn;
 import com.linsh.lshapp.mvp.home.yingmao.SignInHelper;
-import com.linsh.lshutils.others.ShellUtils;
-import com.linsh.lshutils.tools.LshAccessibilityHelper;
-import com.linsh.lshutils.utils.Basic.LshLogUtils;
-import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.utils.LshAppUtils;
-import com.linsh.lshutils.utils.LshScreenUtils;
 
 import java.io.DataOutputStream;
 import java.io.Serializable;
@@ -27,7 +27,7 @@ import java.util.List;
 public class SignInService4 extends AccessibilityService {
 
     private Handler mHandler;
-    private LshAccessibilityHelper mHelper;
+    private AccessibilityHelper mHelper;
     private String lastPacName;
     private String lastClzName;
     private List<SignIn> mSignIns;
@@ -38,9 +38,9 @@ public class SignInService4 extends AccessibilityService {
 
     public void onCreate() {
         super.onCreate();
-        LshLogUtils.i("onCreate");
+        LogUtils.i("onCreate");
         if (mHelper == null) {
-            mHelper = new LshAccessibilityHelper(this);
+            mHelper = new AccessibilityHelper(this);
             mHandler = new Handler();
             isRoot = getRoot();
         }
@@ -68,7 +68,7 @@ public class SignInService4 extends AccessibilityService {
 
     @Override
     public void onInterrupt() {
-        LshLogUtils.i("onInterrupt");
+        LogUtils.i("onInterrupt");
     }
 
     private void onStateChanged(AccessibilityEvent event) {
@@ -94,13 +94,13 @@ public class SignInService4 extends AccessibilityService {
             //// 电信营业厅 ////
             case DianXinYYT:
                 if (className.equals("com.ct.client.MainActivity")) {
-                    LshToastUtils.show("点击 ->【签到送流量】");
+                    ToastUtils.show("点击 ->【签到送流量】");
                 } else if (className.equals("com.ct.client.common.webview.OnlineBusinessWebkitActivity")) {
                     if (mHelper.findFirstNodeInfoByText("我的签到") != null) {
                         // 签到页
                         signIn.setState(SignIn.STATE_SIGNED);
                         updateSignInDb(signIn);
-                        LshToastUtils.show("签到成功 (不成功的话请反馈!)");
+                        ToastUtils.show("签到成功 (不成功的话请反馈!)");
                         signInNextClient();
                     }
                 }
@@ -109,14 +109,14 @@ public class SignInService4 extends AccessibilityService {
             case CnMobile:
                 if (className.equals("com.leadeon.cmcc.view.tabs.AppTabFragment")) {
                     // 主页 -> 跳转签到页
-                    LshToastUtils.show("点击 ->【签到】悬浮窗");
+                    ToastUtils.show("点击 ->【签到】悬浮窗");
                 } else if (className.equals("com.leadeon.cmcc.view.mine.html5.CommonHtml5Activity")) {
                     // 签到页 -> 点击签到
                     if (mHelper.findFirstNodeInfoByText("成长值") != null) {
                         mHandler.postDelayed(() -> {
                             signIn.setState(SignIn.STATE_SIGNED);
                             updateSignInDb(signIn);
-                            LshToastUtils.show("签到成功 (不成功的话请反馈!)");
+                            ToastUtils.show("签到成功 (不成功的话请反馈!)");
                             signInNextClient();
                         }, 2000);
                     }
@@ -135,7 +135,7 @@ public class SignInService4 extends AccessibilityService {
                     // 主页 -> 点击签到
                     mHandler.postDelayed(() -> {
                         if (error) {
-                            LshToastUtils.show("我好像找不到签到按钮了, 你自己来吧...");
+                            ToastUtils.show("我好像找不到签到按钮了, 你自己来吧...");
                             return;
                         }
                         AccessibilityNodeInfo nodeInfo = mHelper.findFirstNodeInfoByViewId("com.ct.client:id/shan");
@@ -152,20 +152,20 @@ public class SignInService4 extends AccessibilityService {
                         // 签到页
                         signIn.setState(SignIn.STATE_SIGNED);
                         updateSignInDb(signIn);
-                        LshToastUtils.show("签到成功 (不成功的话请反馈!)");
+                        ToastUtils.show("签到成功 (不成功的话请反馈!)");
                         signInNextClient();
                     } else {
-                        LshToastUtils.show("等等... 是不是进错页面了?");
+                        ToastUtils.show("等等... 是不是进错页面了?");
                     }
                 } else if (className.equals("com.ct.client.SwitchUserActivity")) {
                     // 登陆页
                     signIn.setState(SignIn.STATE_UNSIGNED);
-                    LshToastUtils.show("等等... 好像需要登录!");
+                    ToastUtils.show("等等... 好像需要登录!");
                 } else if (className.equals("com.ct.client.common.webview.CommWebkitActivity")
                         || className.equals("com.ct.client.recharge.ltepackage.BuyLtePackageActivity")
                         || className.equals("com.hg.activity.HGProxyFragmentActivity")
                         || className.equals("com.hg.activity.HGProxyActivity")) {
-                    LshToastUtils.show("等等... 好像进错页面了!");
+                    ToastUtils.show("等等... 好像进错页面了!");
                     error = true;
                 }
                 break;
@@ -184,7 +184,7 @@ public class SignInService4 extends AccessibilityService {
                         mHandler.postDelayed(() -> {
                             Rect rect = new Rect();
                             nodeInfo.getBoundsInScreen(rect);
-                            LshLogUtils.i("点击签到悬浮窗");
+                            LogUtils.i("点击签到悬浮窗");
                             int x = rect.left + (rect.right - rect.left) / 2;
                             int y = rect.top + (rect.bottom - rect.top) / 2;
                             ShellUtils.execCmd("input tap " + x + " " + y, true);
@@ -194,19 +194,19 @@ public class SignInService4 extends AccessibilityService {
                     // 签到页 -> 点击签到
                     if (mHelper.findFirstNodeInfoByText("成长值") != null) {
                         mHandler.postDelayed(() -> {
-                            int x = LshScreenUtils.getScreenWidth() / 2;
-                            int y = LshScreenUtils.getScreenHeight() / 2;
+                            int x = ScreenUtils.getScreenWidth() / 2;
+                            int y = ScreenUtils.getScreenHeight() / 2;
                             ShellUtils.execCmd("input tap " + x + " " + y, true);
 
                             signIn.setState(SignIn.STATE_SIGNED);
                             updateSignInDb(signIn);
-                            LshToastUtils.show("签到成功 (不成功的话请反馈!)");
+                            ToastUtils.show("签到成功 (不成功的话请反馈!)");
                             signInNextClient();
                         }, 3000);
                     }
                 } else if (className.equals("com.leadeon.sdk.view.UserLoginActivity")) {
                     signIn.setState(SignIn.STATE_UNSIGNED);
-                    LshToastUtils.show("等等... 好像需要登录!");
+                    ToastUtils.show("等等... 好像需要登录!");
                 }
                 break;
             default:
@@ -237,7 +237,7 @@ public class SignInService4 extends AccessibilityService {
                 signIn(0);
             }
         } else {
-            LshToastUtils.show("服务启动失败, 请检查!");
+            ToastUtils.show("服务启动失败, 请检查!");
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -260,10 +260,10 @@ public class SignInService4 extends AccessibilityService {
             SignIn signIn = mSignIns.get(index);
             switch (signIn.getClient()) {
                 case DianXinYYT:
-                    LshAppUtils.launchApp("com.ct.client");
+                    AppUtils.launchApp("com.ct.client");
                     break;
                 case CnMobile:
-                    LshAppUtils.launchApp("com.greenpoint.android.mc10086.activity");
+                    AppUtils.launchApp("com.greenpoint.android.mc10086.activity");
                     break;
                 default:
                     break;

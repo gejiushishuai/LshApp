@@ -1,7 +1,7 @@
 package com.linsh.lshapp.mvp.type_detail;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
 
 /**
  * Created by Senh Linsh on 17/4/25.

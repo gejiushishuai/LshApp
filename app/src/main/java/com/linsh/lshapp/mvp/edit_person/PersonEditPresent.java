@@ -1,25 +1,25 @@
 package com.linsh.lshapp.mvp.edit_person;
 
+import com.linsh.dialog.LshColorDialog;
+import com.linsh.utilseverywhere.ImageUtils;
+import com.linsh.utilseverywhere.LogUtils;
+import com.linsh.utilseverywhere.RegexUtils;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.AsyncConsumer;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.ImageUrl;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.PersonAlbum;
-import com.linsh.lshapp.model.bean.db.PersonDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.ImageUrl;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonAlbum;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.NameTool;
-import com.linsh.lshutils.utils.Basic.LshLogUtils;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshImageUtils;
-import com.linsh.lshutils.utils.LshRegexUtils;
-import com.linsh.lshutils.view.LshColorDialog;
 
 import org.reactivestreams.Publisher;
 
@@ -147,9 +147,9 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                                 .create(new FlowableOnSubscribe<Boolean>() {
                                     @Override
                                     public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
-                                        LshLogUtils.i("生成缩略图");
+                                        LogUtils.i("生成缩略图");
                                         // 宽高 256*256  最大尺寸 50Kb
-                                        boolean success = LshImageUtils.compressImage(avatarFile, thumbFile, 256, 256, 50);
+                                        boolean success = ImageUtils.compressImage(avatarFile, thumbFile, 256, 256, 50);
                                         if (success) {
                                             emitter.onNext(true);
                                         } else {
@@ -161,7 +161,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                                 .subscribeOn(Schedulers.io())
                                 // 上传缩略图
                                 .flatMap(success -> {
-                                    LshLogUtils.i("上传缩略图");
+                                    LogUtils.i("上传缩略图");
                                     return UrlConnector.uploadThumb(thumbName, thumbFile)
                                             .map(uploadInfoHttpInfo -> {
                                                 String[] url = new String[2];
@@ -171,7 +171,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                                 })
                                 // 上传头像
                                 .flatMap(url -> {
-                                    LshLogUtils.i("上传头像");
+                                    LogUtils.i("上传头像");
                                     return UrlConnector.uploadAvatar(avatarName, avatarFile)
                                             .map(uploadInfoHttpInfo -> {
                                                 url[0] = uploadInfoHttpInfo.data.source_url;
@@ -183,7 +183,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
                 .observeOn(AndroidSchedulers.mainThread())
                 // 保存联系人
                 .flatMap(url -> {
-                    LshLogUtils.i("保存联系人");
+                    LogUtils.i("保存联系人");
                     return getSavePersonObservable(group, name, desc, url[0], url[1], sex, sync);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -203,7 +203,7 @@ public class PersonEditPresent extends RealmPresenterImpl<PersonEditContract.Vie
 
     private Flowable<String> getSavePersonObservable(String group, String name, String desc, String avatarUrl, String avatarThumbUrl, String sex, boolean sync) {
         ImageUrl imageUrl = null;
-        if (!LshStringUtils.isEmpty(avatarUrl) && LshRegexUtils.isURL(avatarUrl)) {
+        if (!StringUtils.isEmpty(avatarUrl) && RegexUtils.isURL(avatarUrl)) {
             imageUrl = new ImageUrl(avatarUrl, avatarThumbUrl);
         }
         if (mPerson == null) {

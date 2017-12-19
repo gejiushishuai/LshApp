@@ -23,7 +23,7 @@ import android.content.IntentFilter;
 import android.os.Environment;
 import android.os.StatFs;
 
-import com.linsh.lshutils.utils.LshPhoneStateUtils;
+import com.linsh.utilseverywhere.PhoneStateUtils;
 import com.tencent.tinker.lib.util.TinkerLog;
 import com.tencent.tinker.loader.shareutil.ShareConstants;
 
@@ -55,7 +55,7 @@ public class TinkerUtils {
     public static final int MIN_MEMORY_HEAP_SIZE = 45;
 
     public static boolean isBackground() {
-        return LshPhoneStateUtils.isScreenLocked();
+        return PhoneStateUtils.isScreenLocked();
     }
 
     public static int checkForPatchRecover(long roomSize, int maxMemory) {

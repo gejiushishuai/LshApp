@@ -1,9 +1,9 @@
 package com.linsh.lshapp.mvp.home.yingmao;
 
+import com.linsh.utilseverywhere.module.SimpleDate;
 import com.linsh.lshapp.model.bean.Client;
 import com.linsh.lshapp.model.bean.SignIn;
 import com.linsh.lshapp.tools.SharedPreferenceTools;
-import com.linsh.lshutils.module.SimpleDate;
 
 import java.util.ArrayList;
 import java.util.List;

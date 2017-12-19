@@ -2,15 +2,15 @@ package com.linsh.lshapp.mvp.home.yingmao;
 
 import android.content.Intent;
 
+import com.linsh.utilseverywhere.AccessibilityUtils;
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.LogUtils;
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.base.BasePresenterImpl;
 import com.linsh.lshapp.model.bean.Client;
 import com.linsh.lshapp.model.bean.SignIn;
 import com.linsh.lshapp.model.event.SignInEvent;
 import com.linsh.lshapp.service.SignInService4;
-import com.linsh.lshutils.utils.Basic.LshLogUtils;
-import com.linsh.lshutils.utils.LshAccessibilityUtils;
-import com.linsh.lshutils.utils.LshContextUtils;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class YingmaoPresenter extends BasePresenterImpl<YingmaoContract.View> im
         Disposable disposable1 = RxBus.getDefault().toObservable(SignInEvent.class)
                 .subscribe(event -> {
                     String client = event.getClient();
-                    LshLogUtils.i("刷新签到成功状态", client);
+                    LogUtils.i("刷新签到成功状态", client);
                     for (SignIn in : mSignIns) {
                         if (in.getClient().name().equals(client)) {
                             in.setState(event.getState());
@@ -61,10 +61,10 @@ public class YingmaoPresenter extends BasePresenterImpl<YingmaoContract.View> im
 
     @Override
     public void signIn(SignIn signIn) {
-        if (LshAccessibilityUtils.checkAccessibility()) {
-            Intent intent = new Intent(LshContextUtils.get(), SignInService4.class)
+        if (AccessibilityUtils.checkAccessibility()) {
+            Intent intent = new Intent(ContextUtils.get(), SignInService4.class)
                     .putExtra("sign_in", signIn);
-            LshContextUtils.startService(intent);
+            ContextUtils.startService(intent);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.linsh.lshapp.model.result;
 
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
+
+import com.linsh.utilseverywhere.StringUtils;
 
 /**
  * Created by Senh Linsh on 17/5/4.
@@ -18,7 +19,7 @@ public class Result {
     }
 
     public boolean isEmpty() {
-        return LshStringUtils.isEmpty(message);
+        return StringUtils.isEmpty(message);
     }
 
     public String getMessage() {

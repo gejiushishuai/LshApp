@@ -3,7 +3,8 @@ package com.linsh.lshapp.base;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.linsh.lshutils.view.LshColorDialog;
+import com.linsh.dialog.LshColorDialog;
+
 
 /**
  * Created by Senh Linsh on 17/4/25.

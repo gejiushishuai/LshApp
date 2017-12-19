@@ -1,8 +1,8 @@
 package com.linsh.lshapp.mvp.edit_person;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
 
 import java.io.File;
 import java.util.List;

@@ -1,15 +1,15 @@
 package com.linsh.lshapp.tools;
 
+import com.linsh.utilseverywhere.ArrayUtils;
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.model.action.AsyncConsumer;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.Shiyi;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.Shiyi;
 import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
-import com.linsh.lshutils.utils.LshArrayUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +72,7 @@ public class ImportWechatHelper {
                 }
             }
         }
-        String[] names = LshArrayUtils.toArray(list, new String[list.size()]);
+        String[] names = ArrayUtils.toArray(list, String.class);
         Flowable.fromArray(names)
                 // 匹配名字
                 .flatMap(eachName -> LshRxUtils.getAsyncFlowable((AsyncConsumer<List<Person>>) (realm, emitter) -> {

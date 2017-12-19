@@ -14,9 +14,9 @@ import com.linsh.lshapp.task.network.api.CommonApi;
 import com.linsh.lshapp.task.network.api.DirService;
 import com.linsh.lshapp.task.network.api.FileService;
 import com.linsh.lshapp.tools.LshFileFactory;
-import com.linsh.lshutils.module.unit.FileSize;
-import com.linsh.lshutils.utils.Basic.LshFileUtils;
-import com.linsh.lshutils.utils.LshTimeUtils;
+import com.linsh.utilseverywhere.DateUtils;
+import com.linsh.utilseverywhere.FileUtils;
+import com.linsh.utilseverywhere.module.unit.FileSize;
 
 import java.io.File;
 
@@ -39,7 +39,7 @@ public class UrlConnector {
     private static Flowable<HttpInfo<UploadInfo>> uploadFile(String dirName, String fileName, File file) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
-        if (LshFileUtils.getFileSize(file, FileSize.MB) < 20) {
+        if (FileUtils.getFileSize(file, FileSize.MB) < 20) {
             return RetrofitHelper.createApi(FileService.class, QCloudConfig.HOST)
                     .upload(QcloudSignCreater.getPeriodSign(dirName + "/" + fileName), dirName, fileName, "upload", 1, requestBody)
                     .subscribeOn(Schedulers.io())
@@ -85,7 +85,7 @@ public class UrlConnector {
 
     public static Flowable<HttpInfo<UploadInfo>> uploadRealmData() {
         File file = LshFileFactory.getRealmFile();
-        String time = LshTimeUtils.getTimeString(System.currentTimeMillis(), "yyyyMMdd_HHmmss");
+        String time = DateUtils.format(System.currentTimeMillis(), "yyyyMMdd_HHmmss");
         String fileName = "shiyi_" + time + (BuildConfig.DEBUG ? "_debug" : "") + ".realm";
         String dirName = BuildConfig.DEBUG ? "shiyi/realm/debug" : "shiyi/realm";
         RequestBody.create(MediaType.parse("multipart/form-data"), file);

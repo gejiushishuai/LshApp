@@ -8,12 +8,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.linsh.utilseverywhere.AppUtils;
+import com.linsh.utilseverywhere.LogUtils;
 import com.linsh.lshapp.lib.qcloud.QcloudSignCreater;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshutils.tools.LshDownloadManager;
-import com.linsh.lshutils.utils.Basic.LshLogUtils;
-import com.linsh.lshutils.utils.LshActivityLifecycleUtils;
-import com.linsh.lshutils.utils.LshAppUtils;
 
 import java.io.File;
 
@@ -41,7 +40,7 @@ public class UpdateService extends Service {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                LshLogUtils.i("UpdateService - BroadcastReceiver - onReceive");
+                LogUtils.i("UpdateService - BroadcastReceiver - onReceive");
                 long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
                 if (id == mId) {
                     installApk();
@@ -52,7 +51,7 @@ public class UpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        LshLogUtils.i("onStartCommand");
+        LogUtils.i("onStartCommand");
         String url = intent.getStringExtra(EXTRA_URL);
         String fileName = UrlConnector.getFileNameFromUrl(url);
         mId = mManager.buildRequest(url, fileName)
@@ -68,10 +67,10 @@ public class UpdateService extends Service {
     }
 
     private void installApk() {
-        LshLogUtils.i("installApk");
+        LogUtils.i("installApk");
         File file = LshDownloadManager.getFileIfDownloaded(mId);
         if (file != null && file.exists() && file.getName().endsWith(".apk")) {
-            LshAppUtils.installApk(file);
+            AppUtils.installApk(file);
         }
     }
 

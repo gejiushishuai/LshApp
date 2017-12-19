@@ -1,5 +1,13 @@
 include ':app'
-include ':LshUtils'
 
+include ':Utils-Everywhere'
+project(':Utils-Everywhere').projectDir = new File('../LshLibrary/Utils-Everywhere/')
+include ':Utils-Everywhere:utils'
+
+include ':LshUtils'
 project(':LshUtils').projectDir = new File('../LshLibrary/LshUtils/')
 include ':LshUtils:lshutils'
+
+include ':LshViews'
+project(':LshViews').projectDir = new File('../LshLibrary/LshViews/')
+include ':LshViews:lshviews'

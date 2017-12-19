@@ -6,8 +6,8 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.linsh.utilseverywhere.KeyboardUtils;
 import com.linsh.lshapp.tools.LshActivityStatusTool;
-import com.linsh.lshutils.utils.LshKeyboardUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -82,7 +82,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         mStatusTool.onDestroy();
         // 关闭键盘
-        LshKeyboardUtils.clearFocusAndHideKeyboard(this);
+        KeyboardUtils.clearFocusAndHideKeyboard(this);
     }
 
     public LshActivityStatusTool getStatus() {

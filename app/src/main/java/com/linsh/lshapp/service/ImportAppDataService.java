@@ -6,12 +6,12 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.linsh.utilseverywhere.tools.AccessibilityHelper;
+import com.linsh.utilseverywhere.RegexUtils;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.Rx.RxBus;
 import com.linsh.lshapp.tools.FloatingViewManager;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
-import com.linsh.lshutils.tools.LshAccessibilityHelper;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshRegexUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class ImportAppDataService extends AccessibilityService {
     public static final String COMMAND_OPEN = "COMMAND_OPEN";
 
     private FloatingViewManager mFloatingViewManager;
-    private LshAccessibilityHelper mHelper;
+    private AccessibilityHelper mHelper;
     private String curName;
 
     public void onCreate() {
@@ -33,7 +33,7 @@ public class ImportAppDataService extends AccessibilityService {
             mFloatingViewManager.setView(new ImportWechatFloatingView(this));
         }
         if (mHelper == null) {
-            mHelper = new LshAccessibilityHelper(this);
+            mHelper = new AccessibilityHelper(this);
         }
     }
 
@@ -91,7 +91,7 @@ public class ImportAppDataService extends AccessibilityService {
                     }
                 }
             }
-            if (LshStringUtils.isNotAllEmpty(curName)) {
+            if (StringUtils.isNotAllEmpty(curName)) {
                 RxBus.getDefault().post(new WechatContactEvent(curName, types));
             }
         } else if (className.equals("com.tencent.mobileqq.activity.FriendProfileCardActivity")) {
@@ -119,7 +119,7 @@ public class ImportAppDataService extends AccessibilityService {
                     }
                 }
             }
-            if (LshStringUtils.isNotAllEmpty(curName)) {
+            if (StringUtils.isNotAllEmpty(curName)) {
                 RxBus.getDefault().post(new WechatContactEvent(curName, types));
             }
         } else if (className.equals("com.alibaba.android.user.profile.v2.UserProfileActivity")) {
@@ -145,7 +145,7 @@ public class ImportAppDataService extends AccessibilityService {
                     if (text.contains("邮箱")) {
                         if (i + 1 < allTexts.size()) {
                             String email = allTexts.get(i + 1);
-                            if (LshRegexUtils.isEmail(email)) {
+                            if (RegexUtils.isEmail(email)) {
                                 types.add(new Type("邮箱", email));
                             }
                         }
@@ -160,7 +160,7 @@ public class ImportAppDataService extends AccessibilityService {
                     }
                 }
             }
-            if (LshStringUtils.isNotAllEmpty(curName)) {
+            if (StringUtils.isNotAllEmpty(curName)) {
                 RxBus.getDefault().post(new WechatContactEvent(curName, types));
             }
         } else {

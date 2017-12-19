@@ -2,13 +2,13 @@ package com.linsh.lshapp.tools;
 
 import android.content.Intent;
 
+import com.linsh.utilseverywhere.AppUtils;
 import com.linsh.lshapp.base.BaseContract;
 import com.linsh.lshapp.model.action.HttpThrowableConsumer;
 import com.linsh.lshapp.model.bean.http.UpdateInfo;
 import com.linsh.lshapp.service.UpdateService;
 import com.linsh.lshapp.task.network.UrlConnector;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
-import com.linsh.lshutils.utils.LshAppUtils;
+import com.linsh.utilseverywhere.ContextUtils;
 import com.tencent.tinker.lib.tinker.TinkerInstaller;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ public class VersionChecker {
                         UpdateInfo.ApkBean apk = httpInfo.data.apk;
                         if (apk.version != null) {
                             // 判断如果有新版本的 APK, 则安装 APK
-                            if (apk.version.compareTo(LshAppUtils.getVersionName()) > 0) {
+                            if (apk.version.compareTo(AppUtils.getVersionName()) > 0) {
                                 view.showTextDialog("存在新版本, 是否下载新版本?", "下载", dialog -> {
                                     dialog.dismiss();
                                     view.showToast("正在下载新版本...");
@@ -42,12 +42,12 @@ public class VersionChecker {
                             } else {
                                 // 如果没有新版本 APK, 则判断是否需要升级补丁
                                 Map<String, UpdateInfo.ApkBean> patches = httpInfo.data.patchs;
-                                UpdateInfo.ApkBean patch = patches.get(LshAppUtils.getVersionName());
-                                if (patch != null && patch.version.compareTo(LshAppUtils.getVersionName()) > 0) {
+                                UpdateInfo.ApkBean patch = patches.get(AppUtils.getVersionName());
+                                if (patch != null && patch.version.compareTo(AppUtils.getVersionName()) > 0) {
                                     view.showToast("正在进行补丁升级...");
                                     UrlConnector.downloadPatch(patch.url)
                                             .subscribe(file -> {
-                                                TinkerInstaller.onReceiveUpgradePatch(LshApplicationUtils.getContext(), file.getAbsolutePath());
+                                                TinkerInstaller.onReceiveUpgradePatch(ContextUtils.get(), file.getAbsolutePath());
                                             }, new HttpThrowableConsumer());
                                 } else {
                                     view.showToast("暂无更新");

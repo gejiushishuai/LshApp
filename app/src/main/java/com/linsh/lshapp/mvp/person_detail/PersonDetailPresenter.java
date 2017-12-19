@@ -1,15 +1,15 @@
 package com.linsh.lshapp.mvp.person_detail;
 
+import com.linsh.utilseverywhere.LogUtils;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.DismissLoadingThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.PersonAlbum;
-import com.linsh.lshapp.model.bean.db.PersonDetail;
-import com.linsh.lshapp.model.bean.db.TypeLabel;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonAlbum;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
-import com.linsh.lshutils.utils.Basic.LshLogUtils;
 
 import java.util.List;
 
@@ -48,9 +48,9 @@ public class PersonDetailPresenter extends RealmPresenterImpl<PersonDetailContra
 
         PersonAlbum personAlbum = getRealm().where(PersonAlbum.class).equalTo("id", getView().getPersonId()).findFirst();
         if (personAlbum != null) {
-            LshLogUtils.i("personAlbum size = " + personAlbum.getAvatars().size());
+            LogUtils.i("personAlbum size = " + personAlbum.getAvatars().size());
         } else {
-            LshLogUtils.i("personAlbum = null");
+            LogUtils.i("personAlbum = null");
         }
     }
 

@@ -3,7 +3,7 @@ package com.linsh.lshapp.mvp.edit_type;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
-import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import java.util.List;

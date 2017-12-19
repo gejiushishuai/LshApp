@@ -1,7 +1,7 @@
 package com.linsh.lshapp.model.action;
 
+import com.linsh.utilseverywhere.ToastUtils;
 import com.linsh.lshapp.tools.HttpErrorCatcher;
-import com.linsh.lshutils.utils.Basic.LshToastUtils;
 
 import io.reactivex.functions.Consumer;
 
@@ -19,6 +19,6 @@ public class HttpThrowableConsumer implements Consumer<Throwable> {
 
     public static void showThrowableMsg(Throwable throwable) {
         throwable.printStackTrace();
-        LshToastUtils.show(HttpErrorCatcher.dispatchError(throwable));
+        ToastUtils.show(HttpErrorCatcher.dispatchError(throwable));
     }
 }

@@ -11,9 +11,9 @@ import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.result.SearchResult;
 import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshActivityUtils;
+import com.linsh.utilseverywhere.HandlerUtils;
+import com.linsh.utilseverywhere.IntentUtils;
+import com.linsh.utilseverywhere.StringUtils;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
             @Override
             public void onItemClick(int position) {
                 SearchResult searchResult = mAdapter.getData().get(position);
-                LshActivityUtils.newIntent(PersonDetailActivity.class)
+                IntentUtils.buildIntent(PersonDetailActivity.class)
                         .putExtra(searchResult.personId)
                         .startActivity(getActivity());
             }
@@ -84,9 +84,9 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
             @Override
             public boolean onQueryTextChange(String newText) {
                 curNewText = newText;
-                LshApplicationUtils.removeRunnable(mRunnable);
-                if (LshStringUtils.notEmpty(curNewText)) {
-                    LshApplicationUtils.postRunnable(mRunnable, 500);
+                HandlerUtils.removeRunnable(mRunnable);
+                if (StringUtils.notEmpty(curNewText)) {
+                    HandlerUtils.postRunnable(mRunnable, 500);
                 }
                 return true;
             }

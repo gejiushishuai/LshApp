@@ -1,7 +1,7 @@
 package com.linsh.lshapp.model.transfer;
 
+import com.linsh.utilseverywhere.IOUtils;
 import com.linsh.lshapp.tools.LshRxUtils;
-import com.linsh.lshutils.utils.Basic.LshIOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,7 +66,7 @@ public class FileProgressTransfer implements Function<ResponseBody, Flowable<Flo
             }
             fos.flush();
         } finally {
-            LshIOUtils.close(response, is, fos);
+            IOUtils.close(is, fos);
         }
     }
 }

@@ -5,13 +5,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.linsh.utilseverywhere.ResourceUtils;
+import com.linsh.utilseverywhere.StringUtils;
+import com.linsh.utilseverywhere.UnitConverseUtils;
 import com.linsh.lshapp.R;
-import com.linsh.lshapp.model.bean.db.Type;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.Type;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
 import com.linsh.lshutils.adapter.LshNestedDataRcvAdapter;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshResourceUtils;
-import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
 /**
  * Created by Senh Linsh on 17/4/28.
@@ -55,13 +55,13 @@ public class PersonDetailAdapter extends LshNestedDataRcvAdapter<Type, PersonDet
         holder.tvName.setText(type.getName());
         holder.tvName.setVisibility(hideName ? View.INVISIBLE : View.VISIBLE);
         int leftMargin = 0;
-        if (hideName) leftMargin = LshUnitConverseUtils.dp2px(100);
+        if (hideName) leftMargin = UnitConverseUtils.dp2px(100);
         ((LinearLayout.LayoutParams) holder.vDivider.getLayoutParams()).setMargins(leftMargin, 0, 0, 0);
 
         String detail = typeDetail.getDetail();
-        boolean empty = LshStringUtils.isEmpty(detail);
+        boolean empty = StringUtils.isEmpty(detail);
         holder.tvInfo.setText(empty ? "未填写" : detail);
-        holder.tvInfo.setTextColor(LshResourceUtils.getColor(empty ? R.color.color_text_disabled : R.color.text_title));
+        holder.tvInfo.setTextColor(ResourceUtils.getColor(empty ? R.color.color_text_disabled : R.color.text_title));
 
         holder.tvDetail.setText(typeDetail.getDescribe());
     }

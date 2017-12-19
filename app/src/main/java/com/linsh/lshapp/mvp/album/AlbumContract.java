@@ -1,7 +1,7 @@
 package com.linsh.lshapp.mvp.album;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.bean.db.PersonAlbum;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonAlbum;
 
 /**
  * Created by Senh Linsh on 17/4/25.

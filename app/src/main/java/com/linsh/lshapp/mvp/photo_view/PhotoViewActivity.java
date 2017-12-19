@@ -6,10 +6,10 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseViewActivity;
 import com.linsh.lshutils.adapter.LshViewPagerAdapter;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,7 @@ public class PhotoViewActivity extends BaseViewActivity<PhotoViewContract.Presen
     @Override
     protected void initView() {
         String url = getIntent().getStringExtra(EXTRA_URL);
-        if (LshStringUtils.notEmpty(url)) {
+        if (StringUtils.notEmpty(url)) {
             mUrls.add(url);
         } else {
             String[] extras = getIntent().getStringArrayExtra(EXTRA_URL_ARRAY_LIST);

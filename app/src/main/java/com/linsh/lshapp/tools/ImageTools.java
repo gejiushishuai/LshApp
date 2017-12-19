@@ -9,11 +9,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.RegexUtils;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.lib.qcloud.QcloudSignCreater;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshRegexUtils;
 
 import java.io.File;
 
@@ -24,7 +24,7 @@ import java.io.File;
 public class ImageTools {
 
     public static RequestManager getGlide() {
-        return Glide.with(LshApplicationUtils.getContext());
+        return Glide.with(ContextUtils.get());
     }
 
     public static DrawableTypeRequest<GlideUrl> getGlide(String url) {
@@ -32,7 +32,7 @@ public class ImageTools {
                 .addHeader("Authorization", QcloudSignCreater.getDownLoadSign(getCosPathFromUrl(url)));
         GlideUrl glideUrl = new GlideUrl(url, headerBuilder.build());
 
-        return Glide.with(LshApplicationUtils.getContext())
+        return Glide.with(ContextUtils.get())
                 .load(glideUrl);
     }
 
@@ -41,7 +41,7 @@ public class ImageTools {
     }
 
     public static void setThumb(ImageView imageView, String thumbUrl, String ImageUrl, int placeholder, int error) {
-        String url = LshStringUtils.isEmpty(thumbUrl) ? ImageUrl : thumbUrl;
+        String url = StringUtils.isEmpty(thumbUrl) ? ImageUrl : thumbUrl;
         setImage(imageView, url, placeholder, error);
     }
 
@@ -52,7 +52,7 @@ public class ImageTools {
     public static void setImage(ImageView imageView, String url, int placeholder, int error) {
         if (imageView == null) return;
 
-        if (LshStringUtils.isEmpty(url)) {
+        if (StringUtils.isEmpty(url)) {
             setImage(imageView, error);
             return;
         }
@@ -63,7 +63,7 @@ public class ImageTools {
             GlideUrl glideUrl = new GlideUrl(url, headerBuilder.build());
 
             DrawableRequestBuilder<GlideUrl> builder =
-                    Glide.with(LshApplicationUtils.getContext())
+                    Glide.with(ContextUtils.get())
                             .load(glideUrl)
                             .dontAnimate();
             if (placeholder > 0) {
@@ -88,7 +88,7 @@ public class ImageTools {
         }
 
         try {
-            Glide.with(LshApplicationUtils.getContext()).load(file).into(imageView);
+            Glide.with(ContextUtils.get()).load(file).into(imageView);
         } catch (Exception e) {
             e.printStackTrace();
             setImage(imageView, R.drawable.ic_default_image);
@@ -96,11 +96,11 @@ public class ImageTools {
     }
 
     public static void setImage(ImageView imageView, int res) {
-        Glide.with(LshApplicationUtils.getContext()).load(res).into(imageView);
+        Glide.with(ContextUtils.get()).load(res).into(imageView);
     }
 
     public static void setImage(ImageView imageView, Uri uri) {
-        Glide.with(LshApplicationUtils.getContext()).load(uri).into(imageView);
+        Glide.with(ContextUtils.get()).load(uri).into(imageView);
     }
 
     // 加载头像, 优先使用缩略图, 默认设置了 Loading 和 Error 的图片
@@ -118,6 +118,6 @@ public class ImageTools {
     }
 
     public static boolean isImageUrl(String url) {
-        return LshStringUtils.notEmpty(url) && LshRegexUtils.isURL(url);
+        return StringUtils.notEmpty(url) && RegexUtils.isURL(url);
     }
 }

@@ -1,14 +1,14 @@
 package com.linsh.lshapp.mvp.home.shiyi;
 
+import com.linsh.dialog.LshColorDialog;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.action.NothingConsumer;
-import com.linsh.lshapp.model.bean.db.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
-import com.linsh.lshutils.view.LshColorDialog;
 
 import java.util.List;
 

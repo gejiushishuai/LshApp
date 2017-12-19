@@ -5,12 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.linsh.dialog.LshColorDialog;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.Typable;
 import com.linsh.lshutils.tools.LshItemDragHelper;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.view.LshColorDialog;
+import com.linsh.utilseverywhere.tools.IntentBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +34,7 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @Override
     protected String getToolbarTitle() {
-        int intExtra = LshActivityUtils.getIntExtra(getActivity());
+        int intExtra = IntentBuilder.getIntExtra(getActivity());
         if (intExtra == MANAGER_PERSON_TYPES) {
             return "管理联系人类型";
         } else if (intExtra == MANAGER_GROUPS) {
@@ -46,7 +46,7 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @Override
     protected TypeEditContract.Presenter initPresenter() {
-        int intExtra = LshActivityUtils.getIntExtra(getActivity());
+        int intExtra = IntentBuilder.getIntExtra(getActivity());
         if (intExtra == MANAGER_PERSON_TYPES) {
             return new EditPersonTypePresenter();
         } else if (intExtra == MANAGER_GROUPS) {
@@ -73,7 +73,7 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @Override
     public String getPersonId() {
-        return LshActivityUtils.getStringExtra(getActivity());
+        return IntentBuilder.getStringExtra(getActivity());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.linsh.lshapp.model.transfer;
 
-import com.linsh.lshutils.utils.Basic.LshIOUtils;
+
+import com.linsh.utilseverywhere.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,7 +62,7 @@ public class FileTransfer implements Function<ResponseBody, Flowable<File>> {
             fos.flush();
             emitter.onNext(destFile);
         } finally {
-            LshIOUtils.close(response, is, fos);
+            IOUtils.close(response, is, fos);
         }
     }
 }

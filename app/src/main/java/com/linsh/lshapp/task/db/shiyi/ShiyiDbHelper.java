@@ -1,27 +1,27 @@
 package com.linsh.lshapp.task.db.shiyi;
 
+import com.linsh.utilseverywhere.module.SimpleDate;
+import com.linsh.utilseverywhere.RegexUtils;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.model.action.AsyncConsumer;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.ImageUrl;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.PersonAlbum;
-import com.linsh.lshapp.model.bean.db.PersonDetail;
-import com.linsh.lshapp.model.bean.db.Shiyi;
-import com.linsh.lshapp.model.bean.db.Type;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
-import com.linsh.lshapp.model.bean.db.TypeLabel;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.ImageUrl;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonAlbum;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.Shiyi;
+import com.linsh.lshapp.model.bean.db.shiyi.Type;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
 import com.linsh.lshapp.model.throwabes.CustomThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnemptyGroupThrowable;
 import com.linsh.lshapp.model.throwabes.DeleteUnnameGroupThrowable;
 import com.linsh.lshapp.mvp.sync_contacts.ContactMixer;
 import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.ShiyiModelHelper;
-import com.linsh.lshutils.module.SimpleDate;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshRegexUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -435,7 +435,7 @@ public class ShiyiDbHelper {
                     // 更新 Person
                     realm.copyToRealmOrUpdate(person);
                     // 在相册中保存头像
-                    if (avatar != null && !LshStringUtils.isEmpty(avatar.getUrl()) && LshRegexUtils.isURL(avatar.getUrl())) {
+                    if (avatar != null && !StringUtils.isEmpty(avatar.getUrl()) && RegexUtils.isURL(avatar.getUrl())) {
                         PersonAlbum personAlbum = realm.where(PersonAlbum.class).equalTo("id", person.getId()).findFirst();
                         if (personAlbum == null) {
                             personAlbum = realm.copyToRealm(new PersonAlbum(person.getId()));
@@ -548,7 +548,7 @@ public class ShiyiDbHelper {
             protected void execute(Realm realm, FlowableEmitter<? super String> emitter) {
                 // 没有指定组名, 则保存在"未分组"分组里面
                 String groupName = group;
-                if (LshStringUtils.isEmpty(groupName)) {
+                if (StringUtils.isEmpty(groupName)) {
                     groupName = ShiyiModelHelper.UNNAME_GROUP_NAME;
                 }
                 Group realmGroup = realm.where(Group.class).equalTo("name", groupName).findFirst();
@@ -587,10 +587,10 @@ public class ShiyiDbHelper {
                     person.setId(realmPerson.getId());
                     personDetail.setId(realmPerson.getId());
                     // 覆盖添加 Person 字段
-                    if (LshStringUtils.isEmpty(person.getDescribe())) {
+                    if (StringUtils.isEmpty(person.getDescribe())) {
                         realmPerson.setDescribe(person.getDescribe());
                     }
-                    if (!LshStringUtils.isEmpty(person.getAvatar())) {
+                    if (!StringUtils.isEmpty(person.getAvatar())) {
                         realmPerson.setAvatar(person.getAvatar(), person.getAvatarThumb());
                     }
                     if (person.getIntGender() != 0) {

@@ -6,19 +6,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.linsh.dialog.LshColorDialog;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
 import com.linsh.lshapp.mvp.edit_person.PersonEditActivity;
 import com.linsh.lshapp.mvp.edit_type.TypeEditActivity;
 import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.view.LshColorDialog;
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.IntentUtils;
+import com.linsh.utilseverywhere.StringUtils;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     @Override
     protected void initView(View view) {
         mRcv = (RecyclerView) view.findViewById(R.id.rcv_shiyi_content);
-        mRcv.setLayoutManager(new LinearLayoutManager(LshApplicationUtils.getContext()));
+        mRcv.setLayoutManager(new LinearLayoutManager(ContextUtils.get()));
         mShiyiAdapter = new ShiyiAdapter();
         mRcv.setAdapter(mShiyiAdapter);
 
@@ -70,7 +70,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
 
             @Override
             public void onSecondLevelItemClick(Person SecondLevelData, int firstLevelPosition, int secondLevelPosition) {
-                LshActivityUtils.newIntent(PersonDetailActivity.class)
+                IntentUtils.buildIntent(PersonDetailActivity.class)
                         .putExtra(SecondLevelData.getId())
                         .startActivityForResult(getActivity(), 101);
             }
@@ -109,7 +109,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
     }
 
     private void startManageGroupActivity() {
-        LshActivityUtils.newIntent(TypeEditActivity.class)
+        IntentUtils.buildIntent(TypeEditActivity.class)
                 .putExtra(TypeEditActivity.MANAGER_GROUPS)
                 .startActivity(getActivity());
     }
@@ -123,7 +123,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         String newGroupName = inputText.trim();
-                        if (!LshStringUtils.isTrimEmpty(newGroupName)) {
+                        if (!StringUtils.isTrimEmpty(newGroupName)) {
                             dialog.dismiss();
                             mPresenter.addGroup(newGroupName);
                         }
@@ -142,7 +142,7 @@ public class ShiyiFragment extends BaseMainFragment<ShiyiContract.Presenter> imp
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         String newGroupName = inputText.trim();
-                        if (!LshStringUtils.isTrimEmpty(newGroupName)) {
+                        if (!StringUtils.isTrimEmpty(newGroupName)) {
                             dialog.dismiss();
                             mPresenter.renameGroup(position, newGroupName);
                         }

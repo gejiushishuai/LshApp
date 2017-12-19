@@ -1,9 +1,9 @@
 package com.linsh.lshapp.mvp.person_detail;
 
 import com.linsh.lshapp.base.BaseContract;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.PersonDetail;
-import com.linsh.lshapp.model.bean.db.TypeLabel;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
 
 import java.util.List;
 

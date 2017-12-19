@@ -11,14 +11,14 @@ import android.util.Log;
 import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.CustomQuery;
 import com.github.tamir7.contacts.PhoneNumber;
+import com.linsh.utilseverywhere.module.SimpleDate;
+import com.linsh.utilseverywhere.tools.CursorHelper;
+import com.linsh.utilseverywhere.ArrayUtils;
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.ListUtils;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
-import com.linsh.lshutils.module.SimpleDate;
-import com.linsh.lshutils.tools.LshCursorHelper;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshArrayUtils;
-import com.linsh.lshutils.utils.LshContextUtils;
-import com.linsh.lshutils.utils.LshListUtils;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -68,8 +68,8 @@ public class ContactMixer {
             // 名字 生日
             String birthdayOfPerson = mPerson.getBirthday();
             String birthdayOfContact = mContact.getBirthday() == null ? null : mContact.getBirthday().getStartDate();
-            if (!LshStringUtils.isEquals(mPerson.getName(), mContact.getDisplayName())
-                    || !LshStringUtils.isEquals(birthdayOfPerson, birthdayOfContact)) {
+            if (!StringUtils.isEquals(mPerson.getName(), mContact.getDisplayName())
+                    || !StringUtils.isEquals(birthdayOfPerson, birthdayOfContact)) {
                 status = UPDATE_WITH_CONTACTS;
                 return;
             }
@@ -83,8 +83,8 @@ public class ContactMixer {
             // 电话
             List<String> phoneNumbersOfPerson = mPerson.getPhoneNumbers();
             List<PhoneNumber> phoneNumbersOfContact = mContact.getPhoneNumbers();
-            boolean emptyOfPerson = LshListUtils.isEmpty(phoneNumbersOfPerson);
-            boolean emptyOfContact = LshListUtils.isEmpty(phoneNumbersOfContact);
+            boolean emptyOfPerson = ListUtils.isEmpty(phoneNumbersOfPerson);
+            boolean emptyOfContact = ListUtils.isEmpty(phoneNumbersOfContact);
             if (emptyOfPerson != emptyOfContact) {
                 status = UPDATE_WITH_CONTACTS;
                 return;
@@ -108,7 +108,7 @@ public class ContactMixer {
             String avatarThumb = mPerson.getAvatarThumb();
             String avatar = mPerson.getAvatar();
             String photoUri = mContact.getPhotoUri();
-            if (LshStringUtils.isAllEmpty(avatarThumb, avatar) != LshStringUtils.isEmpty(photoUri)) {
+            if (StringUtils.isAllEmpty(avatarThumb, avatar) != StringUtils.isEmpty(photoUri)) {
                 status = UPDATE_WITH_CONTACTS;
                 return;
             }
@@ -132,7 +132,7 @@ public class ContactMixer {
         for (int i = 0; i < contacts.size(); i++) {
             ShiyiContact contact = contacts.get(i);
             String contactId = contact.getPersonId();
-            if (LshStringUtils.notEmpty(contactId)) {
+            if (StringUtils.notEmpty(contactId)) {
                 for (int j = 0; j < persons.size(); j++) {
                     ContactsPerson person = persons.get(j);
                     String personId = person.getId();
@@ -182,7 +182,7 @@ public class ContactMixer {
     }
 
     public static List<ShiyiContact> getContacts() {
-        ShiyiQuery shiyiQuery = new ShiyiQuery(LshContextUtils.get());
+        ShiyiQuery shiyiQuery = new ShiyiQuery(ContextUtils.get());
         return shiyiQuery.find();
     }
 
@@ -200,8 +200,7 @@ public class ContactMixer {
             super(context);
             Contact.Field[] values = Contact.Field.values();
             ShiyiContact.ShiyiField[] values1 = ShiyiContact.ShiyiField.values();
-            Contact.AbstractField[] fields = new Contact.AbstractField[values.length + values1.length];
-            LshArrayUtils.addArrays(fields, values, values1);
+            Contact.AbstractField[] fields = ArrayUtils.mergeArrays(Contact.AbstractField.class, values, values1);
             include(fields);
         }
 
@@ -233,12 +232,12 @@ public class ContactMixer {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         private void addLookupKey(List<ShiyiContact> shiyiContacts) {
-            ContentResolver resolver = LshContextUtils.get().getContentResolver();
+            ContentResolver resolver = ContextUtils.get().getContentResolver();
             Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,
                     new String[]{ContactsContract.Contacts.NAME_RAW_CONTACT_ID, ContactsContract.Contacts.LOOKUP_KEY},
                     null, null, null);
             if (cursor != null) {
-                LshCursorHelper helper = new LshCursorHelper(cursor);
+                CursorHelper helper = new CursorHelper(cursor);
                 while (cursor.moveToNext()) {
                     Long contactId = helper.getLong(ContactsContract.Contacts.NAME_RAW_CONTACT_ID);
                     Log.i("LshLog", "find lookUpKey: contactId=" + contactId);

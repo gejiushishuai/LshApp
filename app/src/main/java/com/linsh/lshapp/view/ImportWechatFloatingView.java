@@ -17,18 +17,17 @@ import android.widget.Toast;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.linsh.lshapp.R;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
 import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.service.ImportAppDataService;
 import com.linsh.lshapp.tools.ImportWechatHelper;
-import com.linsh.lshutils.tools.LshXmlCreater;
-import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.utils.LshBackgroundUtils;
-import com.linsh.lshutils.utils.LshIntentUtils;
-import com.linsh.lshutils.utils.LshScreenUtils;
-import com.linsh.lshutils.utils.LshUnitConverseUtils;
+import com.linsh.utilseverywhere.BackgroundUtils;
+import com.linsh.utilseverywhere.IntentUtils;
+import com.linsh.utilseverywhere.ScreenUtils;
+import com.linsh.utilseverywhere.ToastUtils;
+import com.linsh.utilseverywhere.UnitConverseUtils;
+import com.linsh.utilseverywhere.XmlUtils;
 
 import java.util.List;
 
@@ -99,13 +98,13 @@ public class ImportWechatFloatingView extends FrameLayout {
                                 public void run() throws Exception {
                                     mAdapter.setState(-1);
                                     mTvSave.setText("查找");
-                                    LshToastUtils.show("已保存");
+                                    ToastUtils.show("已保存");
                                 }
                             }).subscribe();
                     break;
             }
         });
-        LshBackgroundUtils.addPressedEffect(ivClose, mTvSave);
+        BackgroundUtils.addPressedEffect(ivClose, mTvSave);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             for (ImportAppDataService.Type type : types) {
                 TextView textView = (TextView) View.inflate(getContext(), R.layout.view_type, null);
                 textView.setText(type.typeDetail);
-                LshBackgroundUtils.addPressedEffect(textView);
+                BackgroundUtils.addPressedEffect(textView);
                 textView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -164,8 +163,8 @@ public class ImportWechatFloatingView extends FrameLayout {
             }
             mFlTypes.measure(0, 0);
             int measuredWidth = mFlTypes.getMeasuredWidth();
-            if (measuredWidth > LshScreenUtils.getScreenWidth() / 2) {
-                mFlTypes.getLayoutParams().width = LshScreenUtils.getScreenWidth() / 2;
+            if (measuredWidth > ScreenUtils.getScreenWidth() / 2) {
+                mFlTypes.getLayoutParams().width = ScreenUtils.getScreenWidth() / 2;
             }
         }
     }
@@ -186,8 +185,8 @@ public class ImportWechatFloatingView extends FrameLayout {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            int dp5 = LshUnitConverseUtils.dp2px(5);
-            StateListDrawable selector = LshXmlCreater.createDrawableSelector()
+            int dp5 = UnitConverseUtils.dp2px(5);
+            StateListDrawable selector = XmlUtils.buildDrawableSelector()
                     .setSelectedColor(0x33333333).getSelector();
 
             TextView textView = new TextView(parent.getContext());
@@ -196,7 +195,7 @@ public class ImportWechatFloatingView extends FrameLayout {
             textView.setGravity(Gravity.CENTER);
             textView.setBackground(selector);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-            LshBackgroundUtils.addPressedEffect(textView);
+            BackgroundUtils.addPressedEffect(textView);
 
             textView.setOnClickListener(this);
             textView.setOnLongClickListener(this);
@@ -310,13 +309,13 @@ public class ImportWechatFloatingView extends FrameLayout {
                     if (mAdapter.mState == 0) {
                         switch (position) {
                             case 0:
-                                LshIntentUtils.gotoApp("com.tencent.mm");
+                                IntentUtils.gotoApp("com.tencent.mm");
                                 break;
                             case 1:
-                                LshIntentUtils.gotoApp("com.tencent.mobileqq");
+                                IntentUtils.gotoApp("com.tencent.mobileqq");
                                 break;
                             case 2:
-                                LshIntentUtils.gotoApp("com.alibaba.android.rimet");
+                                IntentUtils.gotoApp("com.alibaba.android.rimet");
                                 break;
                         }
                         setState(-1);
@@ -362,14 +361,14 @@ public class ImportWechatFloatingView extends FrameLayout {
             switch (mState) {
                 case 1:
                     if (position > 1) {
-                        LshActivityUtils.newIntent(PersonDetailActivity.class)
+                        IntentUtils.buildIntent(PersonDetailActivity.class)
                                 .putExtra(mPersons.get(position - 2).getId())
                                 .newTask()
                                 .startActivity(getContext());
                     }
                     break;
                 case 3:
-                    LshActivityUtils.newIntent(PersonDetailActivity.class)
+                    IntentUtils.buildIntent(PersonDetailActivity.class)
                             .putExtra(mGroups.get(curGroupPos).getPersons().get(position).getId())
                             .newTask()
                             .startActivity(getContext());
@@ -405,7 +404,7 @@ public class ImportWechatFloatingView extends FrameLayout {
                 startP = new Point((int) event.getX(), (int) event.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
-                int height = LshUnitConverseUtils.dp2px(28) + LshUnitConverseUtils.sp2px(32);
+                int height = UnitConverseUtils.dp2px(28) + UnitConverseUtils.sp2px(32);
                 if (startP.y > height) {
                     return false;
                 }

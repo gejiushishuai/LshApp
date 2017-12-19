@@ -6,13 +6,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.linsh.dialog.LshColorDialog;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.utils.LshClipboardUtils;
-import com.linsh.lshutils.view.LshColorDialog;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
+import com.linsh.utilseverywhere.ClipboardUtils;
+import com.linsh.utilseverywhere.StringUtils;
+import com.linsh.utilseverywhere.tools.IntentBuilder;
 
 import butterknife.BindView;
 
@@ -60,7 +60,7 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
                 invalidateOptionsMenu();
                 break;
             case R.id.menu_shiyi_type_detail_confirm:
-                if (LshStringUtils.isEmpty(etInfo.getText().toString())) {
+                if (StringUtils.isEmpty(etInfo.getText().toString())) {
                     showToast("类型信息不能为空");
                 } else {
                     mPresenter.saveTypeDetail(etInfo.getText().toString().trim(), etDesc.getText().toString().trim());
@@ -86,12 +86,12 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
 
     @Override
     protected String getToolbarTitle() {
-        return LshActivityUtils.getStringExtra(getActivity(), 0);
+        return IntentBuilder.getStringExtra(getActivity(), 0);
     }
 
     @Override
     public String getTypeDetailId() {
-        return LshActivityUtils.getStringExtra(getActivity(), 1);
+        return IntentBuilder.getStringExtra(getActivity(), 1);
     }
 
     @Override
@@ -101,13 +101,13 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
         String detail = typeDetail.getDetail();
         String describe = typeDetail.getDescribe();
 
-        if (LshStringUtils.isAllEmpty(detail, describe)) {
+        if (StringUtils.isAllEmpty(detail, describe)) {
             setEditMode();
         } else {
-            etInfo.setText(LshStringUtils.nullStrToEmpty(detail));
+            etInfo.setText(StringUtils.nullStrToEmpty(detail));
             etInfo.setOnLongClickListener(this);
 
-            etDesc.setText(LshStringUtils.nullStrToEmpty(describe));
+            etDesc.setText(StringUtils.nullStrToEmpty(describe));
             etDesc.clearFocus();
             etDesc.setOnLongClickListener(this);
             etDesc.setFocusable(false);
@@ -131,8 +131,8 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
     @Override
     public boolean onLongClick(View v) {
         String text = ((TextView) v).getText().toString();
-        if (!isEditMode && !LshStringUtils.isEmpty(text)) {
-            LshClipboardUtils.putText(text);
+        if (!isEditMode && !StringUtils.isEmpty(text)) {
+            ClipboardUtils.putText(text);
             showToast("文本已复制");
             return true;
         }

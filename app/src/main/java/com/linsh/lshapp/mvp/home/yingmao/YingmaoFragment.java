@@ -11,7 +11,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.model.bean.SignIn;
 import com.linsh.lshapp.view.LshPopupWindow;
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
+import com.linsh.utilseverywhere.ContextUtils;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class YingmaoFragment extends BaseMainFragment<YingmaoContract.Presenter>
     @Override
     protected void initView(View view) {
         mRcv = (RecyclerView) view.findViewById(R.id.rcv_yingmao_content);
-        mRcv.setLayoutManager(new LinearLayoutManager(LshApplicationUtils.getContext()));
+        mRcv.setLayoutManager(new LinearLayoutManager(ContextUtils.get()));
         mAdapter = new YingmaoAdapter();
         mRcv.setAdapter(mAdapter);
         mAdapter.setAdapterListener(new YingmaoAdapter.AdapterListener() {

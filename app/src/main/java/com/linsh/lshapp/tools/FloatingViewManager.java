@@ -7,7 +7,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
-import com.linsh.lshutils.utils.LshContextUtils;
+import com.linsh.utilseverywhere.ContextUtils;
+
 
 public class FloatingViewManager {
     private static final WindowManager.LayoutParams LAYOUT_PARAMS;
@@ -28,7 +29,7 @@ public class FloatingViewManager {
     }
 
     public FloatingViewManager() {
-        mWindowManager = ((WindowManager) LshContextUtils.get().getSystemService(Context.WINDOW_SERVICE));
+        mWindowManager = ((WindowManager) ContextUtils.get().getSystemService(Context.WINDOW_SERVICE));
     }
 
     public void setView(View floatingView) {

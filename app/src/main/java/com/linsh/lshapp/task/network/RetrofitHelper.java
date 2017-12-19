@@ -1,8 +1,8 @@
 package com.linsh.lshapp.task.network;
 
 
-import com.linsh.lshutils.utils.Basic.LshApplicationUtils;
-import com.linsh.lshutils.utils.LshNetworkUtils;
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.NetworkUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class RetrofitHelper {
             synchronized (RetrofitHelper.class) {
                 if (mOkHttpClient == null) {
                     //设置Http缓存
-                    Cache cache = new Cache(new File(LshApplicationUtils.getContext().getCacheDir(), "HttpCache"), 1024 * 1024 * 10);
+                    Cache cache = new Cache(new File(ContextUtils.get().getCacheDir(), "HttpCache"), 1024 * 1024 * 10);
 
                     mOkHttpClient = new OkHttpClient.Builder()
                             .cache(cache)
@@ -100,7 +100,7 @@ public class RetrofitHelper {
             // 无网络时，设置超时为1天
             int maxStale = 60 * 60 * 24;
             Request request = chain.request();
-            if (LshNetworkUtils.isAvailable()) {
+            if (NetworkUtils.isAvailable()) {
                 //有网络时只从网络获取
                 request = request.newBuilder()
                         .cacheControl(CacheControl.FORCE_NETWORK)
@@ -112,7 +112,7 @@ public class RetrofitHelper {
                         .build();
             }
             Response response = chain.proceed(request);
-            if (LshNetworkUtils.isAvailable()) {
+            if (NetworkUtils.isAvailable()) {
                 response = response.newBuilder()
                         .removeHeader("Pragma")
                         .header("Cache-Control", "public, max-age=" + maxAge)

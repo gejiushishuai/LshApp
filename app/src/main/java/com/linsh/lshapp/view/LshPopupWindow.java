@@ -16,8 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.linsh.utilseverywhere.ResourceUtils;
 import com.linsh.lshapp.R;
-import com.linsh.lshutils.utils.LshResourceUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +101,7 @@ public class LshPopupWindow extends PopupWindow {
         protected void initView(ViewGroup rootLayout) {
             int dp10 = dp2px(10);
             RecyclerView recyclerView = new RecyclerView(context);
-            recyclerView.setBackgroundColor(LshResourceUtils.getColor(R.color.color_theme_dark_blue));
+            recyclerView.setBackgroundColor(ResourceUtils.getColor(R.color.color_theme_dark_blue));
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setPadding(dp10, 0, dp10, 0);
 

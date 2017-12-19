@@ -8,14 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.tamir7.contacts.PhoneNumber;
+import com.linsh.utilseverywhere.LunarCalendarUtils;
+import com.linsh.utilseverywhere.ResourceUtils;
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshLunarCalendarUtils;
-import com.linsh.lshutils.utils.LshResourceUtils;
 
 import java.util.List;
 
@@ -71,7 +71,7 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
         }
         if (drawableRes != 0) {
             holder.tvStatus.setText(text);
-            Drawable drawable = LshResourceUtils.getDrawable(drawableRes);
+            Drawable drawable = ResourceUtils.getDrawable(drawableRes);
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
             holder.tvStatus.setCompoundDrawables(null, drawable, null, null);
         }
@@ -115,7 +115,7 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
         List<PhoneNumber> phoneNumbers = contact.getPhoneNumbers();
         String birthday = contact.getBirthday() == null ? null : contact.getBirthday().getStartDate();
         String lunarBirthday = contact.getLunarBirthday() == null ?
-                null : LshLunarCalendarUtils.normalStr2LunarStr(contact.getLunarBirthday().getStartDate());
+                null : LunarCalendarUtils.normalStr2LunarStr(contact.getLunarBirthday().getStartDate());
 
         StringBuilder builder = new StringBuilder();
         for (PhoneNumber phoneNumber : phoneNumbers) {
@@ -124,13 +124,13 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
             }
             appendInfo(builder, "电话", phoneNumber.getNormalizedNumber(), isLeft);
         }
-        if (LshStringUtils.notEmpty(birthday)) {
+        if (StringUtils.notEmpty(birthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
             appendInfo(builder, "生日", birthday, isLeft);
         }
-        if (LshStringUtils.notEmpty(lunarBirthday)) {
+        if (StringUtils.notEmpty(lunarBirthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
@@ -153,13 +153,13 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
                 appendInfo(builder, "电话", phoneNumber, !isRight);
             }
         }
-        if (LshStringUtils.notEmpty(birthday)) {
+        if (StringUtils.notEmpty(birthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
             appendInfo(builder, "生日", birthday, !isRight);
         }
-        if (LshStringUtils.notEmpty(lunarBirthday)) {
+        if (StringUtils.notEmpty(lunarBirthday)) {
             if (builder.length() != 0) {
                 builder.append("\n");
             }
@@ -180,7 +180,7 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
     private void setItemData(View layout, TextView tvName, String name,
                              ImageView ivAvatar, String avatarUrl, Uri avatarUri, TextView tvDetailText, String detail) {
         tvName.setText(name);
-        if (LshStringUtils.notEmpty(avatarUrl)) {
+        if (StringUtils.notEmpty(avatarUrl)) {
             ImageTools.setImage(ivAvatar, avatarUrl);
         } else if (avatarUri != null) {
             ImageTools.setImage(ivAvatar, avatarUri);
@@ -204,7 +204,7 @@ class SyncContactsAdapter extends LshRecyclerViewAdapter<ContactMixer, SyncConta
             String detail = holder.tvLeftDetailText.getText().toString() + holder.tvRightDetailText.getText().toString();
             if (visible) {
                 holder.llDetailLayout.setVisibility(View.GONE);
-            } else if (LshStringUtils.notEmpty(detail)) {
+            } else if (StringUtils.notEmpty(detail)) {
                 holder.llDetailLayout.setVisibility(View.VISIBLE);
             }
         }

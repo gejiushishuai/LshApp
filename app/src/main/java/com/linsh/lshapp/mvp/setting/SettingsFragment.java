@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.BuildConfig;
 import com.linsh.lshapp.R;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
 
 /**
  * Created by Senh Linsh on 17/5/2.
@@ -28,7 +28,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         findPreference("backup_database").setOnPreferenceClickListener(this);
         Preference checkUpdate = findPreference("check_update");
         checkUpdate.setOnPreferenceClickListener(this);
-        checkUpdate.setTitle(checkUpdate.getTitle() + LshStringUtils.format(" (当前版本: {版本号})", BuildConfig.VERSION_NAME));
+        checkUpdate.setTitle(checkUpdate.getTitle() + StringUtils.format(" (当前版本: {版本号})", BuildConfig.VERSION_NAME));
     }
 
     @Override

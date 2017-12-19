@@ -6,16 +6,16 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.github.tamir7.contacts.Contact;
+import com.linsh.utilseverywhere.tools.ContactsEditor;
+import com.linsh.utilseverywhere.BitmapUtils;
+import com.linsh.utilseverywhere.ContextUtils;
+import com.linsh.utilseverywhere.ListUtils;
+import com.linsh.utilseverywhere.LunarCalendarUtils;
+import com.linsh.utilseverywhere.StringUtils;
+import com.linsh.utilseverywhere.ToastUtils;
 import com.linsh.lshapp.model.bean.ContactsPerson;
 import com.linsh.lshapp.model.bean.ShiyiContact;
 import com.linsh.lshapp.mvp.sync_contacts.ContactMixer;
-import com.linsh.lshutils.tools.LshContactsEditor;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.utils.LshContextUtils;
-import com.linsh.lshutils.utils.LshImageUtils;
-import com.linsh.lshutils.utils.LshListUtils;
-import com.linsh.lshutils.utils.LshLunarCalendarUtils;
 
 import java.util.List;
 
@@ -31,14 +31,14 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ContactsAdder {
 
-    private LshContactsEditor mEditor;
+    private ContactsEditor mEditor;
 
     public ContactsAdder() {
-        mEditor = new LshContactsEditor(LshContextUtils.get().getContentResolver());
+        mEditor = new ContactsEditor(ContextUtils.get().getContentResolver());
     }
 
     public Flowable<ShiyiContact> addContact(ContactsPerson person) {
-        LshContactsEditor.ContactBuilder contactBuilder = mEditor.buildContact();
+        ContactsEditor.ContactBuilder contactBuilder = mEditor.buildContact();
         return LshRxUtils.create((FlowableOnSubscribe<Object>) emitter -> {
             String name = person.getName();
             List<String> phoneNumbers = person.getPhoneNumbers();
@@ -48,28 +48,28 @@ public class ContactsAdder {
 
             contactBuilder.insertDisplayName(name);
             contactBuilder.insert(ShiyiContact.MIME_TYPE_PERSON_ID, ShiyiContact.COLUMN_PERSON_ID, person.getId());
-            if (!LshListUtils.isEmpty(phoneNumbers)) {
+            if (!ListUtils.isEmpty(phoneNumbers)) {
                 for (String number : phoneNumbers) {
                     contactBuilder.insertPhoneNumber(number);
                 }
             }
-            if (LshStringUtils.notEmpty(birthday)) {
+            if (StringUtils.notEmpty(birthday)) {
                 contactBuilder.insertBirthday(birthday);
             }
-            if (LshStringUtils.notEmpty(lunarBirthday)) {
+            if (StringUtils.notEmpty(lunarBirthday)) {
                 if (lunarBirthday.matches(".*[\\u4e00-\\u9fa5]{1,2}月[\\u4e00-\\u9fa5]{1,3}日?")) {
-                    lunarBirthday = LshLunarCalendarUtils.lunarStr2NormalStr(lunarBirthday);
+                    lunarBirthday = LunarCalendarUtils.lunarStr2NormalStr(lunarBirthday);
                 }
                 contactBuilder.insertLunarBirthday(lunarBirthday);
             }
-            if (LshStringUtils.notEmpty(avatar)) {
+            if (StringUtils.notEmpty(avatar)) {
                 ImageTools.getGlide(avatar)
                         .asBitmap()
                         .listener(new RequestListener<GlideUrl, Bitmap>() {
                             @Override
                             public boolean onException(Exception e, GlideUrl model, Target<Bitmap> target, boolean isFirstResource) {
                                 e.printStackTrace();
-                                LshToastUtils.show("导入头像失败");
+                                ToastUtils.show("导入头像失败");
                                 emitter.onNext(e);
                                 return false;
                             }
@@ -87,7 +87,7 @@ public class ContactsAdder {
                 .observeOn(Schedulers.io())
                 .map(result -> {
                     if (result instanceof Bitmap) {
-                        byte[] bytes = LshImageUtils.bitmap2Bytes((Bitmap) result, 1000000);
+                        byte[] bytes = BitmapUtils.toBytes((Bitmap) result, 1000000);
                         contactBuilder.insertPhoto(bytes);
                     }
                     return queryContact(contactBuilder.getContactId());
@@ -101,7 +101,7 @@ public class ContactsAdder {
     }
 
     public Flowable<ShiyiContact> updateContact(ShiyiContact contact, ContactsPerson person) {
-        LshContactsEditor.ContactBuilder contactBuilder = mEditor.buildContact(contact.getId());
+        ContactsEditor.ContactBuilder contactBuilder = mEditor.buildContact(contact.getId());
         return LshRxUtils.create(new FlowableOnSubscribe<Object>() {
             @Override
             public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
@@ -117,30 +117,30 @@ public class ContactsAdder {
                 contactBuilder.deleteBirthday();
                 contactBuilder.deleteLunarBirthday();
                 contactBuilder.insertDisplayName(name);
-                if (!LshListUtils.isEmpty(phoneNumbers)) {
+                if (!ListUtils.isEmpty(phoneNumbers)) {
                     for (String number : phoneNumbers) {
                         contactBuilder.insertPhoneNumber(number);
                     }
                 }
-                if (LshStringUtils.notEmpty(birthday)) {
+                if (StringUtils.notEmpty(birthday)) {
 
                     contactBuilder.insertBirthday(birthday);
                 }
-                if (LshStringUtils.notEmpty(lunarBirthday)) {
+                if (StringUtils.notEmpty(lunarBirthday)) {
                     if (lunarBirthday.matches(".*([\\u4e00-\\u9fa5]{1,2})月([\\u4e00-\\u9fa5]{1,3})日?")) {
-                        lunarBirthday = LshLunarCalendarUtils.lunarStr2NormalStr(lunarBirthday);
+                        lunarBirthday = LunarCalendarUtils.lunarStr2NormalStr(lunarBirthday);
                     }
                     contactBuilder.insertLunarBirthday(lunarBirthday);
                 }
-                if (LshStringUtils.isEmpty(contact.getPhotoUri()) && !LshStringUtils.isAllEmpty(avatar, avatarThumb)) {
-                    avatar = LshStringUtils.isEmpty(avatar) ? avatarThumb : avatar;
+                if (StringUtils.isEmpty(contact.getPhotoUri()) && !StringUtils.isAllEmpty(avatar, avatarThumb)) {
+                    avatar = StringUtils.isEmpty(avatar) ? avatarThumb : avatar;
                     ImageTools.getGlide(avatar)
                             .asBitmap()
                             .listener(new RequestListener<GlideUrl, Bitmap>() {
                                 @Override
                                 public boolean onException(Exception e, GlideUrl model, Target<Bitmap> target, boolean isFirstResource) {
                                     e.printStackTrace();
-                                    LshToastUtils.show("导入头像失败");
+                                    ToastUtils.show("导入头像失败");
                                     emitter.onNext(e);
                                     return true;
                                 }
@@ -159,7 +159,7 @@ public class ContactsAdder {
                 .observeOn(Schedulers.io())
                 .map(result -> {
                     if (result instanceof Bitmap) {
-                        byte[] bytes = LshImageUtils.bitmap2Bytes((Bitmap) result, 1000000);
+                        byte[] bytes = BitmapUtils.toBytes((Bitmap) result, 1000000);
                         contactBuilder.insertPhoto(bytes);
                     }
                     return queryContact(contactBuilder.getContactId());
@@ -167,17 +167,17 @@ public class ContactsAdder {
     }
 
     public static ShiyiContact queryContact(long contactId) {
-        ContactMixer.ShiyiQuery shiyiQuery = new ContactMixer.ShiyiQuery(LshContextUtils.get());
+        ContactMixer.ShiyiQuery shiyiQuery = new ContactMixer.ShiyiQuery(ContextUtils.get());
         shiyiQuery.whereEqualTo(Contact.Field.RawContactId, contactId);
         List<ShiyiContact> shiyiContacts = shiyiQuery.find();
-        if (!LshListUtils.isEmpty(shiyiContacts)) {
+        if (!ListUtils.isEmpty(shiyiContacts)) {
             return shiyiContacts.get(0);
         }
         return null;
     }
 
     public Flowable<ShiyiContact> updatePhoto(ShiyiContact contact, String avatar) {
-        LshContactsEditor.ContactBuilder contactBuilder = mEditor.buildContact(contact.getId());
+        ContactsEditor.ContactBuilder contactBuilder = mEditor.buildContact(contact.getId());
         return LshRxUtils.create(new FlowableOnSubscribe<Object>() {
 
             @Override
@@ -188,7 +188,7 @@ public class ContactsAdder {
                             @Override
                             public boolean onException(Exception e, GlideUrl model, Target<Bitmap> target, boolean isFirstResource) {
                                 e.printStackTrace();
-                                LshToastUtils.show("更新头像失败");
+                                ToastUtils.show("更新头像失败");
                                 emitter.onNext(e);
                                 emitter.onComplete();
                                 return true;
@@ -206,7 +206,7 @@ public class ContactsAdder {
                 .observeOn(Schedulers.io())
                 .map(result -> {
                     if (result instanceof Bitmap) {
-                        byte[] bytes = LshImageUtils.bitmap2Bytes((Bitmap) result, 1000000);
+                        byte[] bytes = BitmapUtils.toBytes((Bitmap) result, 1000000);
                         contactBuilder.insertPhoto(bytes);
                         return queryContact(contactBuilder.getContactId());
                     }

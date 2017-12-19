@@ -3,8 +3,8 @@ package com.linsh.lshapp.tools;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.linsh.lshutils.utils.Basic.LshFileUtils;
-import com.linsh.lshutils.utils.Basic.LshIOUtils;
+import com.linsh.utilseverywhere.FileUtils;
+import com.linsh.utilseverywhere.IOUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -82,7 +82,7 @@ public class LGImgCompressor {
         // 将bitmap保存到指定路径
         FileOutputStream fos = null;
         try {
-            LshFileUtils.makeParentDirs(output);
+            FileUtils.makeParentDirs(output);
             fos = new FileOutputStream(output);
             // 包装缓冲流,提高写入速度
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fos);
@@ -91,7 +91,7 @@ public class LGImgCompressor {
         } catch (Exception e) {
             return false;
         } finally {
-            LshIOUtils.close(baos, fos);
+            IOUtils.close(baos, fos);
         }
         return true;
     }

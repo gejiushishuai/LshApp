@@ -3,7 +3,7 @@ package com.linsh.lshapp.tools;
 import android.app.Activity;
 
 import com.linsh.lshutils.handler.LshCrashHandler;
-import com.linsh.lshutils.utils.Basic.LshLogUtils;
+import com.linsh.lshutils.utils.LogPrinterUtils;
 
 /**
  * Created by Senh Linsh on 17/6/15.
@@ -13,7 +13,7 @@ public class CrashHandler extends LshCrashHandler {
 
     @Override
     protected void onCatchException(Thread thread, Throwable thr) {
-        LshLogUtils.printer().e(thr);
+        LogPrinterUtils.e(thr);
     }
 
     @Override

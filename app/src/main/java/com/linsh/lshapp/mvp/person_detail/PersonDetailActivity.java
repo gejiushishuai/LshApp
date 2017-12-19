@@ -9,13 +9,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.linsh.dialog.LshColorDialog;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.PersonDetail;
-import com.linsh.lshapp.model.bean.db.Type;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
-import com.linsh.lshapp.model.bean.db.TypeLabel;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.Type;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
 import com.linsh.lshapp.mvp.album.AlbumActivity;
 import com.linsh.lshapp.mvp.edit_person.PersonEditActivity;
 import com.linsh.lshapp.mvp.edit_type.TypeEditActivity;
@@ -23,11 +24,11 @@ import com.linsh.lshapp.mvp.photo_view.PhotoViewActivity;
 import com.linsh.lshapp.mvp.type_detail.TypeDetailActivity;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.view.LshPopupWindow;
-import com.linsh.lshutils.Rx.Action;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.utils.LshListUtils;
-import com.linsh.lshutils.utils.LshScreenUtils;
-import com.linsh.lshutils.view.LshColorDialog;
+import com.linsh.utilseverywhere.IntentUtils;
+import com.linsh.utilseverywhere.ListUtils;
+import com.linsh.utilseverywhere.Rx.Action;
+import com.linsh.utilseverywhere.ScreenUtils;
+import com.linsh.utilseverywhere.tools.IntentBuilder;
 
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
             public void onItemClick(Type data, int firstLevelPosition, int secondLevelPosition) {
                 TypeDetail typeDetail = data.getTypeDetails().get(secondLevelPosition);
 
-                LshActivityUtils.newIntent(TypeDetailActivity.class)
+                IntentUtils.buildIntent(TypeDetailActivity.class)
                         .putExtra(data.getName(), 0)
                         .putExtra(typeDetail.getId(), 1)
                         .startActivityForResult(getActivity(), 100);
@@ -87,7 +88,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         mDetailAdapter.setOnItemLongClickListener(new PersonDetailAdapter.OnItemLongClickListener<Type>() {
             @Override
             public void onItemLongClick(View view, final Type data, final int firstLevelPosition, final int secondLevelPosition) {
-                int yOnScreen = LshScreenUtils.getLocationYOnScreen(view);
+                int yOnScreen = ScreenUtils.getLocationYOnScreen(view);
                 View viewParent = (View) view.getParent();
                 if (viewParent instanceof RecyclerView) {
                     viewParent = view;
@@ -134,7 +135,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                         }).getPopupWindow();
 
                 int xOff = viewParent.getWidth() / 2 - popupWindow.getWidth() / 2;
-                int yOff = yOnScreen > LshScreenUtils.getScreenHeight() / 2 ? -popupWindow.getHeight() - view.getHeight() : 0;
+                int yOff = yOnScreen > ScreenUtils.getScreenHeight() / 2 ? -popupWindow.getHeight() - view.getHeight() : 0;
                 popupWindow.showAsDropDown(viewParent, xOff, yOff);
             }
         });
@@ -143,7 +144,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
 
     @Override
     public String getPersonId() {
-        return LshActivityUtils.getStringExtra(getActivity());
+        return IntentBuilder.getStringExtra(getActivity());
     }
 
     @Override
@@ -187,7 +188,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     public boolean onAvatarLongClick() {
         Person person = mPresenter.getPerson();
         if (person != null && person.isValid()) {
-            LshActivityUtils.newIntent(AlbumActivity.class)
+            IntentUtils.buildIntent(AlbumActivity.class)
                     .putExtra(person.getId())
                     .startActivity(getActivity());
         }
@@ -196,7 +197,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
 
     @OnClick(R.id.rl_person_detail_info_layout)
     public void onInfoLayoutClick(View view) {
-        LshActivityUtils.newIntent(PersonEditActivity.class)
+        IntentUtils.buildIntent(PersonEditActivity.class)
                 .putExtra(mPresenter.getPerson().getId())
                 .startActivityForResult(getActivity(), 101);
     }
@@ -219,13 +220,13 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                 return true;
             case R.id.menu_person_detail_manage_type_label:
                 // 管理类型
-                LshActivityUtils.newIntent(TypeEditActivity.class)
+                IntentUtils.buildIntent(TypeEditActivity.class)
                         .putExtra(TypeEditActivity.MANAGER_TYPE_LABELS)
                         .startActivity(getActivity());
                 return true;
             case R.id.menu_person_detail_manage_person_type:
                 // 管理该联系人类型
-                LshActivityUtils.newIntent(TypeEditActivity.class)
+                IntentUtils.buildIntent(TypeEditActivity.class)
                         .putExtra(TypeEditActivity.MANAGER_PERSON_TYPES)
                         .putExtra(mPresenter.getPerson().getId())
                         .startActivity(getActivity());
@@ -256,7 +257,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     }
 
     private void showTypesDialog(List<TypeLabel> types, final int sort) {
-        List<String> stringList = LshListUtils.getStringList(types, new Action<String, TypeLabel>() {
+        List<String> stringList = ListUtils.getStringList(types, new Action<String, TypeLabel>() {
             @Override
             public String call(TypeLabel typeLabel) {
                 return typeLabel.isValid() ? typeLabel.getName() : null;

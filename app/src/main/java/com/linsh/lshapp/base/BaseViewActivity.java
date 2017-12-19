@@ -5,11 +5,11 @@ import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
+import com.linsh.dialog.LshColorDialog;
+import com.linsh.utilseverywhere.StringUtils;
+import com.linsh.utilseverywhere.ToastUtils;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.view.ShapeLoadingDialog;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.view.LshColorDialog;
 
 import java.util.List;
 
@@ -94,7 +94,7 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
         LshColorDialog.TextDialogBuilder dialogBuilder =
                 new LshColorDialog(getActivity())
                         .buildText()
-                        .setTitle(LshStringUtils.isEmpty(title) ? "提示" : title)
+                        .setTitle(StringUtils.isEmpty(title) ? "提示" : title)
                         .setContent(content)
                         .setBgColor(getResources().getColor(R.color.color_theme_dark_blue));
 
@@ -164,7 +164,7 @@ public abstract class BaseViewActivity<T extends BaseContract.BasePresenter> ext
 
     @Override
     public void showToast(String content) {
-        LshToastUtils.show(content);
+        ToastUtils.show(content);
     }
 
     @Override

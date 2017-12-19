@@ -2,18 +2,21 @@ package com.linsh.lshapp.mvp.setting;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.linsh.utilseverywhere.ClickUtils;
+import com.linsh.utilseverywhere.FileUtils;
+import com.linsh.utilseverywhere.ToastUtils;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.AsyncConsumer;
 import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.Person;
-import com.linsh.lshapp.model.bean.db.PersonDetail;
-import com.linsh.lshapp.model.bean.db.Shiyi;
-import com.linsh.lshapp.model.bean.db.Type;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
-import com.linsh.lshapp.model.bean.db.TypeLabel;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.Shiyi;
+import com.linsh.lshapp.model.bean.db.shiyi.Type;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.LshFileFactory;
@@ -21,9 +24,6 @@ import com.linsh.lshapp.tools.LshRxUtils;
 import com.linsh.lshapp.tools.RealmTool;
 import com.linsh.lshapp.tools.SharedPreferenceTools;
 import com.linsh.lshapp.tools.VersionChecker;
-import com.linsh.lshutils.utils.Basic.LshFileUtils;
-import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.utils.LshClickUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
     @Override
     public void outputDatabase() {
         final File destination = new File(LshFileFactory.getAppDir(), "shiyi.realm");
-        LshFileUtils.deleteFile(destination);
+        FileUtils.deleteFile(destination);
 
         Disposable disposable = LshRxUtils
                 .getAsyncFlowable(new AsyncConsumer<Void>() {
@@ -74,7 +74,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
             protected void execute(Realm realm, FlowableEmitter<? super Void> emitter) {
                 boolean success = false;
                 File importDir = new File(LshFileFactory.getJsonImportDir());
-                LshFileUtils.makeDirs(importDir);
+                FileUtils.makeDirs(importDir);
                 if (importDir.exists() && importDir.isDirectory()) {
                     File[] files = importDir.listFiles();
                     if (files != null && files.length > 0) {
@@ -82,14 +82,14 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
                             String name = file.getName();
 
                             if (name.equalsIgnoreCase("Shiyi.txt")) {
-                                String json = LshFileUtils.readFile(file).toString();
+                                String json = FileUtils.readFile(file).toString();
                                 Shiyi shiyi = new Gson().fromJson(json, Shiyi.class);
 
                                 Shiyi realmShiyi = realm.where(Shiyi.class).findFirst();
                                 realmShiyi.getGroups().addAll(shiyi.getGroups());
                                 success = true;
                             } else if (name.equalsIgnoreCase("PersonDetail.txt") || name.equalsIgnoreCase("PersonDetails.txt")) {
-                                String json = LshFileUtils.readFile(file).toString();
+                                String json = FileUtils.readFile(file).toString();
                                 java.lang.reflect.Type typeOfT = new TypeToken<ArrayList<PersonDetail>>() {
                                 }.getType();
                                 List<PersonDetail> personDetails = new Gson().fromJson(json, typeOfT);
@@ -108,7 +108,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
                                 realm.copyToRealmOrUpdate(personDetails);
                                 success = true;
                             } else if (name.equalsIgnoreCase("TypeLabel.txt") || name.equalsIgnoreCase("TypeLabels.txt")) {
-                                String json = LshFileUtils.readFile(file).toString();
+                                String json = FileUtils.readFile(file).toString();
                                 java.lang.reflect.Type type = new TypeToken<ArrayList<TypeLabel>>() {
                                 }.getType();
                                 List<TypeLabel> typeLabels = new Gson().fromJson(json, type);
@@ -134,7 +134,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
     @Override
     public void backupDatabase() {
         if (!RealmTool.checkBackupRealm()) {
-            LshToastUtils.show("数据库没有发生更改, 无须备份");
+            ToastUtils.show("数据库没有发生更改, 无须备份");
             return;
         }
         UrlConnector.uploadRealmData()
@@ -142,7 +142,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(uploadInfoHttpInfo -> {
                     if (uploadInfoHttpInfo != null && uploadInfoHttpInfo.data != null) {
-                        LshToastUtils.show("已成功备份至云端");
+                        ToastUtils.show("已成功备份至云端");
                         SharedPreferenceTools.refreshLastBackupRealmTime();
                     }
                 }, new DefaultThrowableConsumer());
@@ -150,7 +150,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
 
     @Override
     public void outputWordRepo() {
-        if (LshClickUtils.isFastDoubleClick()) {
+        if (ClickUtils.isFastDoubleClick()) {
             return;
         }
         long realmModifiedTime = new File(getRealm().getPath()).lastModified();
@@ -174,7 +174,7 @@ public class SettingsPresenter extends RealmPresenterImpl<SettingsContract.View>
                             }
                         }
                     }
-                    LshFileUtils.writeFile(file, personNames);
+                    FileUtils.writeFile(file, personNames);
                     return true;
                 })
                 .observeOn(AndroidSchedulers.mainThread())

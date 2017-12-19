@@ -3,7 +3,7 @@ package com.linsh.lshapp.mvp.type_detail;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
-import com.linsh.lshapp.model.bean.db.TypeDetail;
+import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
 import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
 
 import io.reactivex.disposables.Disposable;

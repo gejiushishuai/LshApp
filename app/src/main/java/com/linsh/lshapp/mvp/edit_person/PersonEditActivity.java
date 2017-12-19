@@ -9,21 +9,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.linsh.dialog.LshColorDialog;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
 import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshIdTools;
-import com.linsh.lshutils.Rx.Action;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.Basic.LshToastUtils;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.utils.LshIntentUtils;
-import com.linsh.lshutils.utils.LshListUtils;
-import com.linsh.lshutils.view.LshColorDialog;
+import com.linsh.utilseverywhere.IntentUtils;
+import com.linsh.utilseverywhere.ListUtils;
+import com.linsh.utilseverywhere.Rx.Action;
+import com.linsh.utilseverywhere.StringUtils;
+import com.linsh.utilseverywhere.ToastUtils;
+import com.linsh.utilseverywhere.tools.IntentBuilder;
 
 import java.io.File;
 import java.util.List;
@@ -59,7 +59,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     @Override
     protected String getToolbarTitle() {
         String personId = getPersonId();
-        return LshStringUtils.isEmpty(personId) ? "添加联系人" : "修改联系人";
+        return StringUtils.isEmpty(personId) ? "添加联系人" : "修改联系人";
     }
 
     @Override
@@ -117,7 +117,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
 
     // 点击修改头像
     private void editAvatar() {
-        LshIntentUtils.gotoPickPhoto(this, REQUEST_CODE_PICK_PHOTO);
+        IntentUtils.gotoPickPhoto(this, REQUEST_CODE_PICK_PHOTO);
     }
 
     // 点击修改姓名
@@ -131,7 +131,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         if (isEmpty(inputText)) {
-                            LshToastUtils.show("姓名不能为空");
+                            ToastUtils.show("姓名不能为空");
                             return;
                         }
                         if (!inputText.equals(lastName)) {
@@ -157,7 +157,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
                     @Override
                     public void onClick(LshColorDialog dialog, String inputText) {
                         if (isEmpty(inputText)) {
-                            LshToastUtils.show("描述不能为空");
+                            ToastUtils.show("描述不能为空");
                             return;
                         }
                         if (!inputText.equals(lastDesc)) {
@@ -233,7 +233,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     private List<String> getGroups() {
-        List<String> groups = LshListUtils.getStringList(mPresenter.getGroups(), new Action<String, Group>() {
+        List<String> groups = ListUtils.getStringList(mPresenter.getGroups(), new Action<String, Group>() {
             @Override
             public String call(Group group) {
                 return group.getName();
@@ -281,7 +281,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
             case REQUEST_CODE_PICK_PHOTO:
                 if (resultCode == RESULT_OK && data != null) {
                     mCurPickedFile = LshFileFactory.getUploadAvatarFile(LshIdTools.getTimeId());
-                    LshIntentUtils.gotoCropPhoto(this, REQUEST_CODE_CROP_PHOTO, data.getData(), Uri.fromFile(mCurPickedFile), 1, 1, 1600, 1600);
+                    IntentUtils.gotoCropPhoto(this, REQUEST_CODE_CROP_PHOTO, data.getData(), Uri.fromFile(mCurPickedFile), 1, 1, 1600, 1600);
                 }
                 break;
             // 剪裁照片后返回
@@ -303,14 +303,14 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     @Override
     public void showPersonDetail(String personId) {
         finish();
-        LshActivityUtils.newIntent(PersonDetailActivity.class)
+        IntentUtils.buildIntent(PersonDetailActivity.class)
                 .putExtra(personId)
                 .startActivity(getActivity());
     }
 
     @Override
     public String getPersonId() {
-        return LshActivityUtils.getStringExtra(getActivity());
+        return IntentBuilder.getStringExtra(getActivity());
     }
 
     @Override
@@ -335,7 +335,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
             setSex(savedInstanceState.getString("sex"));
             setGroup(savedInstanceState.getString("group"));
             String avatarPath = savedInstanceState.getString("avatar");
-            if (LshStringUtils.notEmpty(avatarPath)) {
+            if (StringUtils.notEmpty(avatarPath)) {
                 mCurSelectedFile = new File(avatarPath);
                 ImageTools.setImage(ivAvatar, mCurSelectedFile);
             }
@@ -371,7 +371,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     private void setAvatar(String avatarThumb, String avatar) {
-        if (!LshStringUtils.isEmpty(avatar)) {
+        if (!StringUtils.isEmpty(avatar)) {
             ImageTools.loadAvatar(ivAvatar, avatarThumb, avatar);
         }
     }
@@ -417,7 +417,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     private boolean isEmpty(String text) {
-        return LshStringUtils.isEmpty(text) || emptyText.equals(text);
+        return StringUtils.isEmpty(text) || emptyText.equals(text);
     }
 
     private String emptyToEmpty(String text) {

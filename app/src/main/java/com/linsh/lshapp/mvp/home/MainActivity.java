@@ -9,12 +9,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.linsh.utilseverywhere.ResourceUtils;
+import com.linsh.utilseverywhere.SystemUtils;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseViewActivity;
 import com.linsh.lshapp.mvp.home.shiyi.ShiyiFragment;
 import com.linsh.lshapp.tools.MainFragmentHelper;
-import com.linsh.lshutils.utils.LshResourceUtils;
-import com.linsh.lshutils.utils.LshSystemUtils;
 
 public class MainActivity extends BaseViewActivity<MainContract.MainPresenter> implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -28,12 +28,12 @@ public class MainActivity extends BaseViewActivity<MainContract.MainPresenter> i
 
     @Override
     protected void initView() {
-        LshSystemUtils.setTranslucentStatusBarWithInsertion(this, LshResourceUtils.getColor(R.color.color_theme_dark_blue_pressed));
+        SystemUtils.setTranslucentStatusBarWithInsertion(this, ResourceUtils.getColor(R.color.color_theme_dark_blue_pressed));
         // 初始化ToolBar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         // 初始化菜单栏
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);

@@ -12,10 +12,9 @@ import com.linsh.lshapp.model.bean.ShiyiContact;
 import com.linsh.lshapp.mvp.person_detail.PersonDetailActivity;
 import com.linsh.lshapp.view.LshPopupWindow;
 import com.linsh.lshutils.adapter.LshRecyclerViewAdapter;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.utils.LshIntentUtils;
-import com.linsh.lshutils.utils.LshPermissionUtils;
+import com.linsh.utilseverywhere.IntentUtils;
+import com.linsh.utilseverywhere.PermissionUtils;
+import com.linsh.utilseverywhere.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +50,8 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
         mAdapter.setOnImportContactsListener(this);
         mAdapter.setOnItemLongClickListener(this);
 
-        if (!LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
-            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
+        if (!PermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
+            PermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
         }
     }
 
@@ -70,18 +69,18 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
 
     @Override
     public void onClickStatus(ContactMixer mixer, int position) {
-        if (LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
+        if (PermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
             curItem = position;
             mPresenter.onClickStatus(mixer);
         } else {
-            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
+            PermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
         }
     }
 
     @Override
     public void onItemLongClick(View view, int position) {
-        if (!LshPermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
-            LshPermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
+        if (!PermissionUtils.checkPermission(Manifest.permission.WRITE_CONTACTS)) {
+            PermissionUtils.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, null);
             return;
         }
         curItem = position;
@@ -98,7 +97,7 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
             items.add("跳转至该拾意联系人");
         }
         if (mixer.getStatus() == ContactMixer.FINISH_UPDATE && contact != null && person != null &&
-                LshStringUtils.isAllNotEmpty(contact.getPhotoUri(), person.getAvatar())) {
+                StringUtils.isAllNotEmpty(contact.getPhotoUri(), person.getAvatar())) {
             items.add(0, "更新头像");
         }
         LshPopupWindow lshPopupWindow = new LshPopupWindow(this);
@@ -117,7 +116,7 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
                                 break;
                             case "跳转至该拾意联系人":
                                 String id = person != null ? person.getId() : contact.getPersonId();
-                                LshActivityUtils.newIntent(PersonDetailActivity.class)
+                                IntentUtils.buildIntent(PersonDetailActivity.class)
                                         .putExtra(id)
                                         .startActivity(getActivity());
                                 break;
@@ -131,11 +130,11 @@ public class SyncContactsActivity extends BaseToolbarActivity<SyncContactsContra
     private void gotoContact(ShiyiContact contact) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             String lookupKey = contact.getLookupKey();
-            if (LshStringUtils.notEmpty(lookupKey)) {
-                LshIntentUtils.gotoContactDetail(contact.getId(), lookupKey);
+            if (StringUtils.notEmpty(lookupKey)) {
+                IntentUtils.gotoContactDetail(contact.getId(), lookupKey);
             }
         } else {
-            LshIntentUtils.gotoContacts();
+            IntentUtils.gotoContacts();
         }
     }
 }

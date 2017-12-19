@@ -15,11 +15,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.linsh.utilseverywhere.module.SimpleDate;
+import com.linsh.utilseverywhere.DateUtils;
+import com.linsh.utilseverywhere.LunarCalendarUtils;
+import com.linsh.utilseverywhere.UnitConverseUtils;
 import com.linsh.lshapp.R;
-import com.linsh.lshutils.module.SimpleDate;
-import com.linsh.lshutils.utils.LshDateUtils;
-import com.linsh.lshutils.utils.LshLunarCalendarUtils;
-import com.linsh.lshutils.utils.LshUnitConverseUtils;
 
 import java.util.Date;
 
@@ -52,7 +52,7 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
 
     private int startYear = 1900;
     private int endYear = 2100;
-    private int curYearIndex = LshDateUtils.getCurYear() - startYear;
+    private int curYearIndex = DateUtils.getCurYear() - startYear;
     private int curMonthIndex = 0;
     private int curDayIndex = 0;
 
@@ -95,7 +95,7 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
         setContentView(mView);
         // 设置 Margin, 在 inflate() 时丢失该属性
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
-        int dp10 = LshUnitConverseUtils.dp2px(10);
+        int dp10 = UnitConverseUtils.dp2px(10);
         layoutParams.setMargins(dp10, dp10, dp10, dp10);
         // 设置 MatchParent 及在底部弹出窗口
         Window window = getWindow();
@@ -179,7 +179,7 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
 
     private void setMonths(boolean isLunar) {
         if (isLunar) {
-            months = LshLunarCalendarUtils.getLunarMonths(false);
+            months = LunarCalendarUtils.getLunarMonths(false);
         } else {
             months = new String[12];
             for (int i = 0; i < 12; i++) {
@@ -192,7 +192,7 @@ public class TimePickerDialog extends Dialog implements NumberPickerView.OnValue
 
     private void setDays(int month, boolean isLunar) {
         if (isLunar) {
-            days = LshLunarCalendarUtils.getLunarDays();
+            days = LunarCalendarUtils.getLunarDays();
             pvDay.setHintText("");
         } else {
             int num = 30;

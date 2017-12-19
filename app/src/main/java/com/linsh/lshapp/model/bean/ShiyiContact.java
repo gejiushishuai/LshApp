@@ -5,7 +5,7 @@ import android.support.annotation.RequiresApi;
 
 import com.github.tamir7.contacts.Contact;
 import com.github.tamir7.contacts.Event;
-import com.linsh.lshutils.utils.LshOSUtils;
+import com.linsh.utilseverywhere.OSUtils;
 
 import java.util.List;
 
@@ -95,7 +95,7 @@ public class ShiyiContact extends Contact {
     // 重写父类方法
     @Override
     protected Contact addEvent(Event event) {
-        if (LshOSUtils.getRomType() == LshOSUtils.ROM.MIUI) {
+        if (OSUtils.getRomType() == OSUtils.ROM.MIUI) {
             String startDate = event.getStartDate();
             if (startDate.startsWith("--")) {
                 event.setStartDate(startDate.substring(2, startDate.length()));

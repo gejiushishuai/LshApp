@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.R;
-import com.linsh.lshapp.model.bean.db.Group;
-import com.linsh.lshapp.model.bean.db.Person;
+import com.linsh.lshapp.model.bean.db.shiyi.Group;
+import com.linsh.lshapp.model.bean.db.shiyi.Person;
 import com.linsh.lshapp.tools.ImageTools;
 import com.linsh.lshutils.adapter.LshExpandableRcvAdapter;
-import com.linsh.lshutils.adapter.LshViewHolder;
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
+import com.linsh.lshutils.viewholder.LshViewHolder;
 
 import java.util.List;
 
@@ -189,9 +189,9 @@ public class ShiyiAdapter extends LshExpandableRcvAdapter<Group, Person> {
             } else if (oldPersonPosition >= 0 && newPersonPosition >= 0) {
                 Person oldPerson = mOldData.get(oldExpandedPosition).getPersons().get(oldPersonPosition);
                 Person newPerson = mNewData.get(newExpandedPosition).getPersons().get(newPersonPosition);
-                return LshStringUtils.isEquals(oldPerson.getName(), newPerson.getName())
-                        && LshStringUtils.isEquals(oldPerson.getDescribe(), newPerson.getDescribe())
-                        && LshStringUtils.isEquals(oldPerson.getAvatar(), newPerson.getAvatar())
+                return StringUtils.isEquals(oldPerson.getName(), newPerson.getName())
+                        && StringUtils.isEquals(oldPerson.getDescribe(), newPerson.getDescribe())
+                        && StringUtils.isEquals(oldPerson.getAvatar(), newPerson.getAvatar())
                         && oldPerson.isSyncWithContacts() == newPerson.isSyncWithContacts();
             }
             return false;
