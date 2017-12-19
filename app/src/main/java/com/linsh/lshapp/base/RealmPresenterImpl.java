@@ -2,6 +2,9 @@ package com.linsh.lshapp.base;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 /**
  * Created by Senh Linsh on 17/4/24.
@@ -56,5 +59,17 @@ public abstract class RealmPresenterImpl<T extends BaseContract.BaseView> extend
 
     protected Realm getRealm() {
         return mRealm;
+    }
+
+    protected void removeRealmChangeListeners(RealmResults<? extends RealmModel> realmResults) {
+        if (realmResults != null && realmResults.isValid()) {
+            realmResults.removeAllChangeListeners();
+        }
+    }
+
+    protected void removeRealmChangeListeners(RealmObject realmObject) {
+        if (realmObject != null && realmObject.isValid()) {
+            realmObject.removeAllChangeListeners();
+        }
     }
 }

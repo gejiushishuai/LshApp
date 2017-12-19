@@ -3,9 +3,9 @@ package com.linsh.lshapp.tools;
 import android.app.Application;
 import android.util.Log;
 
+import com.linsh.utilseverywhere.IOUtils;
 import com.linsh.lshapp.common.LshConfig;
 import com.linsh.lshapp.common.LshConstants;
-import com.linsh.lshutils.utils.Basic.LshIOUtils;
 
 import java.io.File;
 
@@ -23,7 +23,7 @@ public class RealmTool {
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name(LshConstants.NAME_REALM_FILE)
                 .encryptionKey(getEncryptionKey())
-                .schemaVersion(8)
+                .schemaVersion(9)
                 .migration(new ShiyiMigration())
                 .build();
         // 设置默认配置
@@ -51,7 +51,7 @@ public class RealmTool {
                 Log.i("LshLog", "file not exists");
             }
         } finally {
-            LshIOUtils.close(realm);
+            IOUtils.close(realm);
         }
         return false;
     }

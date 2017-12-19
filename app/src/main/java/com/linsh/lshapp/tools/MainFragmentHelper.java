@@ -6,12 +6,13 @@ import android.view.MenuItem;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.mvp.home.MainActivity;
+import com.linsh.lshapp.mvp.home.huhu.HuhuFragment;
 import com.linsh.lshapp.mvp.home.shiyi.ShiyiFragment;
 import com.linsh.lshapp.mvp.home.yingmao.YingmaoFragment;
 import com.linsh.lshapp.mvp.search.SearchActivity;
 import com.linsh.lshapp.mvp.setting.SettingsActivity;
-import com.linsh.lshutils.utils.LshActivityUtils;
-import com.linsh.lshutils.utils.LshFragmentUtils;
+import com.linsh.lshapp.utils.LshFragmentUtils;
+import com.linsh.utilseverywhere.IntentUtils;
 
 /**
  * Created by linsh on 17/1/25.
@@ -32,13 +33,13 @@ public class MainFragmentHelper {
         } else if (id == R.id.nav_shencai) {
 //            fragment = new ShenCaiFragment();
         } else if (id == R.id.nav_huhu) {
-//            fragment = new XiaoHuHuFragment();
+            fragment = new HuhuFragment();
         } else if (id == R.id.nav_yingmao) {
             fragment = new YingmaoFragment();
         } else if (id == R.id.nav_seek) {
-            LshActivityUtils.newIntent(SearchActivity.class).startActivity(activity);
+            IntentUtils.buildIntent(SearchActivity.class).startActivity(activity);
         } else if (id == R.id.nav_setting) {
-            LshActivityUtils.newIntent(SettingsActivity.class).startActivity(activity);
+            IntentUtils.buildIntent(SettingsActivity.class).startActivity(activity);
         }
         if (fragment != null) {
             replaceFragment(fragment, activity);

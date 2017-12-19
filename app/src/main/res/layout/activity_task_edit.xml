@@ -1,0 +1,27 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_theme_window_bg"
+    android:orientation="vertical">
+
+    <com.linsh.lshapp.view.EditTextPreference
+        android:id="@+id/tp_task_edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:detailText="未填写"
+        app:titleText="任务名称"/>
+
+    <include layout="@layout/view_line"/>
+
+    <com.linsh.lshapp.view.EditTextPreference
+        android:id="@+id/tp_task_edit_frequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:detailText="未填写"
+        app:titleText="频率"/>
+
+    <include layout="@layout/view_line"/>
+
+</LinearLayout>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_item_huhu_finish"
+            style="@style/Text_detail"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@color/color_theme_dark_blue"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="打卡"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/tv_item_huhu_stop"
+            style="@style/Text_detail"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@color/color_theme_yellow"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="暂停"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/tv_item_huhu_delete"
+            style="@style/Text_detail"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@android:color/holo_red_light"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="删除"
+            android:textColor="@color/white"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_item_huhu_title"
+            style="@style/Text_title"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            tools:text="我要早起!"/>
+
+        <TextView
+            android:id="@+id/tv_item_huhu_frequency"
+            style="@style/Text_title2"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            tools:text="7天"/>
+
+        <TextView
+            android:id="@+id/tv_item_huhu_status"
+            style="@style/Text_detail"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="5dp"
+            tools:text="缺打10次"/>
+
+    </LinearLayout>
+
+</com.daimajia.swipe.SwipeLayout>

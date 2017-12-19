@@ -97,6 +97,8 @@ dependencies {
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     // PickerView
     compile 'cn.carbswang.android:NumberPickerView:1.1.1'
+    // 滑动删除
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
 
     //////////  个人
     compile project(':LshUtils:lshutils')

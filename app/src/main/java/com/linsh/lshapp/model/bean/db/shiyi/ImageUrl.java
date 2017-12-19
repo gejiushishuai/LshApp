@@ -1,4 +1,4 @@
-package com.linsh.lshapp.model.bean.db;
+package com.linsh.lshapp.model.bean.db.shiyi;
 
 import io.realm.RealmObject;
 

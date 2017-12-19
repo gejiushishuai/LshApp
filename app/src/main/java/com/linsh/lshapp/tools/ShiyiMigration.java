@@ -2,8 +2,8 @@ package com.linsh.lshapp.tools;
 
 import android.util.Log;
 
-import com.linsh.lshutils.utils.Basic.LshStringUtils;
-import com.linsh.lshutils.utils.LshRegexUtils;
+import com.linsh.utilseverywhere.RegexUtils;
+import com.linsh.utilseverywhere.StringUtils;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,7 +56,7 @@ public class ShiyiMigration implements RealmMigration {
                             DynamicRealmObject personAlbum = realm.createObject("PersonAlbum", person.get("id"));
                             String avatar = person.get("avatar");
                             String avatarThumb = person.get("avatarThumb");
-                            if (!LshStringUtils.isEmpty(avatar) && LshRegexUtils.isURL(avatar)) {
+                            if (!StringUtils.isEmpty(avatar) && RegexUtils.isURL(avatar)) {
                                 DynamicRealmObject imageUrl = realm.createObject("ImageUrl");
                                 imageUrl.setString("url", avatar);
                                 imageUrl.setString("thumbUrl", avatarThumb);
@@ -87,6 +87,23 @@ public class ShiyiMigration implements RealmMigration {
                             });
                         });
                 break;
+            case 8:
+                schema.create("Task")
+                        .addField("id", int.class)
+                        .addPrimaryKey("id")
+                        .addField("title", String.class)
+                        .addField("frequency", int.class)
+                        .addField("unit", String.class)
+                        .addField("startTime", long.class)
+                        .addField("lastUpdateTime", long.class)
+                        .addField("progress", int.class);
+                schema.create("Record")
+                        .addField("id", int.class)
+                        .addField("state", int.class)
+                        .addField("note", String.class)
+                        .addField("timestamp", long.class);
+                break;
+
         }
     }
 }
