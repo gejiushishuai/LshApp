@@ -38,7 +38,7 @@ android {
         release {
             minifyEnabled true
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), project.file('proguard-rules.pro')
         }
         debug {
             debuggable true
@@ -89,8 +89,14 @@ dependencies {
     // Multidex
     compile 'com.android.support:multidex:1.0.1'
     // Tinker
-    provided 'com.tencent.tinker:tinker-android-anno:1.7.9'
-    compile 'com.tencent.tinker:tinker-android-lib:1.7.9'
+//    if (is_gradle_3()) {
+//        implementation("com.tencent.tinker:tinker-android-lib:$tinker_version") { changing = true }
+//        annotationProcessor("com.tencent.tinker:tinker-android-anno:$tinker_version") { changing = true }
+//        compileOnly("com.tencent.tinker:tinker-android-anno:$tinker_version") { changing = true }
+//    } else {
+        compile("com.tencent.tinker:tinker-android-lib:$tinker_version") { changing = true }
+        provided("com.tencent.tinker:tinker-android-anno:$tinker_version") { changing = true }
+//    }
     // 通讯录
     compile 'com.github.yuanxiang05:Contacts:1.0.4'
     // PhotoView
@@ -106,4 +112,4 @@ dependencies {
 //    compile 'com.github.SenhLinsh:LshViews:1.0.2'
 }
 
-apply from: 'tinkerpatch.gradle'
+//apply from: 'tinkerpatch.gradle'

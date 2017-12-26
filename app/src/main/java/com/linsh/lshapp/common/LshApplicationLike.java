@@ -65,6 +65,10 @@ public class LshApplicationLike extends DefaultApplicationLike {
     public void onCreate() {
         super.onCreate();
         Application application = getApplication();
+        init(application);
+    }
+
+    public static void init(Application application) {
         Utils.init(application);
         FileManagerUtils.initAppDir(new File(LshFileFactory.getAppDir()));
 
