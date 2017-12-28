@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
 
 android {
@@ -77,7 +79,7 @@ dependencies {
     // 汉字转拼音
     compile 'com.belerweb:pinyin4j:2.5.1'
     // Rxjava
-    compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.5'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -109,7 +111,12 @@ dependencies {
     //////////  个人
     compile project(':LshUtils:lshutils')
     compile project(':LshViews:lshviews')
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 //    compile 'com.github.SenhLinsh:LshViews:1.0.2'
+}
+
+repositories {
+    mavenCentral()
 }
 
 //apply from: 'tinkerpatch.gradle'
