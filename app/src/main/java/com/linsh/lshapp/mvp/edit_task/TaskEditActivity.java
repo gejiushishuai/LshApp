@@ -9,7 +9,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseToolbarActivity;
 import com.linsh.lshapp.model.bean.db.huhu.Frequency;
 import com.linsh.lshapp.model.bean.db.huhu.Task;
-import com.linsh.lshapp.view.EditTextPreference;
+import com.linsh.lshapp.view.LshTextPreference;
 import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.utilseverywhere.ToastUtils;
 import com.linsh.utilseverywhere.tools.IntentBuilder;
@@ -20,9 +20,9 @@ import butterknife.OnClick;
 public class TaskEditActivity extends BaseToolbarActivity<TaskEditContract.Presenter> implements TaskEditContract.View {
 
     @BindView(R.id.tp_task_edit_name)
-    EditTextPreference tpTaskName;
+    LshTextPreference tpTaskName;
     @BindView(R.id.tp_task_edit_frequency)
-    EditTextPreference tpFrequency;
+    LshTextPreference tpFrequency;
 
     private long mTaskId = -1;
     private MenuItem mConfirmItem;

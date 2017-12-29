@@ -2,7 +2,7 @@ package com.linsh.lshapp.mvp.home.huhu;
 
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.bean.db.huhu.Task;
-import com.linsh.lshapp.task.db.shiyi.HuhuDbHelper;
+import com.linsh.lshapp.task.db.HuhuDbHelper;
 
 import io.reactivex.disposables.Disposable;
 import io.realm.RealmResults;

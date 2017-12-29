@@ -34,6 +34,7 @@
         <activity android:name=".mvp.search.SearchActivity"/>
         <activity android:name=".mvp.album.AlbumActivity"/>
         <activity android:name=".mvp.edit_task.TaskEditActivity"/>
+        <activity android:name=".mvp.edit_account.AccountEditActivity"/>
 
         <service android:name=".service.UpdateService"/>
         <service android:name=".lib.tinker.service.TinkerResultService"/>

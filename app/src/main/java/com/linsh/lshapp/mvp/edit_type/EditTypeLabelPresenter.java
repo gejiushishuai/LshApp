@@ -5,8 +5,8 @@ import com.linsh.lshapp.model.action.AsyncTransaction;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbUtils;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbUtils;
 import com.linsh.lshapp.tools.LshRxUtils;
 
 import java.util.List;

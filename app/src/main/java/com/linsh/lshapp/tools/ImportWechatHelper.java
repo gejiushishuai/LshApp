@@ -8,7 +8,7 @@ import com.linsh.lshapp.model.bean.db.shiyi.Group;
 import com.linsh.lshapp.model.bean.db.shiyi.Person;
 import com.linsh.lshapp.model.bean.db.shiyi.Shiyi;
 import com.linsh.lshapp.service.ImportAppDataService;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
 import com.linsh.lshapp.view.ImportWechatFloatingView;
 
 import java.util.ArrayList;

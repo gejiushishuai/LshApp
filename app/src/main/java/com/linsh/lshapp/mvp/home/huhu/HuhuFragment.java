@@ -51,7 +51,6 @@ public class HuhuFragment extends BaseMainFragment<HuhuContract.Presenter> imple
 
             @Override
             public void onStopClick(int position) {
-
             }
 
             @Override

@@ -1,4 +1,4 @@
-package com.linsh.lshapp.task.db.shiyi;
+package com.linsh.lshapp.task.db;
 
 import com.linsh.lshapp.model.bean.Sortable;
 

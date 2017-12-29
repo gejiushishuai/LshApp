@@ -148,7 +148,7 @@ public class HuhuAdapter extends LshHeaderFooterRcvAdapter<Task, RecyclerView.Vi
         super.setData(data);
     }
 
-    public class MyViewHolder extends LshViewHolder {
+    private class MyViewHolder extends LshViewHolder {
 
         private TextView tvFinish;
         private TextView tvStop;

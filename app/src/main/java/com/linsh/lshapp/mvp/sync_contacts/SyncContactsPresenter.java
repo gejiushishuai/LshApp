@@ -29,7 +29,7 @@ import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
 import com.linsh.lshapp.model.bean.http.HttpInfo;
 import com.linsh.lshapp.model.bean.http.UploadInfo;
 import com.linsh.lshapp.model.throwabes.CustomThrowable;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.ContactsAdder;
 import com.linsh.lshapp.tools.HttpErrorCatcher;

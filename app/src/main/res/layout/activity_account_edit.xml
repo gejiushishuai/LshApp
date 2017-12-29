@@ -6,21 +6,30 @@
     android:background="@color/color_theme_window_bg"
     android:orientation="vertical">
 
-    <com.linsh.lshapp.view.LshTextPreference
-        android:id="@+id/tp_task_edit_name"
+    <com.linsh.lshapp.view.LshImagePreference
+        android:id="@+id/ipAvatar"
+        app:imageSrc="@drawable/ic_contact"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:detailText="未填写"
-        app:titleText="任务名称"/>
+        app:titleText="头像"/>
 
     <include layout="@layout/view_line"/>
 
     <com.linsh.lshapp.view.LshTextPreference
-        android:id="@+id/tp_task_edit_frequency"
+        android:id="@+id/tpName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:detailText="未填写"
-        app:titleText="频率"/>
+        app:detailText="---"
+        app:titleText="帐号"/>
+
+    <include layout="@layout/view_line"/>
+
+    <com.linsh.lshapp.view.LshTextPreference
+        android:id="@+id/tpWebsite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:detailText="---"
+        app:titleText="网站"/>
 
     <include layout="@layout/view_line"/>
 

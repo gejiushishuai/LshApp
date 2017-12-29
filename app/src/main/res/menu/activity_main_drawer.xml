@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_shiyi"
-            android:title="拾遗"/>
+            android:title="拾意"/>
         <item
             android:id="@+id/nav_miqi"
             android:title="觅奇"/>

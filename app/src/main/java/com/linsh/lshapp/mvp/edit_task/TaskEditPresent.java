@@ -3,7 +3,7 @@ package com.linsh.lshapp.mvp.edit_task;
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.bean.db.huhu.Frequency;
 import com.linsh.lshapp.model.bean.db.huhu.Task;
-import com.linsh.lshapp.task.db.shiyi.HuhuDbHelper;
+import com.linsh.lshapp.task.db.HuhuDbHelper;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;

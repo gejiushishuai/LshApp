@@ -2,7 +2,7 @@ package com.linsh.lshapp.mvp.album;
 
 import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.bean.db.shiyi.PersonAlbum;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
 
 import io.realm.RealmChangeListener;
 

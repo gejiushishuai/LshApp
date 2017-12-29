@@ -6,17 +6,23 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseViewActivity;
 import com.linsh.lshutils.adapter.LshViewPagerAdapter;
+import com.linsh.utilseverywhere.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-
+/**
+ * <pre>
+ *    author : Senh Linsh
+ *    github : https://github.com/SenhLinsh
+ *    date   : 2017/12/26
+ *    desc   : 展示图片的 Activity, 需要传入图片链接或其数组
+ * </pre>
+ */
 public class PhotoViewActivity extends BaseViewActivity<PhotoViewContract.Presenter> implements PhotoViewContract.View {
 
     public static final String EXTRA_URL = "string_array_list_extra";
@@ -24,7 +30,6 @@ public class PhotoViewActivity extends BaseViewActivity<PhotoViewContract.Presen
     public static final String EXTRA_DISPLAY_ITEM = "extra_display_item";
     private List<String> mUrls = new ArrayList<>();
 
-    @BindView(R.id.vp_photo_view)
     ViewPager mViewPager;
 
     @Override
@@ -34,6 +39,8 @@ public class PhotoViewActivity extends BaseViewActivity<PhotoViewContract.Presen
 
     @Override
     protected void initView() {
+        mViewPager = findViewById(R.id.vp_photo_view);
+
         String url = getIntent().getStringExtra(EXTRA_URL);
         if (StringUtils.notEmpty(url)) {
             mUrls.add(url);

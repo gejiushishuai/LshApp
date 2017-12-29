@@ -5,7 +5,7 @@ import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
 import com.linsh.lshapp.model.bean.db.shiyi.Type;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
 
 import java.util.List;
 

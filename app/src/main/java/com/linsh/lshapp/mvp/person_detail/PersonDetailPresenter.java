@@ -9,7 +9,7 @@ import com.linsh.lshapp.model.bean.db.shiyi.Person;
 import com.linsh.lshapp.model.bean.db.shiyi.PersonAlbum;
 import com.linsh.lshapp.model.bean.db.shiyi.PersonDetail;
 import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
 
 import java.util.List;
 

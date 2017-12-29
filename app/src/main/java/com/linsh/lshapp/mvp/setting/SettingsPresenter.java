@@ -17,7 +17,7 @@ import com.linsh.lshapp.model.bean.db.shiyi.Shiyi;
 import com.linsh.lshapp.model.bean.db.shiyi.Type;
 import com.linsh.lshapp.model.bean.db.shiyi.TypeDetail;
 import com.linsh.lshapp.model.bean.db.shiyi.TypeLabel;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
 import com.linsh.lshapp.task.network.UrlConnector;
 import com.linsh.lshapp.tools.LshFileFactory;
 import com.linsh.lshapp.tools.LshRxUtils;

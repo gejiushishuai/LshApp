@@ -19,6 +19,8 @@ import io.realm.RealmSchema;
  */
 public class ShiyiMigration implements RealmMigration {
 
+    private static final int VERSION = 10;
+
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         Log.i("LshLog", "Shiyi 数据库更新 --- oldVersion = " + oldVersion + ",  newVersion = " + newVersion);
@@ -103,7 +105,19 @@ public class ShiyiMigration implements RealmMigration {
                         .addField("note", String.class)
                         .addField("timestamp", long.class);
                 break;
-
+            case 9:
+                schema.create("Website")
+                        .addField("name", String.class)
+                        .addPrimaryKey("name")
+                        .addField("avatar", String.class);
+                schema.create("Account")
+                        .addField("id", long.class)
+                        .addPrimaryKey("id")
+                        .addRealmObjectField("website", schema.get("Website"))
+                        .addField("name", String.class)
+                        .addField("avatar", String.class)
+                        .addRealmListField("loginWays", schema.get("Account"));
+                break;
         }
     }
 }

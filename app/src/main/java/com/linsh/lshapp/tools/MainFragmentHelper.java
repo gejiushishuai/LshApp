@@ -7,6 +7,7 @@ import com.linsh.lshapp.R;
 import com.linsh.lshapp.base.BaseMainFragment;
 import com.linsh.lshapp.mvp.home.MainActivity;
 import com.linsh.lshapp.mvp.home.huhu.HuhuFragment;
+import com.linsh.lshapp.mvp.home.miqi.MiqiFragment;
 import com.linsh.lshapp.mvp.home.shiyi.ShiyiFragment;
 import com.linsh.lshapp.mvp.home.yingmao.YingmaoFragment;
 import com.linsh.lshapp.mvp.search.SearchActivity;
@@ -29,7 +30,7 @@ public class MainFragmentHelper {
         if (id == R.id.nav_shiyi) {
             fragment = new ShiyiFragment();
         } else if (id == R.id.nav_miqi) {
-//            fragment = new MiQiFragment();
+            fragment = new MiqiFragment();
         } else if (id == R.id.nav_shencai) {
 //            fragment = new ShenCaiFragment();
         } else if (id == R.id.nav_huhu) {

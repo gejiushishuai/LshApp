@@ -4,7 +4,7 @@ import com.linsh.lshapp.base.RealmPresenterImpl;
 import com.linsh.lshapp.model.action.DefaultThrowableConsumer;
 import com.linsh.lshapp.model.action.EmptyConsumer;
 import com.linsh.lshapp.model.bean.db.shiyi.Group;
-import com.linsh.lshapp.task.db.shiyi.ShiyiDbHelper;
+import com.linsh.lshapp.task.db.ShiyiDbHelper;
 
 import java.util.List;
 

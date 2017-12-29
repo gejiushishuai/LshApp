@@ -4,11 +4,12 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
+import com.linsh.ImageViewHelper;
 import com.linsh.TextViewHelper;
 import com.linsh.lshapp.R;
 import com.linsh.utilseverywhere.ResourceUtils;
 import com.linsh.utilseverywhere.UnitConverseUtils;
-import com.linsh.views.preference.TextPreference;
+import com.linsh.views.preference.ImagePreference;
 
 /**
  * <pre>
@@ -18,13 +19,13 @@ import com.linsh.views.preference.TextPreference;
  *    desc   :
  * </pre>
  */
-public class EditTextPreference extends TextPreference {
+public class LshImagePreference extends ImagePreference {
 
-    public EditTextPreference(Context context) {
+    public LshImagePreference(Context context) {
         super(context);
     }
 
-    public EditTextPreference(Context context, @Nullable AttributeSet attrs) {
+    public LshImagePreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -37,10 +38,8 @@ public class EditTextPreference extends TextPreference {
     }
 
     @Override
-    protected TextViewHelper initDetailHelper() {
-        TextViewHelper textViewHelper = super.initDetailHelper();
-        textViewHelper.setTextSize(UnitConverseUtils.sp2px(15));
-        textViewHelper.setTextColor(ResourceUtils.getColor(R.color.text_detail));
-        return textViewHelper;
+    protected ImageViewHelper initDetailHelper() {
+        ImageViewHelper imageViewHelper = super.initDetailHelper();
+        return imageViewHelper;
     }
 }
