@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import butterknife.ButterKnife;
 
 /**
  * Created by Senh Linsh on 16/12/5.
@@ -28,8 +27,6 @@ public abstract class BaseFragment<T extends BaseActivity> extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
-
         initView(view);
         initView(view, savedInstanceState);
         initData();

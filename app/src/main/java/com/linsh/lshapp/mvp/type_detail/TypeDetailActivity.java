@@ -14,16 +14,11 @@ import com.linsh.utilseverywhere.ClipboardUtils;
 import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.utilseverywhere.tools.IntentBuilder;
 
-import butterknife.BindView;
-
 public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.Presenter>
         implements TypeDetailContract.View, View.OnLongClickListener {
 
-    @BindView(R.id.et_type_detail_info)
     EditText etInfo;
-    @BindView(R.id.et_type_detail_desc)
     EditText etDesc;
-    @BindView(R.id.tv_type_detail_timestamp)
     TextView tvTimestamp;
 
     private boolean isEditMode;
@@ -36,6 +31,11 @@ public class TypeDetailActivity extends BaseToolbarActivity<TypeDetailContract.P
 
     @Override
     protected void initView() {
+        etInfo = findViewById(R.id.et_type_detail_info);
+        etDesc = findViewById(R.id.et_type_detail_desc);
+        tvTimestamp = findViewById(R.id.tv_type_detail_timestamp);
+
+
         mTypeInfo = TypeInfoHelper.getHelper(getToolbarTitle());
     }
 

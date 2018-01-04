@@ -28,23 +28,14 @@ import com.linsh.utilseverywhere.tools.IntentBuilder;
 import java.io.File;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.OnClick;
+public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.Presenter> implements PersonEditContract.View, View.OnClickListener {
 
-public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.Presenter> implements PersonEditContract.View {
-
-    @BindView(R.id.iv_shiyi_person_add_avatar)
-    ImageView ivAvatar;
-    @BindView(R.id.tv_shiyi_person_add_name)
-    TextView tvName;
-    @BindView(R.id.tv_shiyi_person_add_desc)
-    TextView tvDesc;
-    @BindView(R.id.tv_shiyi_person_add_sex)
-    TextView tvSex;
-    @BindView(R.id.tv_shiyi_person_add_group)
-    TextView tvGroup;
-    @BindView(R.id.iv_shiyi_person_add_sync)
-    ImageView ivSync;
+    private ImageView ivAvatar;
+    private TextView tvName;
+    private TextView tvDesc;
+    private TextView tvSex;
+    private TextView tvGroup;
+    private ImageView ivSync;
 
     private MenuItem mConfirmItem;
     private String emptyText = "未填写";
@@ -68,13 +59,19 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
     protected void initView() {
+        ivAvatar = findViewById(R.id.iv_shiyi_person_add_avatar);
+        tvName = findViewById(R.id.tv_shiyi_person_add_name);
+        tvDesc = findViewById(R.id.tv_shiyi_person_add_desc);
+        tvSex = findViewById(R.id.tv_shiyi_person_add_sex);
+        tvGroup = findViewById(R.id.tv_shiyi_person_add_group);
+        ivSync = findViewById(R.id.iv_shiyi_person_add_sync);
+        findViewById(R.id.rl_shiyi_person_add_avatar_item).setOnClickListener(this);
+        findViewById(R.id.rl_shiyi_person_add_name_item).setOnClickListener(this);
+        findViewById(R.id.rl_shiyi_person_add_desc_item).setOnClickListener(this);
+        findViewById(R.id.rl_shiyi_person_add_sex_item).setOnClickListener(this);
+        findViewById(R.id.rl_shiyi_person_add_group_item).setOnClickListener(this);
+        findViewById(R.id.ll_shiyi_person_add_sync_item).setOnClickListener(this);
     }
 
     @Override
@@ -83,9 +80,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
         restoreInstanceState(savedInstanceState);
     }
 
-    @OnClick({R.id.rl_shiyi_person_add_avatar_item, R.id.rl_shiyi_person_add_name_item, R.id.rl_shiyi_person_add_desc_item,
-            R.id.rl_shiyi_person_add_sex_item, R.id.rl_shiyi_person_add_group_item, R.id.ll_shiyi_person_add_sync_item})
-    public void clickItems(View view) {
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_shiyi_person_add_avatar_item:
                 editAvatar();
@@ -233,7 +228,7 @@ public class PersonEditActivity extends BaseToolbarActivity<PersonEditContract.P
     }
 
     private List<String> getGroups() {
-        List<String> groups = ListUtils.getStringList(mPresenter.getGroups(), new Action<String, Group>() {
+        List<String> groups = ListUtils.toStringList(mPresenter.getGroups(), new Action<String, Group>() {
             @Override
             public String call(Group group) {
                 return group.getName();

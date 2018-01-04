@@ -15,11 +15,8 @@ import com.linsh.utilseverywhere.tools.IntentBuilder;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-
 public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Presenter> implements TypeEditContract.View, LshItemDragHelper.IItemDragCallback {
 
-    @BindView(R.id.rcv_type_edit_content)
     RecyclerView rcvContent;
 
     public static final int MANAGER_TYPE_LABELS = 0;
@@ -58,6 +55,7 @@ public class TypeEditActivity extends BaseToolbarActivity<TypeEditContract.Prese
 
     @Override
     protected void initView() {
+        rcvContent = findViewById(R.id.rcv_type_edit_content);
         rcvContent.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new TypeEditAdapter();
         rcvContent.setAdapter(mAdapter);

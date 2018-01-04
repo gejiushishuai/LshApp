@@ -18,15 +18,13 @@ import com.linsh.views.album.Image;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import io.realm.RealmList;
 
 public class AlbumActivity extends BaseToolbarActivity<AlbumContract.Presenter> implements AlbumContract.View {
 
     public static final String EXTRA_URL_ARRAY_LIST = "STRING_ARRAY_LIST_EXTRA";
 
-    @BindView(R.id.pv_album)
-    AlbumView mAlbumView;
+    private AlbumView mAlbumView;
 
     @Override
     protected String getToolbarTitle() {
@@ -40,6 +38,7 @@ public class AlbumActivity extends BaseToolbarActivity<AlbumContract.Presenter> 
 
     @Override
     protected void initView() {
+        mAlbumView = findViewById(R.id.pv_album);
         mAlbumView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

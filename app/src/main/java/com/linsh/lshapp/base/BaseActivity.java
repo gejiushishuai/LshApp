@@ -12,8 +12,6 @@ import com.linsh.lshapp.tools.LshActivityStatusTool;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import butterknife.ButterKnife;
-
 public abstract class BaseActivity extends AppCompatActivity {
 
     private LshActivityStatusTool mStatusTool = new LshActivityStatusTool();
@@ -22,7 +20,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
-        ButterKnife.bind(this);
         // 设置屏幕方向
         setScreenOrientation();
         // 初始化布局

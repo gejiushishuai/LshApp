@@ -17,11 +17,8 @@ import com.linsh.utilseverywhere.StringUtils;
 
 import java.util.List;
 
-import butterknife.BindView;
-
 public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter> implements SearchContract.View {
 
-    @BindView(R.id.rcv_search)
     RecyclerView mRecyclerView;
     private SearchAdapter mAdapter;
 
@@ -37,6 +34,7 @@ public class SearchActivity extends BaseToolbarActivity<SearchContract.Presenter
 
     @Override
     protected void initView() {
+        mRecyclerView = findViewById(R.id.rcv_search);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new SearchAdapter();
         mRecyclerView.setAdapter(mAdapter);

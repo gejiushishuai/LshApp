@@ -32,24 +32,14 @@ import com.linsh.utilseverywhere.tools.IntentBuilder;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnLongClick;
+public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContract.Presenter> implements PersonDetailContract.View, View.OnClickListener, View.OnLongClickListener {
 
-public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContract.Presenter> implements PersonDetailContract.View {
-
-    @BindView(R.id.iv_person_detail_avatar)
-    ImageView ivAvatar;
-    @BindView(R.id.tv_person_detail_name)
-    TextView tvName;
-    @BindView(R.id.iv_person_detail_sex)
-    ImageView ivSex;
-    @BindView(R.id.iv_person_detail_sync)
-    ImageView ivSync;
-    @BindView(R.id.tv_person_detail_desc)
-    TextView tvDesc;
-    @BindView(R.id.rcv_person_detail_content)
-    RecyclerView rcvContent;
+    private ImageView ivAvatar;
+    private TextView tvName;
+    private ImageView ivSex;
+    private ImageView ivSync;
+    private TextView tvDesc;
+    private RecyclerView rcvContent;
 
     private PersonDetailAdapter mDetailAdapter;
 
@@ -70,6 +60,17 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
 
     @Override
     protected void initView() {
+        ivAvatar = findViewById(R.id.iv_person_detail_avatar);
+        tvName = findViewById(R.id.tvAccountName);
+        ivSex = findViewById(R.id.iv_person_detail_sex);
+        ivSync = findViewById(R.id.iv_person_detail_sync);
+        tvDesc = findViewById(R.id.tv_person_detail_desc);
+        rcvContent = findViewById(R.id.rcv_person_detail_content);
+
+        ivAvatar.setOnClickListener(this);
+        findViewById(R.id.rl_person_detail_info_layout).setOnClickListener(this);
+        ivAvatar.setOnLongClickListener(this);
+
         rcvContent.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDetailAdapter = new PersonDetailAdapter();
         rcvContent.setAdapter(mDetailAdapter);
@@ -158,7 +159,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
             } else if (gender == 2) {
                 ivSex.setImageResource(R.drawable.ic_sex_female);
             }
-            ivSync.setVisibility(person.isSyncWithContacts() ? View.VISIBLE:View.GONE);
+            ivSync.setVisibility(person.isSyncWithContacts() ? View.VISIBLE : View.GONE);
             ImageTools.loadAvatar(ivAvatar, person.getAvatarThumb(), person.getAvatar());
         }
     }
@@ -170,22 +171,31 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
         }
     }
 
-    @OnClick(R.id.iv_person_detail_avatar)
-    public void onAvatarClick(View view) {
-        Person person = mPresenter.getPerson();
-        if (person != null && person.isValid()) {
-            String avatar = person.getAvatar();
-            if (ImageTools.isImageUrl(avatar)) {
-                String signedUrl = ImageTools.getSignedUrl(avatar);
-                Intent intent = new Intent(getActivity(), PhotoViewActivity.class);
-                intent.putExtra(PhotoViewActivity.EXTRA_URL, signedUrl);
-                startActivity(intent);
-            }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_person_detail_avatar:
+                Person person = mPresenter.getPerson();
+                if (person != null && person.isValid()) {
+                    String avatar = person.getAvatar();
+                    if (ImageTools.isImageUrl(avatar)) {
+                        String signedUrl = ImageTools.getSignedUrl(avatar);
+                        Intent intent = new Intent(getActivity(), PhotoViewActivity.class);
+                        intent.putExtra(PhotoViewActivity.EXTRA_URL, signedUrl);
+                        startActivity(intent);
+                    }
+                }
+                break;
+            case R.id.rl_person_detail_info_layout:
+                IntentUtils.buildIntent(PersonEditActivity.class)
+                        .putExtra(mPresenter.getPerson().getId())
+                        .startActivityForResult(getActivity(), 101);
+                break;
         }
     }
 
-    @OnLongClick(R.id.iv_person_detail_avatar)
-    public boolean onAvatarLongClick() {
+    @Override
+    public boolean onLongClick(View v) {
         Person person = mPresenter.getPerson();
         if (person != null && person.isValid()) {
             IntentUtils.buildIntent(AlbumActivity.class)
@@ -193,13 +203,6 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
                     .startActivity(getActivity());
         }
         return true;
-    }
-
-    @OnClick(R.id.rl_person_detail_info_layout)
-    public void onInfoLayoutClick(View view) {
-        IntentUtils.buildIntent(PersonEditActivity.class)
-                .putExtra(mPresenter.getPerson().getId())
-                .startActivityForResult(getActivity(), 101);
     }
 
     @Override
@@ -257,7 +260,7 @@ public class PersonDetailActivity extends BaseToolbarActivity<PersonDetailContra
     }
 
     private void showTypesDialog(List<TypeLabel> types, final int sort) {
-        List<String> stringList = ListUtils.getStringList(types, new Action<String, TypeLabel>() {
+        List<String> stringList = ListUtils.toStringList(types, new Action<String, TypeLabel>() {
             @Override
             public String call(TypeLabel typeLabel) {
                 return typeLabel.isValid() ? typeLabel.getName() : null;

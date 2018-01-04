@@ -14,14 +14,9 @@ import com.linsh.utilseverywhere.StringUtils;
 import com.linsh.utilseverywhere.ToastUtils;
 import com.linsh.utilseverywhere.tools.IntentBuilder;
 
-import butterknife.BindView;
-import butterknife.OnClick;
+public class TaskEditActivity extends BaseToolbarActivity<TaskEditContract.Presenter> implements TaskEditContract.View, View.OnClickListener {
 
-public class TaskEditActivity extends BaseToolbarActivity<TaskEditContract.Presenter> implements TaskEditContract.View {
-
-    @BindView(R.id.tp_task_edit_name)
     LshTextPreference tpTaskName;
-    @BindView(R.id.tp_task_edit_frequency)
     LshTextPreference tpFrequency;
 
     private long mTaskId = -1;
@@ -41,10 +36,14 @@ public class TaskEditActivity extends BaseToolbarActivity<TaskEditContract.Prese
 
     @Override
     protected void initView() {
+        tpTaskName = findViewById(R.id.tp_task_edit_name);
+        tpFrequency = findViewById(R.id.tp_task_edit_frequency);
+        tpTaskName.setOnClickListener(this);
+        tpFrequency.setOnClickListener(this);
     }
 
-    @OnClick({R.id.tp_task_edit_name, R.id.tp_task_edit_frequency})
-    public void clickItems(View view) {
+    @Override
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tp_task_edit_name:
                 editName();
