@@ -6,8 +6,8 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.linsh.utilseverywhere.KeyboardUtils;
 import com.linsh.lshapp.tools.LshActivityStatusTool;
+import com.linsh.utilseverywhere.KeyboardUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

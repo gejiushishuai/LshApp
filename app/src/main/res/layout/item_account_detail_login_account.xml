@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/ivWebsiteAvatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_website_default"/>
+
+    <TextView
+        android:id="@+id/tvWebsiteName"
+        style="@style/Text_title"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        tools:text="Github"/>
+
+    <com.linsh.views.CircleImageView
+        android:id="@+id/ivAccountAvatar"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginLeft="5dp"
+        android:src="@drawable/ic_contact"
+        app:civ_border_color="#FFF"
+        app:civ_border_width="1dp"/>
+
+    <TextView
+        android:id="@+id/tvAccountName"
+        style="@style/Text_title2"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        tools:text="Senh Linsh"/>
+
+</LinearLayout>

@@ -6,13 +6,13 @@
               android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/rl_person_detail_info_layout"
+        android:id="@+id/rlInfoLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_white">
 
         <ImageView
-            android:id="@+id/iv_person_detail_avatar"
+            android:id="@+id/ivAccountAvatar"
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:layout_alignParentLeft="true"
@@ -23,38 +23,31 @@
         <TextView
             android:id="@+id/tvAccountName"
             style="@style/Text_title"
-            android:layout_alignTop="@id/iv_person_detail_avatar"
-            android:layout_toRightOf="@id/iv_person_detail_avatar"
-            tools:text="名字"/>
-
-        <ImageView
-            android:id="@+id/iv_person_detail_sex"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignBottom="@+id/tvAccountName"
-            android:layout_alignTop="@+id/tvAccountName"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/tvAccountName"
-            android:src="@drawable/ic_sex"/>
-
-        <ImageView
-            android:id="@+id/iv_person_detail_sync"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/tvAccountName"
-            android:layout_alignTop="@+id/tvAccountName"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/tvAccountName"
-            android:src="@drawable/ic_common_sync"/>
+            android:layout_alignTop="@id/ivAccountAvatar"
+            android:layout_toRightOf="@id/ivAccountAvatar"
+            tools:text="渊祥"/>
 
         <TextView
-            android:id="@+id/tv_person_detail_desc"
+            android:id="@+id/tvWebsiteName"
             style="@style/Text_detail"
             android:layout_alignLeft="@id/tvAccountName"
             android:layout_below="@id/tvAccountName"
             android:layout_marginTop="2dp"
             android:textSize="12sp"
-            tools:text="我就是我 不一样的烟火"/>
+            tools:text="腾讯-QQ"/>
+
+        <ImageView
+            android:id="@+id/iv_person_detail_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tvWebsiteName"
+            android:layout_alignTop="@+id/tvWebsiteName"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/tvWebsiteName"
+            android:src="@drawable/ic_common_sync"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
     </RelativeLayout>
 
     <View
@@ -68,7 +61,7 @@
         android:background="@color/bg_nothing"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rcv_person_detail_content"
+        android:id="@+id/rcvContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/color_theme_window_bg"/>

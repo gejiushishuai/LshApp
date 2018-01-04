@@ -8,6 +8,7 @@ import com.linsh.lshapp.tools.LshRxUtils
 import io.reactivex.Flowable
 import io.reactivex.FlowableEmitter
 import io.realm.Realm
+import io.realm.RealmList
 import io.realm.RealmResults
 
 /**
@@ -59,7 +60,7 @@ object MiqiDbHelper {
                 account.website = realmWebsite!!
                 if (account.id <= 0L) {
                     val maxId = realm.where(Account::class.java).max("id")
-                    account.id = (maxId?.toLong() ?: -1) + 1
+                    account.id = (maxId?.toLong() ?: 0) + 1
                 }
                 realm.copyToRealmOrUpdate(account)
                 emitter.onNext(Result())
@@ -90,5 +91,54 @@ object MiqiDbHelper {
         })
     }
 
+    fun addLoginWay(realm: Realm, accountId: Long, otherId: Long): Flowable<Result> {
+        return LshRxUtils.getAsyncTransactionFlowable(realm, object : AsyncTransaction<Result>() {
+            override fun execute(realm: Realm, emitter: FlowableEmitter<in Result>) {
+                val account = realm.where(Account::class.java).equalTo("id", accountId).findFirst()
+                if (account != null) {
+                    val addAccount = realm.where(Account::class.java).equalTo("id", otherId).findFirst()
+                    if (addAccount != null) {
+                        var loginWays = account.loginAccounts
+                        if (loginWays == null) {
+                            loginWays = RealmList(addAccount)
+                            account.loginAccounts = loginWays
+                        } else {
+                            loginWays.add(addAccount)
+                        }
+                        emitter.onNext(Result())
+                    } else {
+                        emitter.onNext(Result("添加失败, 没有找到该帐号"))
+                    }
+                } else {
+                    emitter.onNext(Result("无效帐号"))
+                }
+            }
+        })
+    }
 
+    fun addLoginWay(realm: Realm, accountId: Long, newLoginName: String): Flowable<Result> {
+        return LshRxUtils.getAsyncTransactionFlowable(realm, object : AsyncTransaction<Result>() {
+            override fun execute(realm: Realm, emitter: FlowableEmitter<in Result>) {
+                val account = realm.where(Account::class.java).equalTo("id", accountId).findFirst()
+                if (account != null) {
+                    if (account.loginName?.isNotEmpty() == true) {
+                        val loginName = account.loginName!!
+                        if (!loginName.matches(Regex("(.+\\+\\+)*$newLoginName(\\+\\+.+)*"))) {
+                            if (loginName.contains(Regex("::"))) {
+                                account.loginName = loginName.replace("::", "++$newLoginName::")
+                            } else {
+                                account.loginName += "++$newLoginName"
+                            }
+                        } else {
+                            emitter.onNext(Result("该用户名已存在"))
+                        }
+                    } else {
+                        account.loginName = newLoginName
+                    }
+                } else {
+                    emitter.onNext(Result("无效帐号"))
+                }
+            }
+        })
+    }
 }

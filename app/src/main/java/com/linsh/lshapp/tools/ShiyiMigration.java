@@ -116,7 +116,8 @@ public class ShiyiMigration implements RealmMigration {
                         .addRealmObjectField("website", schema.get("Website"))
                         .addField("name", String.class)
                         .addField("avatar", String.class)
-                        .addRealmListField("loginWays", schema.get("Account"));
+                        .addRealmListField("loginNames", String.class)
+                        .addRealmListField("loginAccounts", schema.get("Account"));
                 break;
         }
     }

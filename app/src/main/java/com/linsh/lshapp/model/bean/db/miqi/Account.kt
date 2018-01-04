@@ -19,15 +19,18 @@ open class Account : RealmObject {
     var website: Website? = null
     var name: String? = null
     var avatar: String? = null
-    var loginWays: RealmList<Account>? = null
+    var loginName: String? = null
+    var loginAccounts: RealmList<Account>? = null
 
     constructor()
 
-    constructor(id: Long, website: Website, name: String, avatar: String? = null, loginWays: RealmList<Account>? = null) {
+    constructor(id: Long, website: Website, name: String, avatar: String? = null,
+                loginName: String? = null, loginAccounts: RealmList<Account>? = null) {
         this.id = id
         this.website = website
         this.name = name
         this.avatar = avatar
-        this.loginWays = loginWays
+        this.loginName = loginName
+        this.loginAccounts = loginAccounts
     }
 }

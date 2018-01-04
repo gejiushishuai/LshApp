@@ -20,7 +20,7 @@ import java.util.List;
  * Created by Senh Linsh on 17/4/25.
  */
 
-public class HuhuAdapter extends LshHeaderFooterRcvAdapter<Task, RecyclerView.ViewHolder> {
+public class HuhuAdapter extends LshHeaderFooterRcvAdapter<Task> {
 
     public static final int VIEW_TYPE_STATUS = 3;
 

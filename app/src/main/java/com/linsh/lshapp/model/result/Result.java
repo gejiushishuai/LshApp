@@ -17,7 +17,7 @@ public class Result {
     }
 
     public Result(String message) {
-        this(false, null);
+        this(false, message);
     }
 
     public Result(boolean success, String message) {

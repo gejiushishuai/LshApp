@@ -23,7 +23,7 @@ import com.linsh.utilseverywhere.StringUtils
  *    desc   :
  * </pre>
  */
-class MiqiAdapter : LshHeaderFooterRcvAdapter<Account, RecyclerView.ViewHolder>(false, true) {
+class MiqiAdapter : LshHeaderFooterRcvAdapter<Account>(false, true) {
 
     companion object {
         const val VIEW_TYPE_STATUS = 3

@@ -93,7 +93,7 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
     // 点击选择网站
     private fun editWebsite() {
         val websites = mPresenter.getWebsites()
-        val list = ListUtils.getStringList(websites, { it.name })
+        val list = ListUtils.toStringList(websites, { it.name })
         list.add(0, "+ 新增网站")
         LshColorDialog(activity)
                 .buildList()

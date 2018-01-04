@@ -49,6 +49,10 @@ public class ImageTools {
         setImage(imageView, url, 0, 0);
     }
 
+    public static void setImage(ImageView imageView, String url, int placeholder) {
+        setImage(imageView, url, placeholder, placeholder);
+    }
+
     public static void setImage(ImageView imageView, String url, int placeholder, int error) {
         if (imageView == null) return;
 
