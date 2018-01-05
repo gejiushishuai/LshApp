@@ -91,8 +91,7 @@ public class ShiyiMigration implements RealmMigration {
                 break;
             case 8:
                 schema.create("Task")
-                        .addField("id", int.class)
-                        .addPrimaryKey("id")
+                        .addField("id", int.class).addPrimaryKey("id")
                         .addField("title", String.class)
                         .addField("frequency", int.class)
                         .addField("unit", String.class)
@@ -106,17 +105,20 @@ public class ShiyiMigration implements RealmMigration {
                         .addField("timestamp", long.class);
                 break;
             case 9:
+                schema.create("WebAvatar")
+                        .addField("thumbUrl", String.class).addPrimaryKey("thumbUrl");
+                schema.create("AccountAvatar")
+                        .addField("url", String.class).addPrimaryKey("url")
+                        .addField("thumbUrl", String.class);
                 schema.create("Website")
-                        .addField("name", String.class)
-                        .addPrimaryKey("name")
-                        .addField("avatar", String.class);
+                        .addField("name", String.class).addPrimaryKey("name")
+                        .addRealmObjectField("avatar", schema.get("WebAvatar"));
                 schema.create("Account")
-                        .addField("id", long.class)
-                        .addPrimaryKey("id")
+                        .addField("id", long.class).addPrimaryKey("id")
                         .addRealmObjectField("website", schema.get("Website"))
                         .addField("name", String.class)
-                        .addField("avatar", String.class)
-                        .addRealmListField("loginNames", String.class)
+                        .addRealmObjectField("avatar", schema.get("AccountAvatar"))
+                        .addField("loginName", String.class)
                         .addRealmListField("loginAccounts", schema.get("Account"));
                 break;
         }

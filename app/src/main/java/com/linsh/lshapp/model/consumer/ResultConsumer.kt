@@ -14,17 +14,23 @@ import io.reactivex.functions.Consumer
  *    desc   :
  * </pre>
  */
-class ResultConsumer(private val view: BaseContract.BaseView? = null, private val level: Int = 0) : Consumer<Result> {
-
-    constructor(view: BaseContract.BaseView) : this(view, 1)
+class ResultConsumer(private val view: BaseContract.BaseView? = null, private val level: Int = 1) : Consumer<Result> {
 
     override fun accept(result: Result) {
-        if (!result.isSuccess) {
-            when (level) {
-                1 -> ToastUtils.show(result.message)
-                2 -> view?.showTextDialog(result.message) ?: ToastUtils.show(result.message)
+        consumeFailure(result, view, level)
+    }
+
+    companion object {
+        fun consumeFailure(result: Result, view: BaseContract.BaseView? = null, level: Int = 0): Boolean {
+            if (!result.isSuccess) {
+                when (level) {
+                    1 -> ToastUtils.show(result.message)
+                    2 -> view?.showTextDialog(result.message) ?: ToastUtils.show(result.message)
+                }
+                LogUtils.i("onNext -> ${result.message}")
+                return true
             }
-            LogUtils.i("onNext -> ${result.message}")
+            return false
         }
     }
 }

@@ -13,9 +13,7 @@ import io.reactivex.functions.Consumer
  *    desc   :
  * </pre>
  */
-class ThrowableConsumer(private val view: BaseContract.BaseView? = null, private val level: Int = 0) : Consumer<Throwable> {
-
-    constructor(view: BaseContract.BaseView) : this(view, 1)
+class ThrowableConsumer(private val view: BaseContract.BaseView? = null, private val level: Int = 1) : Consumer<Throwable> {
 
     override fun accept(thr: Throwable) {
         when (level) {

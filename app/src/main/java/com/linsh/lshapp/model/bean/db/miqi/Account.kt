@@ -18,13 +18,13 @@ open class Account : RealmObject {
     var id: Long = 0
     var website: Website? = null
     var name: String? = null
-    var avatar: String? = null
+    var avatar: AccountAvatar? = null
     var loginName: String? = null
     var loginAccounts: RealmList<Account>? = null
 
     constructor()
 
-    constructor(id: Long, website: Website, name: String, avatar: String? = null,
+    constructor(id: Long, website: Website, name: String, avatar: AccountAvatar? = null,
                 loginName: String? = null, loginAccounts: RealmList<Account>? = null) {
         this.id = id
         this.website = website

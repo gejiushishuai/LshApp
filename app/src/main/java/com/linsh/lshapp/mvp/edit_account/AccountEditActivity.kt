@@ -1,19 +1,17 @@
 package com.linsh.lshapp.mvp.edit_account
 
-import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.view.Menu
 import android.view.MenuItem
+import com.google.gson.Gson
 import com.linsh.dialog.LshColorDialog
 import com.linsh.lshapp.R
 import com.linsh.lshapp.base.BaseToolbarActivity
 import com.linsh.lshapp.model.bean.db.miqi.Account
-import com.linsh.lshapp.mvp.photo_view.PhotoViewActivity
+import com.linsh.lshapp.model.bean.db.miqi.AccountAvatar
+import com.linsh.lshapp.mvp.avatarSelect.AccountAvatarSelectPresenter
+import com.linsh.lshapp.mvp.avatarSelect.AvatarSelectActivity
 import com.linsh.lshapp.tools.ImageTools
-import com.linsh.lshapp.tools.LshFileFactory
-import com.linsh.lshapp.tools.LshIdTools
-import com.linsh.utilseverywhere.IntentUtils
 import com.linsh.utilseverywhere.ListUtils
 import com.linsh.utilseverywhere.StringUtils
 import com.linsh.utilseverywhere.ToastUtils
@@ -34,7 +32,6 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
     private var mAccountId: Long? = null
     private var mConfirmItem: MenuItem? = null
     private val emptyText = "---"
-    private var avatar: String? = null
     private var mCurPickedFile: File? = null
     private var mCurSelectedFile: File? = null
 
@@ -56,14 +53,12 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
     private fun editAvatar() {
         LshColorDialog(activity)
                 .buildList()
-                .setList(listOf("从相册添加", "从已有的头像中添加"))
-                .setOnItemClickListener({ dialog, item, _ ->
+                .setList(listOf("添加或更换头像"))
+                .setOnItemClickListener({ dialog, _, _ ->
                     dialog.dismiss()
-                    when (item) {
-                        "从相册添加" -> IntentUtils.gotoPickPhoto(activity, 100)
-                        "从已有头像中添加" -> IntentBuilder(PhotoViewActivity::class.java)
-                                .startActivity(activity)
-                    }
+                    IntentBuilder(AvatarSelectActivity::class.java)
+                            .putExtra(AccountAvatarSelectPresenter::class.java.name, "class")
+                            .startActivityForResult(activity, 100)
                 })
                 .show()
     }
@@ -110,6 +105,7 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
                 .show()
     }
 
+    // 添加网站
     private fun addWebsite() {
         LshColorDialog(activity).buildInput()
                 .setTitle("添加网址")
@@ -118,11 +114,12 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
                         dialog.dismiss()
                         mPresenter.addWebsite(inputText)
                         tpWebsite.detail().text = inputText
+                        onInfoModified()
                     } else {
                         showToast("输入不能为空")
                     }
                 })
-                .setNegativeButton(null,null)
+                .setNegativeButton(null, null)
                 .show()
     }
 
@@ -155,11 +152,6 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
         return super.onOptionsItemSelected(item)
     }
 
-    //  保存帐号信息
-    private fun saveAccount() {
-        mPresenter.saveAccount(getName(), getWebsite())
-    }
-
     override fun initPresenter(): AccountEditContract.Presenter {
         return AccountEditPresent()
     }
@@ -170,6 +162,15 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
 
     private fun getWebsite(): String {
         return tpWebsite.detail().text.toString()
+    }
+
+    private fun setAvatar(accountAvatar: AccountAvatar?) {
+        ipAvatar.detail().view.tag = accountAvatar
+        ImageTools.setImage(ipAvatar.detail().view, accountAvatar?.thumbFirst())
+    }
+
+    private fun getAvatar(): AccountAvatar {
+        return ipAvatar.detail().view.tag as AccountAvatar
     }
 
     private fun isEmpty(text: String): Boolean {
@@ -191,26 +192,27 @@ class AccountEditActivity : BaseToolbarActivity<AccountEditContract.Presenter>()
         return mAccountId!!
     }
 
+    //  保存帐号信息
+    private fun saveAccount() {
+        mPresenter.saveAccount(getName(), getWebsite(), getAvatar())
+    }
+
     override fun setData(mAccount: Account) {
-        ImageTools.setImage(ipAvatar.detail().view, mAccount.avatar)
         tpName.detail().text = mAccount.name
         tpWebsite.detail().text = mAccount.website?.name
+        setAvatar(mAccount.avatar)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-        // 选择照片后返回
-            100 -> if (resultCode == Activity.RESULT_OK && data != null) {
-                mCurPickedFile = LshFileFactory.getUploadThumbFile(LshIdTools.getTimeId())
-                IntentUtils.gotoCropPhoto(this, 101, data.data, Uri.fromFile(mCurPickedFile),
-                        1, 1, 200, 200)
-            }
-        // 剪裁照片后返回
-            101 -> if (resultCode == Activity.RESULT_OK) {
-                ImageTools.setImage(ipAvatar.detail().view, mCurPickedFile)
-                mCurSelectedFile = mCurPickedFile
-                onInfoModified()
+        when (resultCode) {
+            101 -> if (data != null) {
+                val json = data.getStringExtra("avatar")
+                val avatar = Gson().fromJson(json, AccountAvatar::class.java)
+                if (avatar.url?.isNotEmpty() == true) {
+                    ImageTools.setImage(ipAvatar.detail().imageView, avatar.thumbFirst())
+                    ipAvatar.detail().imageView.tag = avatar
+                }
             }
         }
     }

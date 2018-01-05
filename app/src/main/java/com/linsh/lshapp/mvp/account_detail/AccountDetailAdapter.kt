@@ -61,8 +61,8 @@ class AccountDetailAdapter : BottomFooterEmptyStatusAdapter<Account>(false) {
 
     override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder?, account: Account, position: Int) {
         if (holder is LoginAccountViewHolder) {
-            ImageTools.setImage(holder.itemView.ivAccountAvatar, account.avatar, R.drawable.ic_contact)
-            ImageTools.setImage(holder.itemView.ivWebsiteAvatar, account.website?.avatar, R.drawable.ic_website_default)
+            ImageTools.setImage(holder.itemView.ivAccountAvatar, account.avatar?.thumbFirst(), R.drawable.ic_contact)
+            ImageTools.setImage(holder.itemView.ivWebsiteAvatar, account.website?.avatar?.thumbUrl, R.drawable.ic_website_default)
             holder.itemView.tvAccountName.text = account.name
             holder.itemView.tvWebsiteName.text = account.website?.name
         } else if (holder is LoginNameViewHolder) {

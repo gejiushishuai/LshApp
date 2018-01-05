@@ -115,8 +115,8 @@ class AccountDetailActivity : BaseToolbarActivity<AccountDetailContract.Presente
     }
 
     override fun setData(account: Account) {
-        ImageTools.setImage(ivAccountAvatar, account.avatar, R.drawable.ic_contact)
-        ImageTools.setImage(ivAccountAvatar, account.website?.avatar, R.drawable.ic_website_default)
+        ImageTools.setImage(ivAccountAvatar, account.avatar?.thumbFirst(), R.drawable.ic_contact)
+        ImageTools.setImage(ivAccountAvatar, account.website?.avatar?.thumbUrl, R.drawable.ic_website_default)
         tvAccountName.text = account.name
         tvWebsiteName.text = account.website?.name
         mAdapter.setData(account.loginName, account.loginAccounts)

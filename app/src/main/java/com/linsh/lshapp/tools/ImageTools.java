@@ -87,7 +87,7 @@ public class ImageTools {
         if (imageView == null) return;
 
         if (file == null || !file.exists()) {
-            setImage(imageView, R.drawable.ic_default_image);
+            setImage(imageView, R.drawable.ic_error_default);
             return;
         }
 
@@ -95,7 +95,7 @@ public class ImageTools {
             Glide.with(ContextUtils.get()).load(file).into(imageView);
         } catch (Exception e) {
             e.printStackTrace();
-            setImage(imageView, R.drawable.ic_default_image);
+            setImage(imageView, R.drawable.ic_error_default);
         }
     }
 

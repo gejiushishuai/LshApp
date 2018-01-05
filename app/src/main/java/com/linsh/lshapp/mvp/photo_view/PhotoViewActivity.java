@@ -25,9 +25,9 @@ import java.util.List;
  */
 public class PhotoViewActivity extends BaseViewActivity<PhotoViewContract.Presenter> implements PhotoViewContract.View {
 
-    public static final String EXTRA_URL = "string_array_list_extra";
-    public static final String EXTRA_URL_ARRAY_LIST = "string_array_list_extra";
-    public static final String EXTRA_DISPLAY_ITEM = "extra_display_item";
+    public static final String EXTRA_URL = "extra_url";
+    public static final String EXTRA_URL_ARRAY = "extra_url_array";
+    public static final String EXTRA_DISPLAY_ITEM_INDEX = "extra_display_item_index";
     private List<String> mUrls = new ArrayList<>();
 
     ViewPager mViewPager;
@@ -45,7 +45,7 @@ public class PhotoViewActivity extends BaseViewActivity<PhotoViewContract.Presen
         if (StringUtils.notEmpty(url)) {
             mUrls.add(url);
         } else {
-            String[] extras = getIntent().getStringArrayExtra(EXTRA_URL_ARRAY_LIST);
+            String[] extras = getIntent().getStringArrayExtra(EXTRA_URL_ARRAY);
             if (extras != null) {
                 Collections.addAll(mUrls, extras);
             }
@@ -54,7 +54,7 @@ public class PhotoViewActivity extends BaseViewActivity<PhotoViewContract.Presen
         adapter.setData(mUrls);
         mViewPager.setAdapter(adapter);
 
-        int curItem = getIntent().getIntExtra(EXTRA_DISPLAY_ITEM, 0);
+        int curItem = getIntent().getIntExtra(EXTRA_DISPLAY_ITEM_INDEX, 0);
         if (curItem > 0 && curItem < mUrls.size()) {
             mViewPager.setCurrentItem(curItem);
         }

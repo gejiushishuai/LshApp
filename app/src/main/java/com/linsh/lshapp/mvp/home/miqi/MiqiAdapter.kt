@@ -60,12 +60,12 @@ class MiqiAdapter : LshHeaderFooterRcvAdapter<Account>(false, true) {
             holder.tvWebName?.text = account?.website?.name ?: "未知"
             holder.tvName?.text = account?.name ?: "--"
             val webAvatar = account?.website?.avatar
-            if (StringUtils.notEmpty(webAvatar)) {
-                ImageTools.setImage(holder.ivWebAvatar, webAvatar)
+            if (StringUtils.notEmpty(webAvatar?.thumbUrl)) {
+                ImageTools.setImage(holder.ivWebAvatar, webAvatar?.thumbUrl)
             }
             val acAvatar = account?.avatar
-            if (StringUtils.notEmpty(acAvatar)) {
-                ImageTools.setImage(holder.ivAvatar, acAvatar)
+            if (StringUtils.notEmpty(acAvatar?.thumbFirst())) {
+                ImageTools.setImage(holder.ivAvatar, acAvatar?.thumbFirst())
             }
         }
     }

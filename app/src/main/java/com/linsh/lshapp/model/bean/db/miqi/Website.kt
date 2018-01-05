@@ -15,11 +15,11 @@ open class Website : RealmObject {
 
     @PrimaryKey
     var name: String? = null
-    var avatar: String? = null
+    var avatar: WebAvatar? = null
 
     constructor()
 
-    constructor(name: String, avatar: String? = null) : super() {
+    constructor(name: String, avatar: WebAvatar? = null) : super() {
         this.name = name
         this.avatar = avatar
     }

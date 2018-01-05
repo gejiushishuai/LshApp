@@ -2,6 +2,8 @@ package com.linsh.lshapp.task.db
 
 import com.linsh.lshapp.model.action.AsyncTransaction
 import com.linsh.lshapp.model.bean.db.miqi.Account
+import com.linsh.lshapp.model.bean.db.miqi.AccountAvatar
+import com.linsh.lshapp.model.bean.db.miqi.WebAvatar
 import com.linsh.lshapp.model.bean.db.miqi.Website
 import com.linsh.lshapp.model.result.Result
 import com.linsh.lshapp.tools.LshRxUtils
@@ -35,6 +37,13 @@ object MiqiDbHelper {
         return realm.where(Account::class.java).equalTo("id", id).findFirstAsync()
     }
 
+    fun getWebsiteAvatars(realm: Realm): RealmResults<WebAvatar> {
+        return realm.where(WebAvatar::class.java).findAllAsync()
+    }
+
+    fun getAccountAvatars(realm: Realm): RealmResults<AccountAvatar> {
+        return realm.where(AccountAvatar::class.java).findAllAsync()
+    }
 
     fun updateOrCreateAccount(realm: Realm, account: Account): Flowable<Result> {
         return LshRxUtils.getAsyncTransactionFlowable(realm, object : AsyncTransaction<Result>() {
@@ -52,6 +61,7 @@ object MiqiDbHelper {
     fun saveAccount(realm: Realm, account: Account): Flowable<Result> {
         return LshRxUtils.getAsyncTransactionFlowable(realm, object : AsyncTransaction<Result>() {
             override fun execute(realm: Realm, emitter: FlowableEmitter<in Result>) {
+                // 网站 (网站传入的只有名字, 需要在这里进行查询)
                 val website = account.website ?: Website("未知")
                 var realmWebsite = realm.where(Website::class.java).equalTo("name", website.name).findFirst()
                 if (realmWebsite == null) {
@@ -119,6 +129,7 @@ object MiqiDbHelper {
     fun addLoginWay(realm: Realm, accountId: Long, newLoginName: String): Flowable<Result> {
         return LshRxUtils.getAsyncTransactionFlowable(realm, object : AsyncTransaction<Result>() {
             override fun execute(realm: Realm, emitter: FlowableEmitter<in Result>) {
+
                 val account = realm.where(Account::class.java).equalTo("id", accountId).findFirst()
                 if (account != null) {
                     if (account.loginName?.isNotEmpty() == true) {
@@ -138,6 +149,28 @@ object MiqiDbHelper {
                 } else {
                     emitter.onNext(Result("无效帐号"))
                 }
+            }
+        })
+    }
+
+    fun saveWebAvatar(realm: Realm, webAvatar: WebAvatar): Flowable<Result> {
+        val avatar = if (!webAvatar.isManaged) webAvatar else realm.copyFromRealm(webAvatar)
+        return LshRxUtils.getAsyncTransactionFlowable(realm, object : AsyncTransaction<Result>() {
+            override fun execute(realm: Realm, emitter: FlowableEmitter<in Result>) {
+
+                realm.copyToRealmOrUpdate(avatar)
+                emitter.onNext(Result())
+            }
+        })
+    }
+
+    fun saveAccountAvatar(realm: Realm, accountAvatar: AccountAvatar): Flowable<Result> {
+        val avatar = if (!accountAvatar.isManaged) accountAvatar else realm.copyFromRealm(accountAvatar)
+        return LshRxUtils.getAsyncTransactionFlowable(realm, object : AsyncTransaction<Result>() {
+            override fun execute(realm: Realm, emitter: FlowableEmitter<in Result>) {
+
+                realm.copyToRealmOrUpdate(avatar)
+                emitter.onNext(Result())
             }
         })
     }

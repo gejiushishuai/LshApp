@@ -27,7 +27,7 @@ public class Avatar implements Image {
         if (StringUtils.notEmpty(url) && RegexUtils.isURL(url)) {
             ImageTools.setImage(imageView, url);
         } else {
-            ImageTools.setImage(imageView, R.drawable.ic_default_image);
+            ImageTools.setImage(imageView, R.drawable.ic_error_default);
         }
     }
 }

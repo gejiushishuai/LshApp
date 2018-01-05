@@ -49,8 +49,8 @@ public class AlbumActivity extends BaseToolbarActivity<AlbumContract.Presenter> 
                     array[i] = ImageTools.getSignedUrl(avatar.imageUrl.getUrl());
                 }
                 IntentUtils.buildIntent(PhotoViewActivity.class)
-                        .putExtra(array, PhotoViewActivity.EXTRA_URL_ARRAY_LIST)
-                        .putExtra(position, PhotoViewActivity.EXTRA_DISPLAY_ITEM)
+                        .putExtra(array, PhotoViewActivity.EXTRA_URL_ARRAY)
+                        .putExtra(position, PhotoViewActivity.EXTRA_DISPLAY_ITEM_INDEX)
                         .startActivity(getActivity());
             }
         });
